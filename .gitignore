@@ -30,3 +30,8 @@ out/
 
 ### VS Code ###
 .vscode/
+
+#axon
+axon-server/AxonIQ.pid
+axon-server/axonserver-cli.jar
+axon-server/data/
