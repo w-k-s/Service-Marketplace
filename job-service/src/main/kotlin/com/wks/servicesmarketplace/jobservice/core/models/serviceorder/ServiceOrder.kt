@@ -1,9 +1,13 @@
-package com.wks.servicesmarketplace.jobservice.core.models
+package com.wks.servicesmarketplace.jobservice.core.models.serviceorder
 
-import com.wks.servicesmarketplace.jobservice.core.commands.CreateServiceOrderCommand
-import com.wks.servicesmarketplace.jobservice.core.events.CreateServiceOrderEvent
+import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.commands.CreateServiceOrderCommand
+import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.commands.VerifyServiceOrderCommand
+import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.events.CreateServiceOrderEvent
+import com.wks.servicesmarketplace.jobservice.core.models.Money
+import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.events.VerifyServiceOrderEvent
 import org.axonframework.commandhandling.CommandHandler
 import org.axonframework.eventhandling.EventHandler
+import org.axonframework.eventsourcing.EventSourcingHandler
 import org.axonframework.modelling.command.AggregateIdentifier
 import org.axonframework.modelling.command.AggregateLifecycle
 import org.axonframework.spring.stereotype.Aggregate
@@ -76,7 +80,7 @@ class ServiceOrder() {
         )
     }
 
-    @EventHandler
+    @EventSourcingHandler
     fun on(event: CreateServiceOrderEvent) {
         this.orderId = event.orderId
         this.customerId = event.customerId
@@ -94,6 +98,21 @@ class ServiceOrder() {
             this.createdBy = it.createdBy
             this.version = 1
         }
+    }
+
+    @CommandHandler
+    fun verify(command: VerifyServiceOrderCommand){
+        when(status){
+            ServiceOrderStatus.VERIFYING -> AggregateLifecycle.apply(VerifyServiceOrderEvent(command.orderId!!, command.modifiedBy!!))
+            else -> throw IllegalStateException("ServiceOrder can not be verified when it's state is '${this.status}'")
+        }
+    }
+
+    @EventSourcingHandler
+    fun on(event: VerifyServiceOrderEvent){
+        this.status = ServiceOrderStatus.PUBLISHED
+        this.lastModifiedDate = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC)
+        this.lastModifiedBy = event.modifiedBy
     }
 
     // verify - change state, lastModifiedBy, lastModifiedDate, version

@@ -1,4 +1,4 @@
-package com.wks.servicesmarketplace.jobservice.core.events
+package com.wks.servicesmarketplace.jobservice.core.models.serviceorder.events
 
 import java.time.ZonedDateTime
 

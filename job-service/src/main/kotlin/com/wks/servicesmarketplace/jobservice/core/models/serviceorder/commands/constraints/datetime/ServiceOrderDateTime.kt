@@ -1,4 +1,4 @@
-package com.wks.servicesmarketplace.jobservice.core.commands.constraints.datetime
+package com.wks.servicesmarketplace.jobservice.core.models.serviceorder.commands.constraints.datetime
 
 import javax.validation.Constraint
 import javax.validation.Payload

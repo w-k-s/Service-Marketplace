@@ -1,11 +1,11 @@
-package com.wks.servicesmarketplace.jobservice.core.models
+package com.wks.servicesmarketplace.jobservice.core.models.serviceorder
 
 enum class ServiceOrderStatus {
     INVALID,
     VERIFYING,
     REJECTING,
     REJECTED,
-    CREATED,
+    PUBLISHED,
     BIDS_RECEIVED,
     WITHDRAWING,
     WITHDRAWN,

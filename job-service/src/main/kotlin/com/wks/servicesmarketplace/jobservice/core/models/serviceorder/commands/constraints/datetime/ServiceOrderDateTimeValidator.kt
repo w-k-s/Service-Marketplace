@@ -1,4 +1,4 @@
-package com.wks.servicesmarketplace.jobservice.core.commands.constraints.datetime
+package com.wks.servicesmarketplace.jobservice.core.models.serviceorder.commands.constraints.datetime
 
 import java.time.ZonedDateTime
 import javax.validation.ConstraintValidator
