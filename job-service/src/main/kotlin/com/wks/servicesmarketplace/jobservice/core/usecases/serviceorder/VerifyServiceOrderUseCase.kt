@@ -1,10 +1,8 @@
 package com.wks.servicesmarketplace.jobservice.core.usecases.serviceorder
 
 import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.commands.VerifyServiceOrderCommand
-import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.ServiceOrder
 import com.wks.servicesmarketplace.jobservice.core.usecases.UseCase
 import org.axonframework.commandhandling.gateway.CommandGateway
-import org.axonframework.modelling.command.Repository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 

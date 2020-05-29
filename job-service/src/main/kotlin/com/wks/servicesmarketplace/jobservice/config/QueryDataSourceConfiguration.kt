@@ -1,5 +1,6 @@
 package com.wks.servicesmarketplace.jobservice.config
 
+import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.entities.ServiceOrder
 import com.zaxxer.hikari.HikariDataSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
@@ -44,7 +45,7 @@ class QueryDataSourceConfiguration {
                 .dataSource(queryDataSource)
                 .persistenceUnit("queryDataSource")
                 .properties(properties)
-                .packages("com.wks.servicesmarketplace.jobservice.core")
+                .packages(ServiceOrder::class.java)
                 .build()
     }
 

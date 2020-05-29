@@ -1,16 +1,13 @@
 package com.wks.servicesmarketplace.jobservice.config
 
-import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.ServiceOrder
+import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.aggregates.ServiceOrder
 import org.axonframework.common.jpa.EntityManagerProvider
 import org.axonframework.eventsourcing.EventSourcingRepository
 import org.axonframework.eventsourcing.eventstore.EventStore
 import org.axonframework.modelling.command.Repository
-import org.axonframework.serialization.Serializer
-import org.axonframework.serialization.json.JacksonSerializer
 import org.axonframework.springboot.util.jpa.ContainerManagedEntityManagerProvider
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.Primary
 
 
 @Configuration
@@ -33,9 +30,4 @@ class EventSourcingRepositories {
         return ContainerManagedEntityManagerProvider()
     }
 
-    @Bean
-    @Primary
-    fun serializer(): Serializer {
-        return JacksonSerializer.defaultSerializer()
-    }
 }

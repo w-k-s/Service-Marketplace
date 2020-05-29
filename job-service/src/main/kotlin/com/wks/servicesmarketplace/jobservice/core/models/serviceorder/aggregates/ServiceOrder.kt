@@ -1,6 +1,7 @@
-package com.wks.servicesmarketplace.jobservice.core.models.serviceorder
+package com.wks.servicesmarketplace.jobservice.core.models.serviceorder.aggregates
 
 import com.wks.servicesmarketplace.jobservice.core.models.Money
+import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.ServiceOrderStatus
 import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.commands.CreateServiceOrderCommand
 import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.commands.VerifyServiceOrderCommand
 import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.events.CreateServiceOrderEvent
@@ -10,16 +11,8 @@ import org.axonframework.eventsourcing.EventSourcingHandler
 import org.axonframework.modelling.command.AggregateIdentifier
 import org.axonframework.modelling.command.AggregateLifecycle
 import org.axonframework.spring.stereotype.Aggregate
-import org.hibernate.validator.constraints.Length
-import org.springframework.data.annotation.CreatedBy
-import org.springframework.data.annotation.CreatedDate
-import org.springframework.data.annotation.LastModifiedBy
-import org.springframework.data.annotation.LastModifiedDate
-import org.springframework.transaction.annotation.Transactional
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
-import javax.persistence.*
-import javax.validation.constraints.NotBlank
 
 @Aggregate
 class ServiceOrder() {
@@ -37,29 +30,22 @@ class ServiceOrder() {
 
     lateinit var orderDateTime: ZonedDateTime
 
-    @field:Enumerated(EnumType.STRING)
     var status: ServiceOrderStatus = ServiceOrderStatus.INVALID
 
     var scheduledServiceProviderId: Long? = null
 
-    @field:Embedded
     var price: Money? = null
 
-    var rejectReason: @NotBlank @Length(min = 15, max = 150) String? = null
+    var rejectReason: String? = null
 
-    @field:CreatedDate
     var createdDate: ZonedDateTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC)
 
-    @field:CreatedBy
     lateinit var createdBy: String
 
-    @field:LastModifiedDate
     var lastModifiedDate: ZonedDateTime? = null
 
-    @field:LastModifiedBy
     var lastModifiedBy: String? = null
 
-    @field:Version
     var version: Long = 0
 
     @CommandHandler
