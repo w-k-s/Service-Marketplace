@@ -1,12 +1,11 @@
 package com.wks.servicesmarketplace.jobservice.core.models.serviceorder
 
+import com.wks.servicesmarketplace.jobservice.core.models.Money
 import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.commands.CreateServiceOrderCommand
 import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.commands.VerifyServiceOrderCommand
 import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.events.CreateServiceOrderEvent
-import com.wks.servicesmarketplace.jobservice.core.models.Money
 import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.events.VerifyServiceOrderEvent
 import org.axonframework.commandhandling.CommandHandler
-import org.axonframework.eventhandling.EventHandler
 import org.axonframework.eventsourcing.EventSourcingHandler
 import org.axonframework.modelling.command.AggregateIdentifier
 import org.axonframework.modelling.command.AggregateLifecycle
@@ -16,12 +15,10 @@ import org.springframework.data.annotation.CreatedBy
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedBy
 import org.springframework.data.annotation.LastModifiedDate
+import org.springframework.transaction.annotation.Transactional
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
-import javax.persistence.Embedded
-import javax.persistence.EnumType
-import javax.persistence.Enumerated
-import javax.persistence.Version
+import javax.persistence.*
 import javax.validation.constraints.NotBlank
 
 @Aggregate
@@ -74,29 +71,26 @@ class ServiceOrder() {
                     command.serviceCategoryId,
                     command.title!!,
                     command.description!!,
-                    command.orderDateTime!!,
-                    command.createdBy!!
+                    command.orderDateTime!!.withZoneSameInstant(ZoneOffset.UTC),
+                    ServiceOrderStatus.VERIFYING,
+                    command.createdBy!!,
+                    1
             )
         )
     }
 
     @EventSourcingHandler
     fun on(event: CreateServiceOrderEvent) {
-        this.orderId = event.orderId
-        this.customerId = event.customerId
-        this.serviceCategoryId = event.serviceCategoryId
-        this.title = event.title
-
         event.let {
             this.orderId = it.orderId
             this.customerId = it.customerId
             this.serviceCategoryId = it.serviceCategoryId
             this.title = it.title
             this.description = it.description
-            this.orderDateTime = it.orderDateTime.withZoneSameInstant(ZoneOffset.UTC)
-            this.status = ServiceOrderStatus.VERIFYING
+            this.orderDateTime = it.orderDateTime
+            this.status = it.status
             this.createdBy = it.createdBy
-            this.version = 1
+            this.version = it.version
         }
     }
 

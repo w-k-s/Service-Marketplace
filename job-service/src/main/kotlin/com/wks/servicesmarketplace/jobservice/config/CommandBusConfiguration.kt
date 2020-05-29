@@ -11,10 +11,6 @@ class CommandBusConfiguration {
 
     @Autowired
     fun configureCommandBus(commandBus: CommandBus) {
-//        val commandBus: CommandBus = SimpleCommandBus.builder().build()
-//        commandBus.registerDispatchInterceptor(BeanValidationInterceptor())
-//        commandBus.registerHandlerInterceptor(TransactionManagingInterceptor())
-//        return commandBus
         commandBus.registerDispatchInterceptor(BeanValidationInterceptor())
     }
 }

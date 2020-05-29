@@ -26,11 +26,13 @@ dependencies {
 
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-	implementation("org.axonframework:axon-spring-boot-starter:4.1.2")
+	implementation("org.axonframework:axon-spring-boot-starter:4.1.2"){
+		exclude("org.axonframework", "axon-server-connector") // to auto configure EmbeddedEventStore (https://docs.axoniq.io/reference-guide/configuring-infrastructure-components/event-processing/event-bus-and-event-store)
+	}
 	//implementation("org.liquibase:liquibase-core")
 	//implementation("org.springframework.kafka:spring-kafka")
-	runtimeOnly("com.h2database:h2")
-	//runtimeOnly("org.postgresql:postgresql")
+	//runtimeOnly("com.h2database:h2")
+	runtimeOnly("org.postgresql:postgresql")
 	testImplementation("org.springframework.boot:spring-boot-starter-test") {
 		exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
 	}

@@ -1,5 +1,6 @@
 package com.wks.servicesmarketplace.jobservice.core.models.serviceorder.events
 
+import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.ServiceOrderStatus
 import java.time.ZonedDateTime
 
 data class CreateServiceOrderEvent(val orderId: String,
@@ -8,5 +9,6 @@ data class CreateServiceOrderEvent(val orderId: String,
                                    val title: String,
                                    val description: String,
                                    val orderDateTime: ZonedDateTime,
-                                   val createdBy: String){
-}
+                                   val status: ServiceOrderStatus,
+                                   val createdBy: String,
+                                   val version: Long)
