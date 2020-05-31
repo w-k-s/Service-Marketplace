@@ -10,5 +10,4 @@ data class CreateServiceOrderEvent(val orderId: String,
                                    val description: String,
                                    val orderDateTime: ZonedDateTime,
                                    val status: ServiceOrderStatus,
-                                   val createdBy: String,
-                                   val version: Long)
+                                   val createdBy: String)

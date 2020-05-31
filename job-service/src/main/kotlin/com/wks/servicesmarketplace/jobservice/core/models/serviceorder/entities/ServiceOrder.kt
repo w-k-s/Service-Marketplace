@@ -1,6 +1,5 @@
 package com.wks.servicesmarketplace.jobservice.core.models.serviceorder.entities
 
-import com.wks.servicesmarketplace.jobservice.core.models.Money
 import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.ServiceOrderStatus
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
@@ -26,7 +25,7 @@ data class ServiceOrder private constructor(@field:Id
                                             val lastModifiedDate: ZonedDateTime? = null,
 
                                             val lastModifiedBy: String? = null,
-
+                                            @field:Version
                                             val version: Long = 0) {
 
 
@@ -38,8 +37,7 @@ data class ServiceOrder private constructor(@field:Id
                    description: String,
                    orderDateTime: ZonedDateTime,
                    status: ServiceOrderStatus,
-                   createdBy: String,
-                   version: Long) =
+                   createdBy: String) =
 
                 ServiceOrder(
                         orderId,
@@ -49,9 +47,23 @@ data class ServiceOrder private constructor(@field:Id
                         description,
                         orderDateTime,
                         status,
-                        createdBy = createdBy,
-                        version = version
+                        createdBy = createdBy
                 )
     }
 
+    fun verify(verifiedBy: String): ServiceOrder {
+        return this.copy(
+                status = ServiceOrderStatus.PUBLISHED,
+                lastModifiedBy = verifiedBy,
+                lastModifiedDate = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC)
+        )
+    }
+
+    fun reject(rejectReason: String, rejectedBy: String): ServiceOrder {
+        return this.copy(
+                status = ServiceOrderStatus.REJECTED,
+                lastModifiedBy = rejectedBy,
+                lastModifiedDate = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC)
+        )
+    }
 }

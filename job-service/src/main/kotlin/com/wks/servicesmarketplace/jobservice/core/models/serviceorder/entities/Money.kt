@@ -1,4 +1,4 @@
-package com.wks.servicesmarketplace.jobservice.core.models
+package com.wks.servicesmarketplace.jobservice.core.models.serviceorder.entities
 
 import org.hibernate.validator.constraints.Length
 import java.math.BigDecimal

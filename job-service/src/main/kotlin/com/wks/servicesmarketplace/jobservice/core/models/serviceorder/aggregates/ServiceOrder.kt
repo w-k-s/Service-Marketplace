@@ -1,15 +1,19 @@
 package com.wks.servicesmarketplace.jobservice.core.models.serviceorder.aggregates
 
-import com.wks.servicesmarketplace.jobservice.core.models.Money
+import com.wks.servicesmarketplace.jobservice.core.exceptions.InvalidStateTransitionException
 import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.ServiceOrderStatus
 import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.commands.CreateServiceOrderCommand
+import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.commands.RejectServiceOrderCommand
 import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.commands.VerifyServiceOrderCommand
+import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.entities.Money
 import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.events.CreateServiceOrderEvent
+import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.events.RejectServiceOrderEvent
 import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.events.VerifyServiceOrderEvent
 import org.axonframework.commandhandling.CommandHandler
 import org.axonframework.eventsourcing.EventSourcingHandler
 import org.axonframework.modelling.command.AggregateIdentifier
 import org.axonframework.modelling.command.AggregateLifecycle
+import org.axonframework.modelling.command.AggregateVersion
 import org.axonframework.spring.stereotype.Aggregate
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
@@ -46,6 +50,7 @@ class ServiceOrder() {
 
     var lastModifiedBy: String? = null
 
+    @AggregateVersion
     var version: Long = 0
 
     @CommandHandler
@@ -59,8 +64,7 @@ class ServiceOrder() {
                     command.description!!,
                     command.orderDateTime!!.withZoneSameInstant(ZoneOffset.UTC),
                     ServiceOrderStatus.VERIFYING,
-                    command.createdBy!!,
-                    1
+                    command.createdBy!!
             )
         )
     }
@@ -76,7 +80,6 @@ class ServiceOrder() {
             this.orderDateTime = it.orderDateTime
             this.status = it.status
             this.createdBy = it.createdBy
-            this.version = it.version
         }
     }
 
@@ -84,19 +87,33 @@ class ServiceOrder() {
     fun verify(command: VerifyServiceOrderCommand){
         when(status){
             ServiceOrderStatus.VERIFYING -> AggregateLifecycle.apply(VerifyServiceOrderEvent(command.orderId!!, command.modifiedBy!!))
-            else -> throw IllegalStateException("ServiceOrder can not be verified when it's state is '${this.status}'")
+            else -> throw InvalidStateTransitionException(ServiceOrder::class, this.status.name, ServiceOrderStatus.PUBLISHED.name)
         }
     }
 
     @EventSourcingHandler
     fun on(event: VerifyServiceOrderEvent){
         this.status = ServiceOrderStatus.PUBLISHED
-        this.lastModifiedDate = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC)
         this.lastModifiedBy = event.modifiedBy
+        this.lastModifiedDate = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC)
     }
 
-    // verify - change state, lastModifiedBy, lastModifiedDate, version
-    // reject - provide reason, change state, lastModifiedBy, lastModifiedDate, version
+    @CommandHandler
+    fun reject(command: RejectServiceOrderCommand){
+        when(status){
+            ServiceOrderStatus.VERIFYING -> AggregateLifecycle.apply(RejectServiceOrderEvent(command.orderId!!, command.rejectReason!!, command.modifiedBy!!))
+            else -> throw throw InvalidStateTransitionException(ServiceOrder::class, this.status.name, ServiceOrderStatus.REJECTED.name)
+        }
+    }
+
+    @EventSourcingHandler
+    fun on(event: RejectServiceOrderEvent){
+        this.status = ServiceOrderStatus.REJECTED
+        this.rejectReason = event.rejectReason
+        this.lastModifiedBy = event.modifiedBy
+        this.lastModifiedDate = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC)
+    }
+
     // schedule - change scheduledServiceProviderId,  final bid (embedded), state, lastModifiedBy, lastModifiedDate, version
     // withdraw - change state, lastModifiedBy, lastModifiedDate, version
     // cancel - change state, lastModifiedBy, lastModifiedDate, version

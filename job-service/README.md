@@ -6,6 +6,9 @@
 - [Multiple Databases with Axon (||)](https://stackoverflow.com/a/61885471)
 - [Entity Scan for Axon 4.x.x](https://groups.google.com/forum/#!topic/axonframework/ZZvbIugSfko)
 
+> Axon automatically sets and increases the aggregate's @AggregateVersion field. There's no interaction with this field required: Just add it to your aggregate and you're done.
+[@AggregateVersion docs](https://github.com/AxonFramework/AxonFramework/issues/721)
+
 ### might be useful later:
 
 https://groups.google.com/forum/#!topic/axonframework/EaHY4PgGQo8

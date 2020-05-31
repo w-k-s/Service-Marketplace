@@ -12,10 +12,10 @@ import org.springframework.stereotype.Service
 import java.util.*
 
 @Service
-class CreateServiceOrderUseCase(val commandGateway: CommandGateway,
-                                val serviceOrderQueryRepository: ServiceOrderQueryRepository) : UseCase<ServiceOrderRequest, ServiceOrderResponse> {
+class CreateServiceOrderUseCase(private val commandGateway: CommandGateway,
+                                private val serviceOrderQueryRepository: ServiceOrderQueryRepository) : UseCase<ServiceOrderRequest, OrderIdResponse> {
 
-    override fun execute(request: ServiceOrderRequest): ServiceOrderResponse {
+    override fun execute(request: ServiceOrderRequest): OrderIdResponse {
         // TODO: get address from CQRS query side
 
         val orderId = UUID.randomUUID().toString()
@@ -31,7 +31,7 @@ class CreateServiceOrderUseCase(val commandGateway: CommandGateway,
 
         // TODO: start saga
 
-        return ServiceOrderResponse(orderId)
+        return OrderIdResponse(orderId)
     }
 
     @EventHandler
@@ -45,8 +45,7 @@ class CreateServiceOrderUseCase(val commandGateway: CommandGateway,
                     it.description,
                     it.orderDateTime,
                     it.status,
-                    it.createdBy,
-                    it.version
+                    it.createdBy
             )
         })
     }
