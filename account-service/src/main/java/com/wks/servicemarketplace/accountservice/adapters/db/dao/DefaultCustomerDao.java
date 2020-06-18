@@ -32,14 +32,12 @@ public class DefaultCustomerDao extends BaseDAO implements CustomerDao {
                 field("uuid"),
                 field("first_name"),
                 field("last_name"),
-                field("created_date", zonedDateTime()),
                 field("created_by")
         ).values(
                 customer.getExternalId(),
                 customer.getUuid(),
                 customer.getFirstName(),
                 customer.getLastName(),
-                customer.getCreatedDate(),
                 customer.getCreatedBy()
         ).execute();
     }
@@ -66,7 +64,6 @@ public class DefaultCustomerDao extends BaseDAO implements CustomerDao {
                 field("city"),
                 field("country_code"),
                 field("location"),
-                field("created_date", zonedDateTime()),
                 field("created_by")
         ).values(
                 address.getExternalId(),
@@ -77,7 +74,6 @@ public class DefaultCustomerDao extends BaseDAO implements CustomerDao {
                 address.getCity(),
                 address.getCountry().getCountryCode(),
                 location,
-                address.getCreatedDate(),
                 address.getCreatedBy()
         ).execute();
 

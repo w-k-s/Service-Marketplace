@@ -2,6 +2,7 @@ package com.wks.servicemarketplace.accountservice.core.usecase.customer;
 
 import com.wks.servicemarketplace.accountservice.core.daos.CustomerDao;
 import com.wks.servicemarketplace.accountservice.core.daos.TransactionUtils;
+import com.wks.servicemarketplace.accountservice.core.events.CustomerEventsPublisher;
 import com.wks.servicemarketplace.accountservice.core.models.Customer;
 import com.wks.servicemarketplace.accountservice.core.models.ResultWithEvents;
 import com.wks.servicemarketplace.accountservice.core.models.events.CustomerCreatedEvent;
@@ -21,10 +22,12 @@ public class CreateCustomerUseCase implements UseCase<CustomerRequest, CustomerR
     private static final Logger LOGGER = LoggerFactory.getLogger(CreateCustomerUseCase.class);
 
     private final CustomerDao customerDao;
+    private final CustomerEventsPublisher customerEventsPublisher;
 
     @Inject
-    public CreateCustomerUseCase(CustomerDao customerDao) {
+    public CreateCustomerUseCase(CustomerDao customerDao, CustomerEventsPublisher customerEventsPublisher) {
         this.customerDao = customerDao;
+        this.customerEventsPublisher = customerEventsPublisher;
     }
 
     @Override
@@ -43,9 +46,9 @@ public class CreateCustomerUseCase implements UseCase<CustomerRequest, CustomerR
             final Customer customer = customerAndEvents.getResult();
 
             customerDao.saveCustomer(connection, customer);
-
-            // TODO: Save events;
             connection.commit();
+
+            customerEventsPublisher.customerCreated(customerAndEvents.getEvents());
 
             return CustomerResponse
                     .builder()
@@ -53,8 +56,6 @@ public class CreateCustomerUseCase implements UseCase<CustomerRequest, CustomerR
                     .firstName(customer.getFirstName())
                     .lastName(customer.getLastName())
                     .addresses(Collections.emptyList())
-                    .createdDate(customer.getCreatedDate())
-                    .createdBy(customer.getCreatedBy())
                     .build();
         } catch (Exception e) {
             LOGGER.error("Failed to create customer.", e);

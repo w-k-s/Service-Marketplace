@@ -18,8 +18,4 @@ public class CustomerResponse {
     private String lastName;
     @NonNull
     private List<Address> addresses;
-    @NonNull
-    private ZonedDateTime createdDate;
-    @NonNull
-    private String createdBy;
 }

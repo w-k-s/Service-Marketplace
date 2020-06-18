@@ -61,12 +61,8 @@ public class Address {
     @DecimalMax("180")
     private final BigDecimal longitude;
 
-    @NonNull
-    @NotNull
     private final ZonedDateTime createdDate;
 
-    @NonNull
-    @NotBlank
     private final String createdBy;
 
     private final ZonedDateTime lastModifiedDate;
@@ -104,7 +100,7 @@ public class Address {
                 country,
                 latitude,
                 longitude,
-                ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC),
+                null,
                 createdBy,
                 null,
                 null,

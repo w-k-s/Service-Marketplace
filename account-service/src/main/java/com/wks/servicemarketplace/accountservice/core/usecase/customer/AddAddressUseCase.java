@@ -2,6 +2,7 @@ package com.wks.servicemarketplace.accountservice.core.usecase.customer;
 
 import com.wks.servicemarketplace.accountservice.core.daos.CustomerDao;
 import com.wks.servicemarketplace.accountservice.core.daos.TransactionUtils;
+import com.wks.servicemarketplace.accountservice.core.events.CustomerEventsPublisher;
 import com.wks.servicemarketplace.accountservice.core.models.Address;
 import com.wks.servicemarketplace.accountservice.core.models.CountryCode;
 import com.wks.servicemarketplace.accountservice.core.models.ResultWithEvents;
@@ -21,10 +22,12 @@ public class AddAddressUseCase implements UseCase<AddressRequest, AddressRespons
     private static final Logger LOGGER = LoggerFactory.getLogger(CreateCustomerUseCase.class);
 
     private final CustomerDao customerDao;
+    private final CustomerEventsPublisher customerEventsPublisher;
 
     @Inject
-    public AddAddressUseCase(CustomerDao customerDao) {
+    public AddAddressUseCase(CustomerDao customerDao, CustomerEventsPublisher customerEventsPublisher) {
         this.customerDao = customerDao;
+        this.customerEventsPublisher = customerEventsPublisher;
     }
 
     @Override
@@ -47,10 +50,11 @@ public class AddAddressUseCase implements UseCase<AddressRequest, AddressRespons
             final Address address = addressWithEvents.getResult();
 
             customerDao.saveAddress(connection, address);
-
-            // TODO publish events
-
             connection.commit();
+
+            customerEventsPublisher.addressAdded(
+                    addressWithEvents.getEvents()
+            );
 
             return AddressResponse.builder()
                     .externalId(address.getExternalId())
@@ -62,9 +66,6 @@ public class AddAddressUseCase implements UseCase<AddressRequest, AddressRespons
                     .country(address.getCountry().getCountryCode())
                     .latitude(address.getLatitude())
                     .longitude(address.getLongitude())
-                    .createdDate(address.getCreatedDate())
-                    .createdBy(address.getCreatedBy())
-                    .version(address.getVersion())
                     .build();
         } catch (UseCaseException e){
             LOGGER.error("Failed to add address.", e);

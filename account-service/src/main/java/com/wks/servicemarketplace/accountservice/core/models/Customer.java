@@ -41,8 +41,6 @@ public class Customer {
     @NonNull
     private List<Address> addresses;
 
-    @NonNull
-    @NotNull
     private ZonedDateTime createdDate;
 
     @NonNull
@@ -64,7 +62,7 @@ public class Customer {
                 firstName,
                 lastName,
                 Collections.emptyList(),
-                ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC),
+                null,
                 createdBy,
                 null,
                 null,

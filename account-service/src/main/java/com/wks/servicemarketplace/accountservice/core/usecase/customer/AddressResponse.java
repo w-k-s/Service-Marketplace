@@ -27,10 +27,4 @@ public class AddressResponse {
     private final BigDecimal latitude;
     @NonNull
     private final BigDecimal longitude;
-    @NonNull
-    private final ZonedDateTime createdDate;
-    @NonNull
-    private final String createdBy;
-    @NonNull
-    private final Long version;
 }
