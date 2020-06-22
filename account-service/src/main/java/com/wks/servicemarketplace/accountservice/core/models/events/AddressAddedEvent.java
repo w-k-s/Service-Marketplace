@@ -17,10 +17,10 @@ public class AddressAddedEvent implements DomainEvent {
     private final Long externalId;
 
     @NonNull
-    private final Long customerId;
+    private final Long customerExternalId;
 
     @NonNull
-    private final String addressName;
+    private final String name;
 
     @NonNull
     private final String line1;

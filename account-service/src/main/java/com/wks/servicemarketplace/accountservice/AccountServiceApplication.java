@@ -55,7 +55,10 @@ public class AccountServiceApplication extends ResourceConfig {
     }
 
     public void run() throws InterruptedException {
-        final URI uri = UriBuilder.fromUri("http://0.0.0.0/").port(8080).build();
+        final URI uri = UriBuilder
+                .fromUri(System.getenv("serverHost"))
+                .port(Integer.parseInt(System.getenv("serverPort")))
+                .build();
 
         final Server server = JettyHttpContainerFactory.createServer(uri, this);
         try {

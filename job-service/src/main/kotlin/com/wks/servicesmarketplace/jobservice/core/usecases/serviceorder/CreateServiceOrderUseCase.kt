@@ -1,8 +1,11 @@
 package com.wks.servicesmarketplace.jobservice.core.usecases.serviceorder
 
+import com.wks.servicesmarketplace.jobservice.core.exceptions.AddressNotFoundException
+import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.commands.CreateServiceOrderAddressCommand
 import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.commands.CreateServiceOrderCommand
 import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.entities.ServiceOrder
 import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.events.CreateServiceOrderEvent
+import com.wks.servicesmarketplace.jobservice.core.repositories.CustomerAddressQueryRepository
 import com.wks.servicesmarketplace.jobservice.core.repositories.ServiceOrderQueryRepository
 import com.wks.servicesmarketplace.jobservice.core.usecases.UseCase
 import org.axonframework.commandhandling.callbacks.LoggingCallback
@@ -13,18 +16,33 @@ import java.util.*
 
 @Service
 class CreateServiceOrderUseCase(private val commandGateway: CommandGateway,
-                                private val serviceOrderQueryRepository: ServiceOrderQueryRepository) : UseCase<ServiceOrderRequest, OrderIdResponse> {
+                                private val serviceOrderQueryRepository: ServiceOrderQueryRepository,
+                                private val customerAddressQueryRepository: CustomerAddressQueryRepository) : UseCase<ServiceOrderRequest, OrderIdResponse> {
 
     override fun execute(request: ServiceOrderRequest): OrderIdResponse {
-        // TODO: get address from CQRS query side
+
+        val address = customerAddressQueryRepository.findByExternalIdAndCustomerExternalId(
+                request.addressExternalId,
+                request.customerExternalId
+        ) ?: throw AddressNotFoundException(request.addressExternalId, request.customerExternalId)
 
         val orderId = UUID.randomUUID().toString()
         commandGateway.send(CreateServiceOrderCommand(
                 orderId,
-                request.customerId,
+                request.customerExternalId,
                 request.serviceCategoryId,
                 request.title,
                 request.description,
+                CreateServiceOrderAddressCommand(
+                        address.externalId,
+                        address.name,
+                        address.line1,
+                        address.line2,
+                        address.city,
+                        address.country,
+                        address.latitude,
+                        address.longitude
+                ),
                 request.orderDateTime,
                 "Joe Doe" // TODO get from principal
         ), LoggingCallback.INSTANCE)
@@ -35,7 +53,7 @@ class CreateServiceOrderUseCase(private val commandGateway: CommandGateway,
     }
 
     @EventHandler
-    fun saveServiceOrder(event: CreateServiceOrderEvent){
+    fun saveServiceOrder(event: CreateServiceOrderEvent) {
         serviceOrderQueryRepository.save(event.let {
             ServiceOrder.create(
                     it.orderId,
@@ -43,6 +61,7 @@ class CreateServiceOrderUseCase(private val commandGateway: CommandGateway,
                     it.serviceCategoryId,
                     it.title,
                     it.description,
+                    it.address.externalId,
                     it.orderDateTime,
                     it.status,
                     it.createdBy

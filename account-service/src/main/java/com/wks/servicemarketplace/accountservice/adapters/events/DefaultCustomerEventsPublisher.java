@@ -12,6 +12,7 @@ import com.wks.servicemarketplace.accountservice.core.models.events.CustomerCrea
 import javax.inject.Inject;
 import javax.ws.rs.core.Context;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 public class DefaultCustomerEventsPublisher implements CustomerEventsPublisher {
@@ -26,7 +27,7 @@ public class DefaultCustomerEventsPublisher implements CustomerEventsPublisher {
         this.channel = amqpChannel;
         this.objectMapper = objectMapper;
 
-        channel.exchangeDeclare(EXCHANGE_NAME, BuiltinExchangeType.TOPIC);
+        channel.exchangeDeclare(EXCHANGE_NAME, BuiltinExchangeType.TOPIC, true, true, Collections.emptyMap());
     }
 
     @Override

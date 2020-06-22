@@ -5,7 +5,8 @@ import java.time.ZonedDateTime
 
 class ServiceOrderRequest {
     @field:JsonProperty("customerId")
-    var customerId: Long = 0
+    var customerExternalId: Long = 0
+    var addressExternalId: Long = 0
     var serviceCategoryId: Long = 0
     var title: String? = null
     var description: String? = null

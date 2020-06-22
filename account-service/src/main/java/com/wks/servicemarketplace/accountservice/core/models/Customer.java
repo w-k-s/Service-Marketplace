@@ -2,13 +2,14 @@ package com.wks.servicemarketplace.accountservice.core.models;
 
 import com.wks.servicemarketplace.accountservice.core.models.events.CustomerCreatedEvent;
 import com.wks.servicemarketplace.accountservice.core.utils.ModelValidator;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
+import lombok.Value;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.List;

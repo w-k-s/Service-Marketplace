@@ -6,14 +6,13 @@ import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.commands.
 import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.commands.RejectServiceOrderCommand
 import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.commands.VerifyServiceOrderCommand
 import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.entities.Money
+import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.events.CreateServiceOrderAddressEvent
 import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.events.CreateServiceOrderEvent
 import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.events.RejectServiceOrderEvent
 import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.events.VerifyServiceOrderEvent
 import org.axonframework.commandhandling.CommandHandler
 import org.axonframework.eventsourcing.EventSourcingHandler
-import org.axonframework.modelling.command.AggregateIdentifier
-import org.axonframework.modelling.command.AggregateLifecycle
-import org.axonframework.modelling.command.AggregateVersion
+import org.axonframework.modelling.command.*
 import org.axonframework.spring.stereotype.Aggregate
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
@@ -33,6 +32,8 @@ class ServiceOrder() {
     lateinit var description: String
 
     lateinit var orderDateTime: ZonedDateTime
+
+    lateinit var address: Address
 
     var status: ServiceOrderStatus = ServiceOrderStatus.INVALID
 
@@ -62,6 +63,18 @@ class ServiceOrder() {
                     command.serviceCategoryId,
                     command.title!!,
                     command.description!!,
+                    command.address.let {
+                        CreateServiceOrderAddressEvent(
+                                it!!.externalId!!,
+                                it.name!!,
+                                it.line1!!,
+                                it.line2,
+                                it.city,
+                                it.country,
+                                it.latitude,
+                                it.longitude
+                        )
+                    },
                     command.orderDateTime!!.withZoneSameInstant(ZoneOffset.UTC),
                     ServiceOrderStatus.VERIFYING,
                     command.createdBy!!
@@ -77,6 +90,19 @@ class ServiceOrder() {
             this.serviceCategoryId = it.serviceCategoryId
             this.title = it.title
             this.description = it.description
+            this.address = it.address.let {
+                Address(
+                        it.externalId,
+                        event.customerId,
+                        it.name,
+                        it.line1,
+                        it.line2,
+                        it.city,
+                        it.country,
+                        it.latitude,
+                        it.longitude
+                )
+            }
             this.orderDateTime = it.orderDateTime
             this.status = it.status
             this.createdBy = it.createdBy

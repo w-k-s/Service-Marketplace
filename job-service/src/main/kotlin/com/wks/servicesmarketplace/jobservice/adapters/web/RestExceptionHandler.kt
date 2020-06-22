@@ -2,6 +2,7 @@ package com.wks.servicesmarketplace.jobservice.adapters.web
 
 import com.wks.servicesmarketplace.jobservice.adapters.web.error.ErrorType
 import com.wks.servicesmarketplace.jobservice.adapters.web.error.ErrorResponse
+import com.wks.servicesmarketplace.jobservice.core.exceptions.AddressNotFoundException
 import com.wks.servicesmarketplace.jobservice.core.exceptions.InvalidStateTransitionException
 import com.wks.servicesmarketplace.jobservice.core.exceptions.ServiceOrderNotFoundException
 import org.axonframework.messaging.interceptors.JSR303ViolationException
@@ -29,11 +30,15 @@ class RestExceptionHandler : ResponseEntityExceptionHandler() {
                 HttpHeaders(), errorResponse.type.httpStatus, request!!)
     }
 
-    @ExceptionHandler(value = [AggregateNotFoundException::class, ServiceOrderNotFoundException::class])
+    @ExceptionHandler(value = [
+        AggregateNotFoundException::class,
+        ServiceOrderNotFoundException::class,
+        AddressNotFoundException::class])
     protected fun handleAggregateNotFound(ex: Exception?, request: WebRequest?): ResponseEntity<Any?>? {
-        val resourceId = when(ex){
+        val resourceId = when (ex) {
             is AggregateNotFoundException -> ex.aggregateIdentifier.toString()
             is ServiceOrderNotFoundException -> ex.orderId
+            is AddressNotFoundException -> ex.addressExternalId.toString()
             else -> ""
         }
         val errorResponse = ErrorResponse(

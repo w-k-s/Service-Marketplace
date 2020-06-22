@@ -14,6 +14,7 @@ data class ServiceOrder private constructor(@field:Id
                                             val title: String,
                                             val description: String,
                                             val orderDateTime: ZonedDateTime,
+                                            val addressExternalId: Long,
                                             @field:Enumerated(EnumType.STRING)
                                             val status: ServiceOrderStatus = ServiceOrderStatus.INVALID,
                                             val scheduledServiceProviderId: Long? = null,
@@ -23,7 +24,6 @@ data class ServiceOrder private constructor(@field:Id
                                             val createdDate: ZonedDateTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC),
                                             val createdBy: String,
                                             val lastModifiedDate: ZonedDateTime? = null,
-
                                             val lastModifiedBy: String? = null,
                                             @field:Version
                                             val version: Long = 0) {
@@ -35,6 +35,7 @@ data class ServiceOrder private constructor(@field:Id
                    serviceCategoryId: Long,
                    title: String,
                    description: String,
+                   addressExternalId: Long,
                    orderDateTime: ZonedDateTime,
                    status: ServiceOrderStatus,
                    createdBy: String) =
@@ -46,6 +47,7 @@ data class ServiceOrder private constructor(@field:Id
                         title,
                         description,
                         orderDateTime,
+                        addressExternalId,
                         status,
                         createdBy = createdBy
                 )

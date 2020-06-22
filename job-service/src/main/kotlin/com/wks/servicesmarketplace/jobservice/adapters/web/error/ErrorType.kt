@@ -6,7 +6,8 @@ enum class ErrorType(val code: Int, val httpStatus: HttpStatus) {
     UNKNOWN(ErrorType.GENERAL_ERROR_UNKNOWN, HttpStatus.INTERNAL_SERVER_ERROR),
     VALIDATION(ErrorType.GENERAL_ERROR_VALIDATION, HttpStatus.BAD_REQUEST),
     NOT_FOUND(ErrorType.GENERAL_ERROR_NOT_FOUND, HttpStatus.NOT_FOUND),
-    INVALID_STATE(ErrorType.GENERAL_ERROR_INVALID_STATE, HttpStatus.BAD_REQUEST);
+    INVALID_STATE(ErrorType.GENERAL_ERROR_INVALID_STATE, HttpStatus.BAD_REQUEST),
+    ADDRESS_NOT_FOUND(ErrorType.SERVICE_ORDER_ERROR_ADDRESS_NOT_FOUND, HttpStatus.NOT_FOUND);
 
     companion object {
         private const val SERVICE_CODE = 1_00_000
@@ -17,5 +18,9 @@ enum class ErrorType(val code: Int, val httpStatus: HttpStatus) {
         private const val GENERAL_ERROR_VALIDATION: Int = SERVICE_CODE + CATEGORY_CODE_GENERAL_ERROR + 1                // 100001
         private const val GENERAL_ERROR_NOT_FOUND: Int = SERVICE_CODE + CATEGORY_CODE_GENERAL_ERROR + 10                // 100010
         private const val GENERAL_ERROR_INVALID_STATE: Int = SERVICE_CODE + CATEGORY_CODE_GENERAL_ERROR + 20            // 100020
+
+        // -- Service Order Errors
+        private const val CATEGORY_CODE_SERVICE_ORDER_ERROR = 100
+        private const val SERVICE_ORDER_ERROR_ADDRESS_NOT_FOUND = SERVICE_CODE + CATEGORY_CODE_SERVICE_ORDER_ERROR + 10;// 100110
     }
 }
