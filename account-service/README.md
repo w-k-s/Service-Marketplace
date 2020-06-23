@@ -108,4 +108,4 @@ for each row execute procedure audit_record();
 
 - [Dependency Injection using Jersey's HK2](https://riptutorial.com/jersey/example/23632/basic-dependency-injection-using-jersey-s-hk2)
 - [Implementing Custom Injection Provider](https://eclipse-ee4j.github.io/jersey.github.io/documentation/latest/ioc.html#d0e17204)
-
+- [A minimal REST API in Java](https://notes.eatonphil.com/a-minimal-rest-api-in-java.html)
