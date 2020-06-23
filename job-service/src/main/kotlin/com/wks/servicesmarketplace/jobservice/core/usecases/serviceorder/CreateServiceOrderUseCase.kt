@@ -1,7 +1,6 @@
 package com.wks.servicesmarketplace.jobservice.core.usecases.serviceorder
 
 import com.wks.servicesmarketplace.jobservice.core.exceptions.AddressNotFoundException
-import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.commands.CreateServiceOrderAddressCommand
 import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.commands.CreateServiceOrderCommand
 import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.entities.ServiceOrder
 import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.events.CreateServiceOrderEvent
@@ -33,7 +32,7 @@ class CreateServiceOrderUseCase(private val commandGateway: CommandGateway,
                 request.serviceCategoryId,
                 request.title,
                 request.description,
-                CreateServiceOrderAddressCommand(
+                CreateServiceOrderCommand.Address(
                         address.externalId,
                         address.name,
                         address.line1,

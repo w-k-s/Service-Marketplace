@@ -1,3 +1,36 @@
+# Account Service
+
+This service uses Jersey in a Jetty Container with JOOQ/JDBC.
+
+The architecture of this service is, for the most part, my preferred architecture for developing Java backends. 
+The key points are:
+
+**1. No Aspect-Oriented Programming**
+
+- Aspect-Oriented Programming makes it difficult to know how/when a method is called or if it is called at all.
+- The worst offender is the  `@Transactional` annotation. One might reasonably assume that annotating a method with `@Transactional` causes the method to execute within a transaction.
+- However, this is only true if the `@Transactional` method is invoked from a bean. 
+
+**2. No JPA/Hibernate**
+- JPA, in my opinion, has excessive overhead.
+- Something like JOOQ which is a DSL for building queries and optionally executing them has less overhead, is more intuitive, and is flexible enough to allow you to leverage JDBC if needed.
+
+**3. Minimal Magic**
+- What I dislike about Spring is it's magic. Put this dependency in and *snap* it SHOULD just works.
+- The problem is when it doesn't work and you don't get useful error messages. When this happens, You don't know which part of your code is causing the issue and you don't know what exactly to ask (so Stackoverflow closes your question).
+- Debugging such problems requires experience/intuition rather than reasoning and deduction.
+- I prefer to have things as explicit as possible rather than annotation/reflection magic. When things go wrong, I want to be able to see where they went wrong in MY project rather than a huge irrelevant stacktrace that you get from Spring.
+
+- I would have preferred to have used constructor-based Dependency Injection in this project but I couldn't do so consistently so I went with the `bindFactory` approach.
+
+**4. Toolkits over Frameworks**
+- Frameworks have to be general purpose, backwards compatible and flexible enough to adapt to changes in the programming world (e.g. OOP -> Functional,Rx programming).
+- As a result of this, when frameworks solve a problem they have to solve them in as flexible a way as possible. This can lead to complexity and bloat.
+- What I find is that it's a lot simpler to take a minimal framework and to either import a toolkit or implement utilities that reduce the boilerplate specific to your needs.
+- For example, Spring's `@Transactional` reduces the boilerplate in managing a transaction. However, it has a dependency on Spring's AOP library. Is it worth it?
+- The `TransactionUtils` class in this project accomplishes the same thing but in a few lines of code that is specific to my needs. It does not need any extra library and certainly not one that uses reflection and proxying.
+
+## Database Setup
 ```postgresql
 CREATE DATABASE account;
 CREATE EXTENSION postgis;
@@ -58,4 +91,21 @@ create trigger audit_addresses
 BEFORE update on addresses
 for each row execute procedure audit_record();
 ```
-- https://stackoverflow.com/a/47396542
+
+## Useful Resources
+
+> 4.2.2. When to use Geography Data type over Geometry data type
+> 
+> If your data is contained in a small area, you might find that choosing an appropriate projection and using GEOMETRY is the best solution, in terms of performance and functionality available.
+>
+> If your data is global or covers a continental region, you may find that GEOGRAPHY allows you to build a system without having to worry about projection details. You store your data in longitude/latitude, and use the functions that have been defined on GEOGRAPHY. 
+>
+> If you don't understand projections, and you don't want to learn about them, and you're prepared to accept the limitations in functionality available in GEOGRAPHY, then it might be easier for you to use GEOGRAPHY than GEOMETRY. Simply load your data up as longitude/latitude and go from there.
+>
+- [4.2.2. When to use Geography Data type over Geometry data type](https://postgis.net/docs/manual-2.1/using_postgis_dbmanagement.html#PostGIS_GeographyVSGeometry)
+
+  I went with option number 3 since learning about projections wasn't my main focus when working on this side-project.
+
+- [Dependency Injection using Jersey's HK2](https://riptutorial.com/jersey/example/23632/basic-dependency-injection-using-jersey-s-hk2)
+- [Implementing Custom Injection Provider](https://eclipse-ee4j.github.io/jersey.github.io/documentation/latest/ioc.html#d0e17204)
+

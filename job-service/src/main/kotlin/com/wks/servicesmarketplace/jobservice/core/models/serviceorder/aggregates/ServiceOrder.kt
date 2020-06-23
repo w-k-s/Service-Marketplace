@@ -6,7 +6,6 @@ import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.commands.
 import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.commands.RejectServiceOrderCommand
 import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.commands.VerifyServiceOrderCommand
 import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.entities.Money
-import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.events.CreateServiceOrderAddressEvent
 import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.events.CreateServiceOrderEvent
 import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.events.RejectServiceOrderEvent
 import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.events.VerifyServiceOrderEvent
@@ -64,7 +63,7 @@ class ServiceOrder() {
                     command.title!!,
                     command.description!!,
                     command.address.let {
-                        CreateServiceOrderAddressEvent(
+                        CreateServiceOrderEvent.Address(
                                 it!!.externalId!!,
                                 it.name!!,
                                 it.line1!!,
