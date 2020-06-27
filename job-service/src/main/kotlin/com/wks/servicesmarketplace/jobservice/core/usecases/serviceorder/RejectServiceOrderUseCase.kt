@@ -7,6 +7,7 @@ import com.wks.servicesmarketplace.jobservice.core.usecases.UseCase
 import org.axonframework.commandhandling.gateway.CommandGateway
 import org.axonframework.eventhandling.EventHandler
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.util.concurrent.TimeUnit
 
 @Service
@@ -22,6 +23,7 @@ class RejectServiceOrderUseCase(private val commandGateway: CommandGateway,
     }
 
     @EventHandler
+    @Transactional
     fun reject(event: RejectServiceOrderEvent) {
         serviceOrderQueryRepository.findById(event.orderId).map {
             it.reject(event.rejectReason, event.modifiedBy)

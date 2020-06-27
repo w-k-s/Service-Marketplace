@@ -5,6 +5,7 @@ import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.events.Ve
 import com.wks.servicesmarketplace.jobservice.core.repositories.ServiceOrderQueryRepository
 import com.wks.servicesmarketplace.jobservice.core.usecases.UseCase
 import org.axonframework.commandhandling.gateway.CommandGateway
+import org.axonframework.eventhandling.EventHandler
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.concurrent.TimeUnit
@@ -21,6 +22,7 @@ class VerifyServiceOrderUseCase(private val commandGateway: CommandGateway,
         ), 1, TimeUnit.SECONDS)
     }
 
+    @EventHandler
     @Transactional
     fun verify(event: VerifyServiceOrderEvent) {
         serviceOrderQueryRepository.findById(event.orderId).map {

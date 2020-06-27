@@ -23,6 +23,7 @@ class CreateServiceOrderCommand(@field:TargetAggregateIdentifier @field:NotBlank
             @field:NotNull @field:NotBlank val city: String,
             @field:NotNull @field:Size(min = 2, max = 2) val country: String,
             @field:DecimalMin("-90") @field:DecimalMax("90") val latitude: BigDecimal,
-            @field:DecimalMin("-180") @field:DecimalMax("180") val longitude: BigDecimal
+            @field:DecimalMin("-180") @field:DecimalMax("180") val longitude: BigDecimal,
+            @field:NotNull val version: Long
     )
 }

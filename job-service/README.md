@@ -59,3 +59,10 @@ https://groups.google.com/forum/#!topic/axonframework/R-QoZMlj2mM
 
 https://www.geekabyte.io/2015/10/exploring-cqrs-with-axon-framework_13.html
 https://sgitario.github.io/axon-by-example/
+
+### TO DO
+- [ ] Acknowledge messages, quality of service?
+- [ ] Rename Account Service -> Customer Service
+- [ ] Create Service Provider Service
+- [ ] Maybe use POSTGIS in the order service? Let's not worry about that right now.
+- [ ] 

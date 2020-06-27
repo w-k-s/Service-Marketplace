@@ -1,14 +1,17 @@
-package com.wks.servicemarketplace.accountservice.core.usecase.customer;
+package com.wks.servicemarketplace.accountservice.core.usecase.address;
 
+import com.google.common.collect.ImmutableMap;
 import com.wks.servicemarketplace.accountservice.core.daos.CustomerDao;
 import com.wks.servicemarketplace.accountservice.core.daos.TransactionUtils;
 import com.wks.servicemarketplace.accountservice.core.events.CustomerEventsPublisher;
+import com.wks.servicemarketplace.accountservice.core.exceptions.CountryCodeNotFoundException;
 import com.wks.servicemarketplace.accountservice.core.models.Address;
 import com.wks.servicemarketplace.accountservice.core.models.CountryCode;
 import com.wks.servicemarketplace.accountservice.core.models.ResultWithEvents;
 import com.wks.servicemarketplace.accountservice.core.models.events.AddressAddedEvent;
 import com.wks.servicemarketplace.accountservice.core.usecase.UseCase;
 import com.wks.servicemarketplace.accountservice.core.usecase.UseCaseException;
+import com.wks.servicemarketplace.accountservice.core.usecase.customer.CreateCustomerUseCase;
 import com.wks.servicemarketplace.accountservice.core.usecase.errors.ErrorType;
 import com.wks.servicemarketplace.accountservice.core.utils.CloseableUtils;
 import org.slf4j.Logger;
@@ -67,10 +70,10 @@ public class AddAddressUseCase implements UseCase<AddressRequest, AddressRespons
                     .latitude(address.getLatitude())
                     .longitude(address.getLongitude())
                     .build();
-        } catch (UseCaseException e){
+        } catch (CountryCodeNotFoundException e) {
             LOGGER.error("Failed to add address.", e);
             TransactionUtils.rollback(connection);
-            throw e;
+            throw new UseCaseException(ErrorType.INVALID_COUNTRY, ImmutableMap.of("countryCode", e.getCountryCode()));
         } catch (Exception e) {
             LOGGER.error("Failed to add address.", e);
             TransactionUtils.rollback(connection);

@@ -1,9 +1,9 @@
 package com.wks.servicemarketplace.accountservice.adapters.web.resources;
 
 import com.wks.servicemarketplace.accountservice.core.usecase.UseCaseException;
-import com.wks.servicemarketplace.accountservice.core.usecase.customer.AddAddressUseCase;
-import com.wks.servicemarketplace.accountservice.core.usecase.customer.AddressRequest;
-import com.wks.servicemarketplace.accountservice.core.usecase.customer.AddressResponse;
+import com.wks.servicemarketplace.accountservice.core.usecase.address.AddAddressUseCase;
+import com.wks.servicemarketplace.accountservice.core.usecase.address.AddressRequest;
+import com.wks.servicemarketplace.accountservice.core.usecase.address.AddressResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

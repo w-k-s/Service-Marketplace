@@ -11,7 +11,7 @@ import org.springframework.transaction.PlatformTransactionManager
 
 
 @Configuration
-class CommandBusConfiguration {
+class AxonConfiguration {
 
     @Autowired
     fun configureCommandBus(commandBus: CommandBus,
@@ -19,4 +19,5 @@ class CommandBusConfiguration {
         commandBus.registerDispatchInterceptor(BeanValidationInterceptor())
         commandBus.registerHandlerInterceptor(TransactionManagingInterceptor(SpringTransactionManager(commandTransactionManager)))
     }
+
 }

@@ -1,4 +1,4 @@
-package com.wks.servicemarketplace.accountservice.core.usecase.customer;
+package com.wks.servicemarketplace.accountservice.core.usecase.address;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;

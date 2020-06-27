@@ -40,7 +40,8 @@ class CreateServiceOrderUseCase(private val commandGateway: CommandGateway,
                         address.city,
                         address.country,
                         address.latitude,
-                        address.longitude
+                        address.longitude,
+                        address.version
                 ),
                 request.orderDateTime,
                 "Joe Doe" // TODO get from principal

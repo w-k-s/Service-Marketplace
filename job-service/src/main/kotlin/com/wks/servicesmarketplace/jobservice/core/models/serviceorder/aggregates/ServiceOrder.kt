@@ -71,7 +71,8 @@ class ServiceOrder() {
                                 it.city,
                                 it.country,
                                 it.latitude,
-                                it.longitude
+                                it.longitude,
+                                it.version
                         )
                     },
                     command.orderDateTime!!.withZoneSameInstant(ZoneOffset.UTC),

@@ -8,6 +8,8 @@ import com.rabbitmq.client.MessageProperties;
 import com.wks.servicemarketplace.accountservice.core.events.CustomerEventsPublisher;
 import com.wks.servicemarketplace.accountservice.core.models.events.AddressAddedEvent;
 import com.wks.servicemarketplace.accountservice.core.models.events.CustomerCreatedEvent;
+import com.wks.servicemarketplace.accountservice.core.usecase.address.verifyaddress.AddressVerificationFailedEvent;
+import com.wks.servicemarketplace.accountservice.core.usecase.address.verifyaddress.AddressVerifiedEvent;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.Context;
@@ -56,5 +58,30 @@ public class DefaultCustomerEventsPublisher implements CustomerEventsPublisher {
                     objectMapper.writeValueAsBytes(event)
             );
         }
+    }
+
+    @Override
+    public void addressVerified(AddressVerifiedEvent event) throws IOException {
+
+        channel.queueDeclare(QueueName.ADDRESS_VERIFIED, true, false, true, Collections.emptyMap());
+
+        channel.basicPublish(
+                "",
+                QueueName.ADDRESS_VERIFIED,
+                MessageProperties.PERSISTENT_TEXT_PLAIN,
+                objectMapper.writeValueAsBytes(event)
+        );
+    }
+
+    @Override
+    public void addressVerificationFailed(AddressVerificationFailedEvent event) throws IOException {
+        channel.queueDeclare(QueueName.ADDRESS_VERIFICATION_FAILED, true, false, true, Collections.emptyMap());
+
+        channel.basicPublish(
+                "",
+                QueueName.ADDRESS_VERIFICATION_FAILED,
+                MessageProperties.PERSISTENT_TEXT_PLAIN,
+                objectMapper.writeValueAsBytes(event)
+        );
     }
 }

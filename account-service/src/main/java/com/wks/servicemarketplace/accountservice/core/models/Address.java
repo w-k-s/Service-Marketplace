@@ -7,21 +7,26 @@ import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.Value;
 
+import javax.persistence.Column;
 import javax.validation.constraints.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Collections;
+import java.util.UUID;
 
 @Value
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Address {
 
     @NonNull
     @NotNull
     @PositiveOrZero
     private final Long externalId;
+
+    @NonNull
+    @NotBlank
+    private final String uuid;
 
     @NonNull
     @NotNull
@@ -92,6 +97,7 @@ public class Address {
                                                                       String createdBy) {
         final Address address = new Address(
                 externalId,
+                UUID.randomUUID().toString(),
                 customerExternalId,
                 addressName,
                 line1,

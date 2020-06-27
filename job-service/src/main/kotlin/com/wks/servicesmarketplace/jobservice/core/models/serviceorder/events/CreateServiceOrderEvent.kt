@@ -21,6 +21,7 @@ data class CreateServiceOrderEvent(val orderId: String,
             val city: String,
             val country: String,
             val latitude: BigDecimal,
-            val longitude: BigDecimal
+            val longitude: BigDecimal,
+            val version: Long
     )
 }
