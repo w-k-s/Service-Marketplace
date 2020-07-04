@@ -11,6 +11,8 @@ import java.time.ZonedDateTime;
 @Builder
 public class AddressResponse {
     @NonNull
+    private final String uuid;
+    @NonNull
     private final Long externalId;
     @NonNull
     private final Long customerExternalId;
@@ -27,4 +29,6 @@ public class AddressResponse {
     private final BigDecimal latitude;
     @NonNull
     private final BigDecimal longitude;
+    @NonNull
+    private final Long version;
 }

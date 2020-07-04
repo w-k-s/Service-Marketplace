@@ -52,10 +52,12 @@ public class CreateCustomerUseCase implements UseCase<CustomerRequest, CustomerR
 
             return CustomerResponse
                     .builder()
+                    .uuid(customer.getUuid())
                     .externalId(customer.getExternalId())
                     .firstName(customer.getFirstName())
                     .lastName(customer.getLastName())
                     .addresses(Collections.emptyList())
+                    .version(customer.getVersion())
                     .build();
         } catch (Exception e) {
             LOGGER.error("Failed to create customer.", e);

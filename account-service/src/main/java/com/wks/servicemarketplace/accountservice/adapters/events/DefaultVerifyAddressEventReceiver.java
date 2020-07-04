@@ -36,10 +36,12 @@ public class DefaultVerifyAddressEventReceiver {
                 LOGGER.info("deliverCallback");
                 final VerifyAddressRequest request = objectMapper.readValue(message.getBody(), VerifyAddressRequest.class);
                 verifyAddressUseCase.execute(request);
+                channel.basicAck(message.getEnvelope().getDeliveryTag(), false);
             } catch (UseCaseException e) {
-                e.printStackTrace();
+                LOGGER.error(e.getMessage(), e);
             }
         };
-        channel.basicConsume(QueueName.VERIFY_ADDRESS, false, deliverCallback, consumerTag -> {});
+        channel.basicConsume(QueueName.VERIFY_ADDRESS, false, deliverCallback, consumerTag -> {
+        });
     }
 }

@@ -7,16 +7,21 @@ import com.wks.servicemarketplace.accountservice.core.models.CountryCode;
 import com.wks.servicemarketplace.accountservice.core.models.Customer;
 import org.jooq.Record;
 import org.jooq.RecordMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
 
 import static org.jooq.impl.DSL.*;
 
 public class DefaultCustomerDao extends BaseDAO implements CustomerDao {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultCustomerDao.class);
 
     @Inject
     public DefaultCustomerDao(DataSource dataSource) {
@@ -79,6 +84,17 @@ public class DefaultCustomerDao extends BaseDAO implements CustomerDao {
                 address.getLongitude(),
                 address.getCreatedBy()
         ).execute();
+    }
+
+    @Override
+    public List<Address> findAddressesByCustomerUuid(Connection connection, String customerUuid) throws SQLException {
+        return create(connection)
+                .select(table("addresses").as("a").asterisk())
+                .from(table("addresses").as("a"))
+                .leftJoin(table("customers").as("c"))
+                .on(field("a.customer_external_id").eq(field("c.external_id")))
+                .where(field("c.uuid").eq(customerUuid))
+                .fetch(addressRecordMapper());
     }
 
     @Override

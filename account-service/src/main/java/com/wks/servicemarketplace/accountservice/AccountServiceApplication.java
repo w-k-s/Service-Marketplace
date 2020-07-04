@@ -7,15 +7,14 @@ import com.wks.servicemarketplace.accountservice.adapters.db.dao.DataSource;
 import com.wks.servicemarketplace.accountservice.adapters.db.dao.DefaultCustomerDao;
 import com.wks.servicemarketplace.accountservice.adapters.events.DefaultCustomerEventsPublisher;
 import com.wks.servicemarketplace.accountservice.adapters.events.DefaultVerifyAddressEventReceiver;
-import com.wks.servicemarketplace.accountservice.adapters.web.errors.exceptionmappers.UseCaseExceptionMapper;
-import com.wks.servicemarketplace.accountservice.adapters.web.resources.AddressResource;
-import com.wks.servicemarketplace.accountservice.adapters.web.resources.CustomerResource;
+import com.wks.servicemarketplace.accountservice.adapters.web.resources.GraphQLResource;
 import com.wks.servicemarketplace.accountservice.config.*;
 import com.wks.servicemarketplace.accountservice.core.daos.CustomerDao;
 import com.wks.servicemarketplace.accountservice.core.events.CustomerEventsPublisher;
 import com.wks.servicemarketplace.accountservice.core.usecase.address.AddAddressUseCase;
-import com.wks.servicemarketplace.accountservice.core.usecase.customer.CreateCustomerUseCase;
+import com.wks.servicemarketplace.accountservice.core.usecase.address.FindAddressByCustomerUuidUseCase;
 import com.wks.servicemarketplace.accountservice.core.usecase.address.verifyaddress.VerifyAddressUseCase;
+import com.wks.servicemarketplace.accountservice.core.usecase.customer.CreateCustomerUseCase;
 import org.eclipse.jetty.server.Server;
 import org.glassfish.hk2.api.Immediate;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
@@ -24,7 +23,6 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Singleton;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 
@@ -38,27 +36,26 @@ public class AccountServiceApplication extends ResourceConfig {
 
     private void registerResources() {
         register(ImmediateFeature.class);
-        register(UseCaseExceptionMapper.class);
         register(ObjectMapperProvider.class);
         register(new AbstractBinder() {
             @Override
             protected void configure() {
-                bindFactory(ApplicationParametersFactory.class, Singleton.class).to(ApplicationParameters.class).in(Singleton.class);
-                bindFactory(ObjectMapperFactory.class, Singleton.class).to(ObjectMapper.class).in(Singleton.class);
-                bindFactory(DataSourceFactory.class, Singleton.class).to(DataSource.class).in(Singleton.class);
-                bindFactory(AmqpConnectionFactory.class, Singleton.class).to(Connection.class).in(Singleton.class);
-                bindFactory(AmqpChannelFactory.class, Singleton.class).to(Channel.class).in(Singleton.class);
+                bindFactory(ApplicationParametersFactory.class, Immediate.class).to(ApplicationParameters.class).in(Immediate.class);
+                bindFactory(ObjectMapperFactory.class, Immediate.class).to(ObjectMapper.class).in(Immediate.class);
+                bindFactory(DataSourceFactory.class, Immediate.class).to(DataSource.class).in(Immediate.class);
+                bindFactory(AmqpConnectionFactory.class, Immediate.class).to(Connection.class).in(Immediate.class);
+                bindFactory(AmqpChannelFactory.class, Immediate.class).to(Channel.class).in(Immediate.class);
                 bindFactory(DefaultVerifyAddressEventReceiverFactory.class, Immediate.class).to(DefaultVerifyAddressEventReceiver.class).in(Immediate.class);
-                bindFactory(VerifyAddressUseCaseFactory.class, Immediate.class).to(VerifyAddressUseCase.class).in(Immediate.class);
+                bindFactory(GraphQLContextFactory.class, Immediate.class).to(GraphQLContext.class).in(Immediate.class);
                 bind(DefaultCustomerDao.class).to(CustomerDao.class);
                 bind(DefaultCustomerEventsPublisher.class).to(CustomerEventsPublisher.class);
                 bind(CreateCustomerUseCase.class).to(CreateCustomerUseCase.class);
                 bind(AddAddressUseCase.class).to(AddAddressUseCase.class);
+                bind(FindAddressByCustomerUuidUseCase.class).to(FindAddressByCustomerUuidUseCase.class);
                 bind(VerifyAddressUseCase.class).to(VerifyAddressUseCase.class);
             }
         });
-        register(CustomerResource.class);
-        register(AddressResource.class);
+        register(GraphQLResource.class);
     }
 
     public void run() throws InterruptedException {

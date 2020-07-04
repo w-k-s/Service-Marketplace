@@ -9,6 +9,7 @@ import com.wks.servicemarketplace.accountservice.core.usecase.UseCaseException;
 import com.wks.servicemarketplace.accountservice.core.usecase.errors.ErrorType;
 import com.wks.servicemarketplace.accountservice.core.utils.CloseableUtils;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -19,6 +20,7 @@ public class VerifyAddressUseCase implements UseCase<VerifyAddressRequest, Void>
     private final CustomerDao customerDao;
     private final CustomerEventsPublisher customerEventsPublisher;
 
+    @Inject
     public VerifyAddressUseCase(CustomerDao customerDao,
                                 CustomerEventsPublisher customerEventsPublisher) {
         this.customerDao = customerDao;

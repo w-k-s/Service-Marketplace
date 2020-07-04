@@ -60,6 +60,7 @@ public class AddAddressUseCase implements UseCase<AddressRequest, AddressRespons
             );
 
             return AddressResponse.builder()
+                    .uuid(address.getUuid())
                     .externalId(address.getExternalId())
                     .customerExternalId(address.getCustomerExternalId())
                     .name(address.getName())
@@ -69,6 +70,7 @@ public class AddAddressUseCase implements UseCase<AddressRequest, AddressRespons
                     .country(address.getCountry().getCountryCode())
                     .latitude(address.getLatitude())
                     .longitude(address.getLongitude())
+                    .version(address.getVersion())
                     .build();
         } catch (CountryCodeNotFoundException e) {
             LOGGER.error("Failed to add address.", e);

@@ -93,7 +93,39 @@ BEFORE update on addresses
 for each row execute procedure audit_record();
 ```
 
+## Sample Requests
+
+**Create Customer**
+```
+curl --location --request POST 'http://localhost:8081/graphql' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+  "query": "mutation createCustomer($firstName: String!, $lastName: String!) { createCustomer(firstName: $firstName, lastName: $lastName) { uuid } }",
+  "variables":{
+	  "firstName": "Waqqas",
+		"lastName": "Waqqas"
+  }
+}'
+```
+
+**Add Address**
+```
+curl --location --request POST 'http://localhost:8081/graphql' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+	"query": "mutation { createAddress(name: \"Home\", line1: \"Num 4, Privet Drive\", city: \"London\", country: \"UK\", latitude: 51.691336, longitude: -0.416966, customerExternalId: 1) { uuid externalId name line1 line2 city country version } }"
+}'
+```
+
 ## Useful Resources
+
+> 3.4. Life-cycle of Root Resource Classes
+> By default the life-cycle of root resource classes is per-request which, namely that a new instance of a root resource class is created every time the request URI path matches the root resource. 
+> This makes for a very natural programming model where constructors and fields can be utilized without concern for multiple concurrent requests to the same resource.
+>  
+> In general this is unlikely to be a cause of performance issues. 
+> Class construction and garbage collection of JVMs has vastly improved over the years and many objects will be created and discarded to serve and process the HTTP request and return the HTTP response. 
+- [Life-cycle of Root Resource Classes](https://eclipse-ee4j.github.io/jersey.github.io/documentation/latest/jaxrs-resources.html#d0e2692)
 
 > 4.2.2. When to use Geography Data type over Geometry data type
 > 

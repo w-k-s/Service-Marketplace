@@ -11,6 +11,8 @@ import java.util.List;
 @Builder
 public class CustomerResponse {
     @NonNull
+    private String uuid;
+    @NonNull
     private Long externalId;
     @NonNull
     private String firstName;
@@ -18,4 +20,6 @@ public class CustomerResponse {
     private String lastName;
     @NonNull
     private List<Address> addresses;
+    @NonNull
+    private Long version;
 }
