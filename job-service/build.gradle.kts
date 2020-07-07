@@ -39,7 +39,10 @@ dependencies {
 	implementation("org.axonframework:axon-spring-boot-starter:4.3.4"){
 		exclude("org.axonframework", "axon-server-connector") // to auto configure EmbeddedEventStore (https://docs.axoniq.io/reference-guide/configuring-infrastructure-components/event-processing/event-bus-and-event-store)
 	}
-	//implementation("axon-amqp-spring-boot-starter:org.axonframework.extensions.amqp:4.3")
+
+	implementation("com.graphql-java:graphql-spring-boot-starter:5.0.2")
+	implementation("com.graphql-java:graphiql-spring-boot-starter:5.0.2")
+	implementation("com.graphql-java:graphql-java-tools:5.2.4")
 
 	runtimeOnly("org.postgresql:postgresql")
 

@@ -113,7 +113,7 @@ curl --location --request POST 'http://localhost:8081/graphql' \
 curl --location --request POST 'http://localhost:8081/graphql' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-	"query": "mutation { createAddress(name: \"Home\", line1: \"Num 4, Privet Drive\", city: \"London\", country: \"UK\", latitude: 51.691336, longitude: -0.416966, customerExternalId: 1) { uuid externalId name line1 line2 city country version } }"
+	"query": "mutation { createAddress(address: {name: \"Home\", line1: \"Num 4, Privet Drive\", city: \"London\", country: \"UK\", latitude: 51.691336, longitude: -0.416966, customerExternalId: 1}) { uuid externalId name line1 line2 city country version } }"
 }'
 ```
 

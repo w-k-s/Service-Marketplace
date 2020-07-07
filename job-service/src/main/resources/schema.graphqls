@@ -1,0 +1,56 @@
+type ServiceOrderResponse{
+    orderId: String!
+    customerId: Long!
+    serviceCategoryId: Long!
+    title: String!
+    description: String!
+    orderDateTime: String!
+    status: String!
+    rejectReason: String
+    version: Long!
+}
+
+type Money{
+    amount: Float!
+    currency: String!
+}
+
+type Address{
+    externalId: Long!
+    customerExternalId: Long!
+    name: String!
+    line1: String!
+    line2: String
+    city: String!
+    country: String!
+    latitude: Float!
+    longitude: Float!
+    version: Long!
+}
+
+type OrderIdResponse{
+    orderId: String!
+}
+
+input ServiceOrderRequest {
+    customerExternalId: Long!
+    addressExternalId: Long!
+    serviceCategoryId: Long!
+    title: String!
+    description: String!
+    orderDateTime: String!
+}
+
+
+type Query{
+    getServiceOrderById(orderId: String!): ServiceOrderResponse!
+}
+
+type Mutation{
+    createServiceOrder(order: ServiceOrderRequest!): OrderIdResponse!
+}
+
+schema{
+    query: Query
+    mutation: Mutation
+}

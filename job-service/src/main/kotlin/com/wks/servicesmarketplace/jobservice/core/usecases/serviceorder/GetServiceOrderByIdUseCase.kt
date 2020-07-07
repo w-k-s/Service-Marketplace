@@ -32,7 +32,7 @@ class GetServiceOrderByIdUseCase(private val queryGateway: QueryGateway,
                     it.orderDateTime,
                     it.createdDate,
                     it.rejectReason,
-                    it.lastModifiedDate
+                    it.version
             )
         }
     }

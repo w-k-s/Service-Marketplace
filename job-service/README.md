@@ -65,4 +65,3 @@ https://sgitario.github.io/axon-by-example/
 - [ ] Rename Account Service -> Customer Service
 - [ ] Create Service Provider Service
 - [ ] Maybe use POSTGIS in the order service? Let's not worry about that right now.
-- [ ] 

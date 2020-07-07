@@ -23,17 +23,20 @@ type Query {
     address(customerUuid: String!): [AddressResponse]
 }
 
+input AddressRequest{
+    customerExternalId: Long!,
+    name: String!,
+    line1: String!,
+    line2: String,
+    city: String!,
+    country: String!,
+    latitude: Float!,
+    longitude: Float!
+}
+
 type Mutation{
     createCustomer(firstName: String!, lastName: String!): Customer
-    createAddress(
-        customerExternalId: Long!,
-        name: String!,
-        line1: String!,
-        line2: String,
-        city: String!,
-        country: String!,
-        latitude: Float!,
-        longitude: Float!): AddressResponse
+    createAddress(address: AddressRequest!): AddressResponse
 }
 
 schema {

@@ -1,6 +1,7 @@
 package com.wks.servicemarketplace.accountservice.adapters.web.resources;
 
 import com.wks.servicemarketplace.accountservice.config.GraphQLContext;
+import com.wks.servicemarketplace.accountservice.core.usecase.UseCaseException;
 import graphql.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,12 +62,20 @@ public class GraphQLResource {
         }
         List<GraphQLError> graphQLErrorList = new ArrayList<>();
         for (GraphQLError error : executionResult.getErrors()) {
-            LOGGER.error("ERROR-{}: {}", error.getClass(), error.getMessage());
-            if (error instanceof ExceptionWhileDataFetching) {
-                graphQLErrorList.add(new SanitizedError((ExceptionWhileDataFetching) error));
-            } else {
+
+            if (!(error instanceof ExceptionWhileDataFetching)) {
                 graphQLErrorList.add(error);
+                continue;
             }
+
+            final ExceptionWhileDataFetching fetchError = (ExceptionWhileDataFetching) error;
+            if (fetchError.getException() instanceof UseCaseException) {
+                final UseCaseException useCaseException = (UseCaseException) fetchError.getException();
+                graphQLErrorList.add(new GraphQLUseCaseError(fetchError.getMessage(), useCaseException.getUserInfo(), useCaseException.getErrorType()));
+                continue;
+            }
+
+            graphQLErrorList.add(new SanitizedError((ExceptionWhileDataFetching) error));
         }
         return new ExecutionResultImpl(executionResult.getData(), graphQLErrorList, executionResult.getExtensions());
     }

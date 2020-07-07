@@ -11,6 +11,7 @@ import org.axonframework.commandhandling.callbacks.LoggingCallback
 import org.axonframework.commandhandling.gateway.CommandGateway
 import org.axonframework.eventhandling.EventHandler
 import org.springframework.stereotype.Service
+import java.time.ZonedDateTime
 import java.util.*
 
 @Service
@@ -43,7 +44,7 @@ class CreateServiceOrderUseCase(private val commandGateway: CommandGateway,
                         address.longitude,
                         address.version
                 ),
-                request.orderDateTime,
+                ZonedDateTime.parse(request.orderDateTime),
                 "Joe Doe" // TODO get from principal
         ), LoggingCallback.INSTANCE)
 

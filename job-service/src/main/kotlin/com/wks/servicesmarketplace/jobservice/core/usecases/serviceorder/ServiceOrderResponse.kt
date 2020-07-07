@@ -15,5 +15,5 @@ data class ServiceOrderResponse(
         val orderDateTime: ZonedDateTime,
         val createdDate: ZonedDateTime,
         val rejectReason: String? = null,
-        val lastModifiedDate: ZonedDateTime? = null
+        val version: Long
 )

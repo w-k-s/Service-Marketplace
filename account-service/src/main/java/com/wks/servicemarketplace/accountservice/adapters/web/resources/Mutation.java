@@ -29,25 +29,8 @@ public class Mutation implements GraphQLRootResolver {
                 .build());
     }
 
-    public AddressResponse createAddress(
-            Long customerExternalId,
-            String name,
-            String line1,
-            String line2,
-            String city,
-            String country,
-            BigDecimal latitude,
-            BigDecimal longitude) throws UseCaseException {
-        return addressUseCase.execute(AddressRequest.builder()
-                .customerExternalId(customerExternalId)
-                .name(name)
-                .line1(line1)
-                .line2(line2)
-                .city(city)
-                .country(country)
-                .latitude(latitude)
-                .longitude(longitude)
-                .build());
+    public AddressResponse createAddress(AddressRequest addressRequest) throws UseCaseException {
+        return addressUseCase.execute(addressRequest);
     }
 
     /// TODO: Types
