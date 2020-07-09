@@ -10,10 +10,6 @@ import java.lang.Exception
 @Component
 class QueryResolver(private val getServiceOrderByIdUseCase: GetServiceOrderByIdUseCase) : GraphQLQueryResolver {
     fun getServiceOrderById(orderId: String): ServiceOrderResponse {
-        try {
-            return getServiceOrderByIdUseCase.execute(GetServiceOrderByIdQuery(orderId));
-        } catch (e: Exception) {
-            throw e.toGraphQLException()
-        }
+        return getServiceOrderByIdUseCase.execute(GetServiceOrderByIdQuery(orderId));
     }
 }

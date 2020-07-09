@@ -10,10 +10,6 @@ import org.springframework.stereotype.Component
 class MutationResolver(private val createServiceOrder: CreateServiceOrderUseCase) : GraphQLMutationResolver {
 
     fun createServiceOrder(serviceOrder: ServiceOrderRequest): OrderIdResponse {
-        try {
-            return createServiceOrder.execute(serviceOrder)
-        } catch (e: Exception) {
-            throw e.toGraphQLException()
-        }
+       return createServiceOrder.execute(serviceOrder)
     }
 }

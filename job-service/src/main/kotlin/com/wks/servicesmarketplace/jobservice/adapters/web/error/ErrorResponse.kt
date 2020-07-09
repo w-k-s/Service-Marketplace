@@ -2,6 +2,7 @@ package com.wks.servicesmarketplace.jobservice.adapters.web.error
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
+import com.wks.servicesmarketplace.jobservice.core.exceptions.ErrorType
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder(value = [ "code", "type", "description", "fields" ])

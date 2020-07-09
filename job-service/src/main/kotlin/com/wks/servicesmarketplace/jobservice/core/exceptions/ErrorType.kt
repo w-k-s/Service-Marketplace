@@ -1,13 +1,12 @@
-package com.wks.servicesmarketplace.jobservice.adapters.web.error
+package com.wks.servicesmarketplace.jobservice.core.exceptions
 
-import org.springframework.http.HttpStatus
-
-enum class ErrorType(val code: Int, val httpStatus: HttpStatus) {
-    UNKNOWN(ErrorType.GENERAL_ERROR_UNKNOWN, HttpStatus.INTERNAL_SERVER_ERROR),
-    VALIDATION(ErrorType.GENERAL_ERROR_VALIDATION, HttpStatus.BAD_REQUEST),
-    NOT_FOUND(ErrorType.GENERAL_ERROR_NOT_FOUND, HttpStatus.NOT_FOUND),
-    INVALID_STATE(ErrorType.GENERAL_ERROR_INVALID_STATE, HttpStatus.BAD_REQUEST),
-    ADDRESS_NOT_FOUND(ErrorType.SERVICE_ORDER_ERROR_ADDRESS_NOT_FOUND, HttpStatus.NOT_FOUND);
+enum class ErrorType(val code: Int) {
+    UNKNOWN(ErrorType.GENERAL_ERROR_UNKNOWN),
+    VALIDATION(ErrorType.GENERAL_ERROR_VALIDATION),
+    NOT_FOUND(ErrorType.GENERAL_ERROR_NOT_FOUND),
+    INVALID_STATE(ErrorType.GENERAL_ERROR_INVALID_STATE),
+    ADDRESS_NOT_FOUND(ErrorType.SERVICE_ORDER_ERROR_ADDRESS_NOT_FOUND),
+    SERVICE_ORDER_NOT_FOUND(ErrorType.SERVICE_ORDER_ERROR_ORDER_NOT_FOUND);
 
     companion object {
         private const val SERVICE_CODE = 1_00_000
@@ -22,5 +21,6 @@ enum class ErrorType(val code: Int, val httpStatus: HttpStatus) {
         // -- Service Order Errors
         private const val CATEGORY_CODE_SERVICE_ORDER_ERROR = 100
         private const val SERVICE_ORDER_ERROR_ADDRESS_NOT_FOUND = SERVICE_CODE + CATEGORY_CODE_SERVICE_ORDER_ERROR + 10;// 100110
+        private const val SERVICE_ORDER_ERROR_ORDER_NOT_FOUND = SERVICE_CODE + CATEGORY_CODE_GENERAL_ERROR + 20         // 100120
     }
 }

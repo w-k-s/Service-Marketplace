@@ -1,6 +1,6 @@
 package com.wks.servicesmarketplace.jobservice.adapters.graphql
 
-import com.wks.servicesmarketplace.jobservice.adapters.web.error.ErrorType
+import com.wks.servicesmarketplace.jobservice.core.exceptions.ErrorType
 import org.axonframework.messaging.interceptors.JSR303ViolationException
 
 
