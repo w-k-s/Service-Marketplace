@@ -25,7 +25,7 @@ public class UseCaseException extends Exception {
     }
 
     public UseCaseException(ErrorType errorType, String description, Map<String, String> userInfo, Throwable cause) {
-        super(String.format("%s: %s", errorType, description), cause);
+        super(description, cause);
         Preconditions.checkNotNull(errorType);
 
         this.errorType = errorType;

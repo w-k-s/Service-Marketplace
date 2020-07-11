@@ -75,7 +75,7 @@ public class AddAddressUseCase implements UseCase<AddressRequest, AddressRespons
         } catch (CountryCodeNotFoundException e) {
             LOGGER.error("Failed to add address.", e);
             TransactionUtils.rollback(connection);
-            throw new UseCaseException(ErrorType.INVALID_COUNTRY, ImmutableMap.of("countryCode", e.getCountryCode()));
+            throw new UseCaseException(ErrorType.INVALID_COUNTRY, e.getMessage(), ImmutableMap.of("countryCode", e.getCountryCode()), e);
         } catch (Exception e) {
             LOGGER.error("Failed to add address.", e);
             TransactionUtils.rollback(connection);

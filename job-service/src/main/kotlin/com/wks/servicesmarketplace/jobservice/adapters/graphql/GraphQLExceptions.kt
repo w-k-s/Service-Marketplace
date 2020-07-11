@@ -1,16 +1,41 @@
 package com.wks.servicesmarketplace.jobservice.adapters.graphql
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.wks.servicesmarketplace.jobservice.core.exceptions.ErrorType
+import graphql.ExceptionWhileDataFetching
+import graphql.GraphQLError
+import graphql.execution.ExecutionPath
+import graphql.language.SourceLocation
 import org.axonframework.messaging.interceptors.JSR303ViolationException
 
+class GraphQLSanitizedException(inner: ExceptionWhileDataFetching)
+    : ExceptionWhileDataFetching(ExecutionPath.fromList(inner.path), inner.exception, inner.locations.first()) {
 
-fun Throwable.toGraphQLException(): GraphQLException {
-    return when (this) {
-        is JSR303ViolationException -> {
-            val fields = this.violations.map { it.propertyPath.toString() to it.message }.toMap()
-            val message = fields.map { "${it.key}: ${it.value}" }.joinToString(";")
-            GraphQLException(message, fields, ErrorType.VALIDATION)
-        }
-        else -> GraphQLException(this.message, ErrorType.UNKNOWN)
+    @Override
+    @JsonIgnore
+    override fun getException(): Throwable {
+        return super.getException()
     }
+}
+
+data class GraphQLUseCaseError(private val description: String,
+                               private val userInfo: Map<String, String> = emptyMap(),
+                               private val errorType: ErrorType) : GraphQLError {
+
+    private val extensions = mutableMapOf<String,Any>()
+
+    init{
+        extensions["code"] = errorType.code
+        extensions["type"] = errorType.name
+        extensions["description"] = description
+        extensions["userInfo"] = userInfo
+    }
+
+    override fun getMessage(): String = description
+
+    override fun getErrorType() = graphql.ErrorType.DataFetchingException
+
+    override fun getLocations() = emptyList<SourceLocation>()
+
+    override fun getExtensions() = extensions
 }

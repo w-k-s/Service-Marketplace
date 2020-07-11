@@ -1,18 +1,18 @@
 package com.wks.servicemarketplace.accountservice.config;
 
-import graphql.schema.GraphQLSchema;
+import graphql.GraphQL;
 
 public class GraphQLContext {
-    private final GraphQLSchema graphQLSchema;
+    private final GraphQL graphQL;
     private final String introspectionQuery;
 
-    public GraphQLContext(GraphQLSchema graphQLSchema, String introspectionQuery) {
-        this.graphQLSchema = graphQLSchema;
+    public GraphQLContext(GraphQL graphQL, String introspectionQuery) {
+        this.graphQL = graphQL;
         this.introspectionQuery = introspectionQuery;
     }
 
-    public GraphQLSchema getGraphQLSchema() {
-        return graphQLSchema;
+    public GraphQL getGraphQL() {
+        return graphQL;
     }
 
     public String getIntrospectionQuery() {

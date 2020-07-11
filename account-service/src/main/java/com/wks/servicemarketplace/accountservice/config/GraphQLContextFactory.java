@@ -1,40 +1,43 @@
 package com.wks.servicemarketplace.accountservice.config;
 
-import com.coxautodev.graphql.tools.SchemaParser;
-import com.wks.servicemarketplace.accountservice.adapters.web.resources.Mutation;
-import com.wks.servicemarketplace.accountservice.adapters.web.resources.Query;
-import com.wks.servicemarketplace.accountservice.core.usecase.address.AddAddressUseCase;
-import com.wks.servicemarketplace.accountservice.core.usecase.address.FindAddressByCustomerUuidUseCase;
-import com.wks.servicemarketplace.accountservice.core.usecase.customer.CreateCustomerUseCase;
+import com.wks.servicemarketplace.accountservice.adapters.graphql.AddressDataFetcher;
+import com.wks.servicemarketplace.accountservice.adapters.graphql.CreateAddressDataFetcher;
+import com.wks.servicemarketplace.accountservice.adapters.graphql.CreateCustomerDataFetcher;
+import graphql.GraphQL;
+import graphql.execution.instrumentation.ChainedInstrumentation;
 import graphql.schema.GraphQLSchema;
+import graphql.schema.idl.RuntimeWiring;
+import io.gqljf.federation.FederatedSchemaBuilder;
+import io.gqljf.federation.tracing.FederatedTracingInstrumentation;
 import org.glassfish.hk2.api.Factory;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Collections;
 
 public class GraphQLContextFactory implements Factory<GraphQLContext> {
 
     private GraphQLContext graphQLContext;
 
     @Inject
-    public GraphQLContextFactory(FindAddressByCustomerUuidUseCase findAddressByCustomerUuidUseCase,
-                                 CreateCustomerUseCase createCustomerUseCase,
-                                 AddAddressUseCase addAddressUseCase) throws IOException, URISyntaxException {
+    public GraphQLContextFactory(CreateCustomerDataFetcher createCustomerDataFetcher,
+                                 CreateAddressDataFetcher createAddressDataFetcher,
+                                 AddressDataFetcher addressDataFetcher) throws IOException, URISyntaxException {
+        final InputStream schemaInputStream = getClass().getClassLoader().getResourceAsStream("schema.graphqls");
 
-        final GraphQLSchema graphQLSchema = SchemaParser.newParser()
-                .files("schema.graphqls")
-                .resolvers(new Query(
-                        findAddressByCustomerUuidUseCase
-                ), new Mutation(
-                        createCustomerUseCase,
-                        addAddressUseCase
-                ))
-                .build()
-                .makeExecutableSchema();
+        final GraphQLSchema transformedGraphQLSchema = new FederatedSchemaBuilder()
+                .schemaInputStream(schemaInputStream)
+                .runtimeWiring(createRuntimeWiring(createCustomerDataFetcher, createAddressDataFetcher, addressDataFetcher))
+                .excludeSubscriptionsFromApolloSdl(true)
+                .build();
+        final GraphQL graphQL = GraphQL.newGraphQL(transformedGraphQLSchema)
+                .instrumentation(new ChainedInstrumentation(Collections.singletonList(new FederatedTracingInstrumentation())))
+                .build();
 
         String introspectionQuery = null;
         final URL introspectionQueryURL = getClass().getClassLoader().getResource("introspectionQuery.graphqls");
@@ -42,9 +45,19 @@ public class GraphQLContextFactory implements Factory<GraphQLContext> {
             introspectionQuery = new String(Files.readAllBytes(Paths.get(introspectionQueryURL.toURI())));
         }
         this.graphQLContext = new GraphQLContext(
-                graphQLSchema,
+                graphQL,
                 introspectionQuery
         );
+    }
+
+    private RuntimeWiring createRuntimeWiring(CreateCustomerDataFetcher createCustomerDataFetcher,
+                                              CreateAddressDataFetcher createAddressDataFetcher, AddressDataFetcher addressDataFetcher) {
+        return RuntimeWiring.newRuntimeWiring()
+                .type("Query", builder -> builder.dataFetcher("address", addressDataFetcher))
+                .type("Mutation", builder ->
+                        builder.dataFetcher("createCustomer", createCustomerDataFetcher)
+                                .dataFetcher("createAddress", createAddressDataFetcher))
+                .build();
     }
 
     @Override

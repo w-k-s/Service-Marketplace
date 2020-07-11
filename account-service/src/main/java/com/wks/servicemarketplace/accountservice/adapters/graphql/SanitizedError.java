@@ -1,12 +1,13 @@
-package com.wks.servicemarketplace.accountservice.adapters.web.resources;
+package com.wks.servicemarketplace.accountservice.adapters.graphql;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import graphql.ExceptionWhileDataFetching;
+import graphql.execution.ExecutionPath;
 
 public class SanitizedError extends ExceptionWhileDataFetching {
 
     public SanitizedError(ExceptionWhileDataFetching inner) {
-        super(inner.getException());
+        super(ExecutionPath.fromList(inner.getPath()), inner.getException(), inner.getLocations().get(0));
     }
 
     @Override

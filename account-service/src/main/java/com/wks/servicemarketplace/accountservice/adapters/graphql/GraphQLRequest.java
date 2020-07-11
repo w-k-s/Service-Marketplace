@@ -1,4 +1,4 @@
-package com.wks.servicemarketplace.accountservice.adapters.web.resources;
+package com.wks.servicemarketplace.accountservice.adapters.graphql;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

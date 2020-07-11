@@ -1,4 +1,4 @@
-package com.wks.servicemarketplace.accountservice.adapters.web.resources;
+package com.wks.servicemarketplace.accountservice.adapters.graphql;
 
 import com.wks.servicemarketplace.accountservice.config.GraphQLContext;
 import com.wks.servicemarketplace.accountservice.core.usecase.UseCaseException;
@@ -24,7 +24,7 @@ public class GraphQLResource {
     @Inject
     public GraphQLResource(GraphQLContext context) {
         LOGGER.info("Initializing GraphQLResource");
-        this.graphQL = GraphQL.newGraphQL(context.getGraphQLSchema()).build();
+        this.graphQL = context.getGraphQL();
         this.introspectionQuery = context.getIntrospectionQuery();
     }
 
@@ -69,14 +69,24 @@ public class GraphQLResource {
             }
 
             final ExceptionWhileDataFetching fetchError = (ExceptionWhileDataFetching) error;
-            if (fetchError.getException() instanceof UseCaseException) {
-                final UseCaseException useCaseException = (UseCaseException) fetchError.getException();
-                graphQLErrorList.add(new GraphQLUseCaseError(fetchError.getMessage(), useCaseException.getUserInfo(), useCaseException.getErrorType()));
+            final UseCaseException useCaseException = getRootUseCaseException(fetchError);
+            if (useCaseException != null) {
+                graphQLErrorList.add(new GraphQLUseCaseError(useCaseException, fetchError));
                 continue;
             }
 
             graphQLErrorList.add(new SanitizedError((ExceptionWhileDataFetching) error));
         }
         return new ExecutionResultImpl(executionResult.getData(), graphQLErrorList, executionResult.getExtensions());
+    }
+
+    private UseCaseException getRootUseCaseException(ExceptionWhileDataFetching fetchError) {
+        if (fetchError.getException() instanceof UseCaseException) {
+            return (UseCaseException) fetchError.getException();
+        }
+        if (fetchError.getException().getCause() instanceof UseCaseException) {
+            return (UseCaseException) fetchError.getException().getCause();
+        }
+        return null;
     }
 }

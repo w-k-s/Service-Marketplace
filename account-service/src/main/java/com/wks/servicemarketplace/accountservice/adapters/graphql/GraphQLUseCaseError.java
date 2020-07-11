@@ -1,9 +1,11 @@
-package com.wks.servicemarketplace.accountservice.adapters.web.resources;
+package com.wks.servicemarketplace.accountservice.adapters.graphql;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.wks.servicemarketplace.accountservice.core.usecase.UseCaseException;
 import com.wks.servicemarketplace.accountservice.core.usecase.errors.ErrorType;
-import graphql.GraphQLError;
+import graphql.ExceptionWhileDataFetching;
+import graphql.execution.ExecutionPath;
 import graphql.language.SourceLocation;
 
 import java.util.Collections;
@@ -11,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class GraphQLUseCaseError implements GraphQLError {
+public class GraphQLUseCaseError extends ExceptionWhileDataFetching {
 
     private static final String EXTENSION_ERROR_CODE = "code";
     private static final String EXTENSION_ERROR_TYPE = "type";
@@ -21,19 +23,18 @@ public class GraphQLUseCaseError implements GraphQLError {
     private final String message;
     private final Map<String, Object> extensions;
 
-    public GraphQLUseCaseError(String message, ErrorType errorType) {
-        this(message, Collections.emptyMap(), errorType);
-    }
+    public GraphQLUseCaseError(UseCaseException useCaseException,
+                               ExceptionWhileDataFetching cause) {
+        super(ExecutionPath.fromList(cause.getPath()), useCaseException, cause.getLocations().get(0));
+        this.message = useCaseException.getDescription();
 
-    public GraphQLUseCaseError(String message, Map<String, String> extensions, ErrorType errorType) {
-        this.message = message;
-
+        final ErrorType errorType = useCaseException.getErrorType();
         Map<String, Object> allExtensions = new HashMap<>();
         allExtensions.put(EXTENSION_ERROR_CODE, errorType.code);
         allExtensions.put(EXTENSION_ERROR_TYPE, errorType.name());
         allExtensions.put(EXTENSION_ERROR_MESSAGE, message);
-        if (extensions != null && !extensions.isEmpty()) {
-            allExtensions.put(EXTENSION_ERROR_FIELDS, extensions);
+        if (useCaseException.getUserInfo() != null && !useCaseException.getUserInfo().isEmpty()) {
+            allExtensions.put(EXTENSION_ERROR_FIELDS, useCaseException.getUserInfo());
         }
         this.extensions = Collections.unmodifiableMap(allExtensions);
     }
@@ -59,5 +60,11 @@ public class GraphQLUseCaseError implements GraphQLError {
     @JsonProperty
     public Map<String, Object> getExtensions() {
         return extensions;
+    }
+
+    @Override
+    @JsonIgnore
+    public Throwable getException() {
+        return super.getException();
     }
 }

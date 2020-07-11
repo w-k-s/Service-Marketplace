@@ -7,7 +7,7 @@ import com.wks.servicemarketplace.accountservice.adapters.db.dao.DataSource;
 import com.wks.servicemarketplace.accountservice.adapters.db.dao.DefaultCustomerDao;
 import com.wks.servicemarketplace.accountservice.adapters.events.DefaultCustomerEventsPublisher;
 import com.wks.servicemarketplace.accountservice.adapters.events.DefaultVerifyAddressEventReceiver;
-import com.wks.servicemarketplace.accountservice.adapters.web.resources.GraphQLResource;
+import com.wks.servicemarketplace.accountservice.adapters.graphql.*;
 import com.wks.servicemarketplace.accountservice.config.*;
 import com.wks.servicemarketplace.accountservice.core.daos.CustomerDao;
 import com.wks.servicemarketplace.accountservice.core.events.CustomerEventsPublisher;
@@ -53,6 +53,10 @@ public class AccountServiceApplication extends ResourceConfig {
                 bind(AddAddressUseCase.class).to(AddAddressUseCase.class);
                 bind(FindAddressByCustomerUuidUseCase.class).to(FindAddressByCustomerUuidUseCase.class);
                 bind(VerifyAddressUseCase.class).to(VerifyAddressUseCase.class);
+                bind(AddressDataFetcher.class).to(AddressDataFetcher.class);
+                bind(CreateCustomerDataFetcher.class).to(CreateCustomerDataFetcher.class);
+                bind(CreateAddressDataFetcher.class).to(CreateAddressDataFetcher.class);
+                bind(DataFetchingEnvironmentMapper.class).to(DataFetchingEnvironmentMapper.class);
             }
         });
         register(GraphQLResource.class);
