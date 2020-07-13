@@ -51,6 +51,8 @@
 > Axon automatically sets and increases the aggregate's @AggregateVersion field. There's no interaction with this field required: Just add it to your aggregate and you're done.
 [@AggregateVersion docs](https://github.com/AxonFramework/AxonFramework/issues/721)
 
+- [Apollo Federation with Spring](https://github.com/apollographql/federation-jvm/tree/master/spring-example)
+
 ### might be useful later:
 
 https://groups.google.com/forum/#!topic/axonframework/EaHY4PgGQo8

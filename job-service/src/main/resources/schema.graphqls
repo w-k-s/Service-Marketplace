@@ -1,13 +1,13 @@
 type ServiceOrderResponse{
     orderId: String!
-    customerId: Long!
-    serviceCategoryId: Long!
+    customerId: Int!
+    serviceCategoryId: Int!
     title: String!
     description: String!
     orderDateTime: String!
     status: String!
     rejectReason: String
-    version: Long!
+    version: Int!
 }
 
 type Money{
@@ -16,8 +16,8 @@ type Money{
 }
 
 type Address{
-    externalId: Long!
-    customerExternalId: Long!
+    externalId: Int!
+    customerExternalId: Int!
     name: String!
     line1: String!
     line2: String
@@ -25,7 +25,7 @@ type Address{
     country: String!
     latitude: Float!
     longitude: Float!
-    version: Long!
+    version: Int!
 }
 
 type OrderIdResponse{
@@ -33,9 +33,9 @@ type OrderIdResponse{
 }
 
 input ServiceOrderRequest {
-    customerExternalId: Long!
-    addressExternalId: Long!
-    serviceCategoryId: Long!
+    customerExternalId: Int!
+    addressExternalId: Int!
+    serviceCategoryId: Int!
     title: String!
     description: String!
     orderDateTime: String!
