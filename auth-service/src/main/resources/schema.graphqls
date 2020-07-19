@@ -1,0 +1,37 @@
+input SignInRequest {
+    username: String!
+    password: String!
+}
+
+type SignInResponse {
+    username: String!
+    token: String!
+}
+
+input SignUpRequest{
+    firstName: String!
+    lastName: String!
+    email: String!
+    username: String!
+    enabled: Boolean!
+    userType: UserType!
+}
+
+enum UserType {
+    CUSTOMER,
+    SERVICE_PROVIDER
+}
+
+type SignUpResponse{
+    username: String!
+}
+
+type Mutation {
+    signIn(data: SignInRequest!): SignInResponse!
+    signUp(data: SignUpRequest!): SignUpResonse
+}
+
+schema {
+  query: Query
+  mutation: Mutation
+}
