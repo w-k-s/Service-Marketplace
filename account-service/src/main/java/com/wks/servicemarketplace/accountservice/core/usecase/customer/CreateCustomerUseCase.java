@@ -1,5 +1,7 @@
 package com.wks.servicemarketplace.accountservice.core.usecase.customer;
 
+import com.wks.servicemarketplace.accountservice.core.auth.AuthorizationUtils;
+import com.wks.servicemarketplace.accountservice.core.auth.UserProvider;
 import com.wks.servicemarketplace.accountservice.core.daos.CustomerDao;
 import com.wks.servicemarketplace.accountservice.core.daos.TransactionUtils;
 import com.wks.servicemarketplace.accountservice.core.events.CustomerEventsPublisher;
@@ -23,15 +25,20 @@ public class CreateCustomerUseCase implements UseCase<CustomerRequest, CustomerR
 
     private final CustomerDao customerDao;
     private final CustomerEventsPublisher customerEventsPublisher;
+    private final UserProvider userProvider;
 
     @Inject
-    public CreateCustomerUseCase(CustomerDao customerDao, CustomerEventsPublisher customerEventsPublisher) {
+    public CreateCustomerUseCase(CustomerDao customerDao,
+                                 CustomerEventsPublisher customerEventsPublisher,
+                                 UserProvider userProvider) {
         this.customerDao = customerDao;
         this.customerEventsPublisher = customerEventsPublisher;
+        this.userProvider = userProvider;
     }
 
     @Override
     public CustomerResponse execute(CustomerRequest customerRequest) throws UseCaseException {
+        AuthorizationUtils.checkRole(userProvider, "Customer");
 
         Connection connection = null;
         try {
@@ -41,7 +48,7 @@ public class CreateCustomerUseCase implements UseCase<CustomerRequest, CustomerR
                     customerDao.newCustomerExternalId(connection),
                     customerRequest.getFirstName(),
                     customerRequest.getLastName(),
-                    "John Doe" // get from token
+                    userProvider.getUser().getUsername()
             );
             final Customer customer = customerAndEvents.getResult();
 

@@ -142,3 +142,17 @@ curl --location --request POST 'http://localhost:8081/graphql' \
 - [Dependency Injection using Jersey's HK2](https://riptutorial.com/jersey/example/23632/basic-dependency-injection-using-jersey-s-hk2)
 - [Implementing Custom Injection Provider](https://eclipse-ee4j.github.io/jersey.github.io/documentation/latest/ioc.html#d0e17204)
 - [A minimal REST API in Java](https://notes.eatonphil.com/a-minimal-rest-api-in-java.html)
+
+> proxy cause a dynamic proxy to be created. So every time you access the service, it will be a proxy. 
+> the proxyForSameScope just says that if the parent is in the same scope, i.e a request scope, don't make it a proxy, just use the real object. For instance, now it will be a proxy object, but if you try to inject it into a resource class (which is request scope by default), it will the the actual instance.
+- [How to use RequestScoped objects within singleton jersey?](https://stackoverflow.com/a/41633475/821110)
+
+> When using @Singleton on a resource class, you would expect the request scoped injection (without proxying solution provided aboce) to fail on start up, since there is no request on startup.
+> 
+>The reason is that @Singleton resources are not created until the first request. 
+> So there actually is a request scope during injection. 
+> 
+> So any request sensitive information is injected with the service only once. 
+> Now all subsequent request will see all the first request’s context sensitive information.
+> I strongly suggest staying away from the @Singleton annotation. If you want a singleton, just register the instance in your ResourceConfig
+- [Request Scoped Injection into a Singleton with Jersey](https://psamsotha.github.io/jersey/2015/12/16/request-scope-into-singleton-scope.html)

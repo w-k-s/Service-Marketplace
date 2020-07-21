@@ -1,8 +1,12 @@
 package com.wks.servicemarketplace.accountservice.adapters.graphql;
 
-import com.wks.servicemarketplace.accountservice.config.GraphQLContext;
+import com.google.common.collect.ImmutableMap;
+import com.wks.servicemarketplace.accountservice.core.exceptions.AuthenticationRequiredException;
+import com.wks.servicemarketplace.accountservice.core.exceptions.UnauthorizedException;
 import com.wks.servicemarketplace.accountservice.core.usecase.UseCaseException;
+import com.wks.servicemarketplace.accountservice.core.usecase.errors.ErrorType;
 import graphql.*;
+import org.glassfish.jersey.process.internal.RequestScoped;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,18 +18,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Path("/")
+@RequestScoped
 public class GraphQLResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GraphQLResource.class);
 
     private final GraphQL graphQL;
-    private final String introspectionQuery;
 
     @Inject
-    public GraphQLResource(GraphQLContext context) {
+    public GraphQLResource(GraphQL graphQL) {
         LOGGER.info("Initializing GraphQLResource");
-        this.graphQL = context.getGraphQL();
-        this.introspectionQuery = context.getIntrospectionQuery();
+        this.graphQL = graphQL;
     }
 
     @GET
@@ -48,14 +51,6 @@ public class GraphQLResource {
         return Response.ok(result).build();
     }
 
-    @GET
-    @Path("/graphql/schema.json")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response graphQLSchema() {
-        ExecutionResult result = filterGraphQLErrors(graphQL.execute(introspectionQuery));
-        return Response.ok(result).build();
-    }
-
     private ExecutionResult filterGraphQLErrors(ExecutionResult executionResult) {
         if (executionResult.getErrors().isEmpty()) {
             return executionResult;
@@ -68,25 +63,32 @@ public class GraphQLResource {
                 continue;
             }
 
-            final ExceptionWhileDataFetching fetchError = (ExceptionWhileDataFetching) error;
-            final UseCaseException useCaseException = getRootUseCaseException(fetchError);
-            if (useCaseException != null) {
-                graphQLErrorList.add(new GraphQLUseCaseError(useCaseException, fetchError));
-                continue;
-            }
-
-            graphQLErrorList.add(new SanitizedError((ExceptionWhileDataFetching) error));
+            graphQLErrorList.add(getGraphQLError((ExceptionWhileDataFetching) error));
         }
         return new ExecutionResultImpl(executionResult.getData(), graphQLErrorList, executionResult.getExtensions());
     }
 
-    private UseCaseException getRootUseCaseException(ExceptionWhileDataFetching fetchError) {
+    private GraphQLError getGraphQLError(ExceptionWhileDataFetching fetchError) {
         if (fetchError.getException() instanceof UseCaseException) {
-            return (UseCaseException) fetchError.getException();
+            return new GraphQLUseCaseError((UseCaseException) fetchError.getException(), fetchError);
         }
         if (fetchError.getException().getCause() instanceof UseCaseException) {
-            return (UseCaseException) fetchError.getException().getCause();
+            return new GraphQLUseCaseError((UseCaseException) fetchError.getException().getCause(), fetchError);
         }
-        return null;
+        if (fetchError.getException() instanceof AuthenticationRequiredException) {
+            return new GraphQLUseCaseError(new UseCaseException(
+                    ErrorType.UNAUTHENTICATED,
+                    fetchError.getException()
+            ), fetchError);
+        }
+        if (fetchError.getException() instanceof UnauthorizedException) {
+            return new GraphQLUseCaseError(new UseCaseException(
+                    ErrorType.UNAUTHORIZED,
+                    fetchError.getMessage(),
+                    ImmutableMap.of("requiredRole", ((UnauthorizedException) fetchError.getException()).getRequiredRole()),
+                    fetchError.getException()
+            ), fetchError);
+        }
+        return new SanitizedError(fetchError);
     }
 }

@@ -9,16 +9,19 @@ import com.wks.servicemarketplace.accountservice.adapters.events.DefaultCustomer
 import com.wks.servicemarketplace.accountservice.adapters.events.DefaultVerifyAddressEventReceiver;
 import com.wks.servicemarketplace.accountservice.adapters.graphql.*;
 import com.wks.servicemarketplace.accountservice.config.*;
+import com.wks.servicemarketplace.accountservice.core.auth.UserProvider;
 import com.wks.servicemarketplace.accountservice.core.daos.CustomerDao;
 import com.wks.servicemarketplace.accountservice.core.events.CustomerEventsPublisher;
 import com.wks.servicemarketplace.accountservice.core.usecase.address.AddAddressUseCase;
 import com.wks.servicemarketplace.accountservice.core.usecase.address.FindAddressByCustomerUuidUseCase;
 import com.wks.servicemarketplace.accountservice.core.usecase.address.verifyaddress.VerifyAddressUseCase;
 import com.wks.servicemarketplace.accountservice.core.usecase.customer.CreateCustomerUseCase;
+import graphql.GraphQL;
 import org.eclipse.jetty.server.Server;
 import org.glassfish.hk2.api.Immediate;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.jetty.JettyHttpContainerFactory;
+import org.glassfish.jersey.process.internal.RequestScoped;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +40,7 @@ public class AccountServiceApplication extends ResourceConfig {
     private void registerResources() {
         register(ImmediateFeature.class);
         register(ObjectMapperProvider.class);
+        register(AuthenticationFilter.class);
         register(new AbstractBinder() {
             @Override
             protected void configure() {
@@ -46,9 +50,17 @@ public class AccountServiceApplication extends ResourceConfig {
                 bindFactory(AmqpConnectionFactory.class, Immediate.class).to(Connection.class).in(Immediate.class);
                 bindFactory(AmqpChannelFactory.class, Immediate.class).to(Channel.class).in(Immediate.class);
                 bindFactory(DefaultVerifyAddressEventReceiverFactory.class, Immediate.class).to(DefaultVerifyAddressEventReceiver.class).in(Immediate.class);
-                bindFactory(GraphQLContextFactory.class, Immediate.class).to(GraphQLContext.class).in(Immediate.class);
+                bindFactory(GraphQLFactory.class, Immediate.class).to(GraphQL.class).in(Immediate.class);
                 bind(DefaultCustomerDao.class).to(CustomerDao.class);
                 bind(DefaultCustomerEventsPublisher.class).to(CustomerEventsPublisher.class);
+
+                // User Provider Factory must be request scoped, within a singleton.
+                // In order to achieve this with Jersey, a proxy object is needed.
+                bindFactory(UserProviderFactory.class)
+                        .proxy(true) // proxy cause a dynamic proxy to be created. So every time you access the service, it will be a proxy.
+                        .proxyForSameScope(false) // if the parent is in the same scope, i.e a request scope, don't make it a proxy, just use the real object
+                        .to(UserProvider.class)
+                        .in(RequestScoped.class);
                 bind(CreateCustomerUseCase.class).to(CreateCustomerUseCase.class);
                 bind(AddAddressUseCase.class).to(AddAddressUseCase.class);
                 bind(FindAddressByCustomerUuidUseCase.class).to(FindAddressByCustomerUuidUseCase.class);

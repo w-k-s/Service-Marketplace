@@ -12,22 +12,17 @@ import io.gqljf.federation.tracing.FederatedTracingInstrumentation;
 import org.glassfish.hk2.api.Factory;
 
 import javax.inject.Inject;
-import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Collections;
 
-public class GraphQLContextFactory implements Factory<GraphQLContext> {
+public class GraphQLFactory implements Factory<GraphQL> {
 
-    private GraphQLContext graphQLContext;
+    private GraphQL graphQL;
 
     @Inject
-    public GraphQLContextFactory(CreateCustomerDataFetcher createCustomerDataFetcher,
-                                 CreateAddressDataFetcher createAddressDataFetcher,
-                                 AddressDataFetcher addressDataFetcher) throws IOException, URISyntaxException {
+    public GraphQLFactory(CreateCustomerDataFetcher createCustomerDataFetcher,
+                          CreateAddressDataFetcher createAddressDataFetcher,
+                          AddressDataFetcher addressDataFetcher) {
         final InputStream schemaInputStream = getClass().getClassLoader().getResourceAsStream("schema.graphqls");
 
         final GraphQLSchema transformedGraphQLSchema = new FederatedSchemaBuilder()
@@ -35,19 +30,9 @@ public class GraphQLContextFactory implements Factory<GraphQLContext> {
                 .runtimeWiring(createRuntimeWiring(createCustomerDataFetcher, createAddressDataFetcher, addressDataFetcher))
                 .excludeSubscriptionsFromApolloSdl(true)
                 .build();
-        final GraphQL graphQL = GraphQL.newGraphQL(transformedGraphQLSchema)
+        this.graphQL = GraphQL.newGraphQL(transformedGraphQLSchema)
                 .instrumentation(new ChainedInstrumentation(Collections.singletonList(new FederatedTracingInstrumentation())))
                 .build();
-
-        String introspectionQuery = null;
-        final URL introspectionQueryURL = getClass().getClassLoader().getResource("introspectionQuery.graphqls");
-        if (introspectionQueryURL != null) {
-            introspectionQuery = new String(Files.readAllBytes(Paths.get(introspectionQueryURL.toURI())));
-        }
-        this.graphQLContext = new GraphQLContext(
-                graphQL,
-                introspectionQuery
-        );
     }
 
     private RuntimeWiring createRuntimeWiring(CreateCustomerDataFetcher createCustomerDataFetcher,
@@ -61,11 +46,11 @@ public class GraphQLContextFactory implements Factory<GraphQLContext> {
     }
 
     @Override
-    public GraphQLContext provide() {
-        return graphQLContext;
+    public GraphQL provide() {
+        return graphQL;
     }
 
     @Override
-    public void dispose(GraphQLContext instance) {
+    public void dispose(GraphQL instance) {
     }
 }
