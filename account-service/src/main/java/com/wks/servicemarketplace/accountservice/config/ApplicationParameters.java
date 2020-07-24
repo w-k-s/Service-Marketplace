@@ -24,4 +24,6 @@ public class ApplicationParameters {
     @NonNull
     private final String amqpHost;
     private final int amqpPort;
+    @NonNull
+    private final String keycloakKeySetUrl;
 }

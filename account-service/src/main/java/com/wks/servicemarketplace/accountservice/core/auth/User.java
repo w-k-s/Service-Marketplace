@@ -1,6 +1,9 @@
 package com.wks.servicemarketplace.accountservice.core.auth;
 
-public interface User {
+import java.security.Principal;
+
+public interface User extends Principal {
+
     String getUuid();
 
     String getUsername();

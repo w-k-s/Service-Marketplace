@@ -93,6 +93,19 @@ BEFORE update on addresses
 for each row execute procedure audit_record();
 ```
 
+## Environment Variables
+
+| Environmental Variable | Description                       | Example                                                                            | required |
+|------------------------|-----------------------------------|------------------------------------------------------------------------------------|----------|
+| jdbcUrl                | JDBC URL of service database      | jdbc:postgresql://localhost:5432/account                                           | true     |
+| jdbcUsername           | service database username         |                                                                                    | true     |
+| jdbcPassword           | service database password         |                                                                                    | true     |
+| amqpHost               | RabbitMQ Broker Host              | localhost                                                                          | true     |
+| amqpPort               | RabbitMQ Broker port              | 5672                                                                               | true     |
+| serverHost             | Listen to requests from host      | http://localhost                                                                   | true     |
+| serverPort             | Listen to requests for port       | 8081                                                                               | true     |
+| keycloakKeySetUrl      | URL that returns Keycloak's KeySet| http://localhost:8180/auth/realms/ServiceMarketplace/protocol/openid-connect/certs | true     |
+
 ## Sample Requests
 
 **Create Customer**

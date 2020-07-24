@@ -3,6 +3,8 @@ package com.wks.servicemarketplace.accountservice;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
+import com.wks.servicemarketplace.accountservice.adapters.auth.TokenValidator;
+import com.wks.servicemarketplace.accountservice.adapters.auth.keycloak.KeycloakJwksValidator;
 import com.wks.servicemarketplace.accountservice.adapters.db.dao.DataSource;
 import com.wks.servicemarketplace.accountservice.adapters.db.dao.DefaultCustomerDao;
 import com.wks.servicemarketplace.accountservice.adapters.events.DefaultCustomerEventsPublisher;
@@ -53,6 +55,7 @@ public class AccountServiceApplication extends ResourceConfig {
                 bindFactory(GraphQLFactory.class, Immediate.class).to(GraphQL.class).in(Immediate.class);
                 bind(DefaultCustomerDao.class).to(CustomerDao.class);
                 bind(DefaultCustomerEventsPublisher.class).to(CustomerEventsPublisher.class);
+                bindFactory(TokenValidatorFactory.class, Immediate.class).to(TokenValidator.class).in(Immediate.class);
 
                 // User Provider Factory must be request scoped, within a singleton.
                 // In order to achieve this with Jersey, a proxy object is needed.

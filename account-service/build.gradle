@@ -65,6 +65,9 @@ dependencies {
     implementation 'com.graphql-java:graphql-java-tools:3.2.0'
     implementation "io.gqljf:graphql-java-federation:0.1.16" // jCenter
 
+    // JWK
+    implementation "org.bitbucket.b_c:jose4j:0.7.2"
+
     testImplementation group: 'junit', name: 'junit', version: '4.12'
     testCompileOnly 'org.projectlombok:lombok:1.18.12'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.12'

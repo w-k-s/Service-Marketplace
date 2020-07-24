@@ -1,5 +1,7 @@
 package com.wks.servicemarketplace.accountservice.adapters.auth;
 
+import com.wks.servicemarketplace.accountservice.core.auth.User;
+
 import javax.ws.rs.core.SecurityContext;
 import java.security.Principal;
 
