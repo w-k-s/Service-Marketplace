@@ -2,9 +2,9 @@ package com.wks.servicemarketplace.authservice
 
 import com.wks.servicemarketplace.authservice.adapters.keycloak.KeycloakAdapter
 import com.wks.servicemarketplace.authservice.adapters.web.resources.AuthResource
-import com.wks.servicemarketplace.authservice.config.ObjectMapperProvider
+import com.wks.servicemarketplace.authservice.config.*
 import com.wks.servicemarketplace.authservice.core.IAMAdapter
-import org.glassfish.jersey.internal.inject.AbstractBinder
+import org.glassfish.hk2.utilities.binding.AbstractBinder
 import org.glassfish.jersey.jetty.JettyHttpContainerFactory
 import org.glassfish.jersey.server.ResourceConfig
 import org.slf4j.LoggerFactory
@@ -33,6 +33,8 @@ class AuthServiceApplication : ResourceConfig() {
     private fun registerResources() {
         register(object : AbstractBinder() {
             override fun configure() {
+                bindFactory(ApplicationParametersFactory::class.java).to(ApplicationParameters::class.java)
+                bindFactory(KeycloakConfigurationFactory::class.java).to(KeycloakConfiguration::class.java)
                 bind(KeycloakAdapter::class.java).to(IAMAdapter::class.java)
             }
         })

@@ -2,6 +2,7 @@ package com.wks.servicemarketplace.authservice.adapters.keycloak
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.wks.servicemarketplace.authservice.config.KeycloakConfiguration
 import com.wks.servicemarketplace.authservice.core.*
 import org.apache.http.client.entity.UrlEncodedFormEntity
 import org.apache.http.client.methods.HttpPost
@@ -19,9 +20,10 @@ import org.keycloak.representations.idm.UserRepresentation
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.nio.charset.StandardCharsets
+import javax.inject.Inject
 
 
-class KeycloakAdapter : IAMAdapter {
+class KeycloakAdapter @Inject constructor(private val config: KeycloakConfiguration) : IAMAdapter {
 
     companion object {
         val LOGGER: Logger = LoggerFactory.getLogger(KeycloakAdapter::class.java)
@@ -34,15 +36,20 @@ class KeycloakAdapter : IAMAdapter {
     private val clientId: String
 
     init {
+        val authEndpoint = URIBuilder(config.serverUrl)
+                .setPath("auth")
+                .build()
+                .toString()
+
         val keycloak = KeycloakBuilder.builder()
-                .serverUrl("http://localhost:8180/auth")
-                .realm("ServiceMarketplace")
+                .serverUrl(authEndpoint)
+                .realm(config.realm)
                 .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
-                .clientId("admin-cli")
-                .clientSecret("254461e0-a74b-4756-8ab0-4a8e941c0f09")
+                .clientId(config.adminId)
+                .clientSecret(config.adminSecret)
                 .build()
 
-        realmResource = keycloak.realm("ServiceMarketplace")
+        realmResource = keycloak.realm(config.realm)
         objectMapper = ObjectMapper()
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
@@ -53,7 +60,7 @@ class KeycloakAdapter : IAMAdapter {
         // 4. Select `Service Accunt Roles`
         // 5. From Client Roles, select realm `realm-management`
         // 6. Select role `view-clients`
-        val clientRepresentation = realmResource.clients().findByClientId("service-marketplace-app").first()
+        val clientRepresentation = realmResource.clients().findByClientId(config.clientId).first()
         val rolesResource = realmResource.clients().get(clientRepresentation.id).roles()
         customerRoleRepresentation = rolesResource[UserType.CUSTOMER.code].toRepresentation()
         serviceProviderRoleRepresentation = rolesResource[UserType.SERVICE_PROVIDER.code].toRepresentation()
@@ -61,20 +68,17 @@ class KeycloakAdapter : IAMAdapter {
     }
 
     override fun login(credentials: Credentials): KeycloakToken {
-        val uri = URIBuilder()
-                .setScheme("http")
-                .setHost("localhost")
-                .setPort(8180)
-                .setPath("/auth/realms/ServiceMarketplace/protocol/openid-connect/token")
+        val uri = URIBuilder(config.serverUrl)
+                .setPath("/auth/realms/${config.realm}/protocol/openid-connect/token")
                 .build()
 
         val client = HttpClients.createDefault()
         val httpPost = HttpPost(uri)
 
         httpPost.entity = UrlEncodedFormEntity(listOf(
-                BasicNameValuePair("grant_type","password"),
-                BasicNameValuePair("client_id", "service-marketplace-app"),
-                BasicNameValuePair("client_secret", "a5505bca-746d-4b4d-a82d-755bcda7efa8"),
+                BasicNameValuePair("grant_type", "password"),
+                BasicNameValuePair("client_id", config.clientId),
+                BasicNameValuePair("client_secret", config.clientSecret),
                 BasicNameValuePair("username", credentials.username),
                 BasicNameValuePair("password", credentials.password)
         ))
@@ -84,7 +88,7 @@ class KeycloakAdapter : IAMAdapter {
         return objectMapper.readValue(responseBody, KeycloakToken::class.java)
     }
 
-    override fun register(identity: Registration) : Identity{
+    override fun register(identity: Registration): Identity {
         val user = UserRepresentation()
         user.isEnabled = true
         user.username = identity.email
