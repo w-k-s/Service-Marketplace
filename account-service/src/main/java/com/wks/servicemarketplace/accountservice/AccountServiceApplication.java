@@ -56,13 +56,6 @@ public class AccountServiceApplication extends ResourceConfig {
                 bind(DefaultCustomerEventsPublisher.class).to(CustomerEventsPublisher.class);
                 bindFactory(TokenValidatorFactory.class, Immediate.class).to(TokenValidator.class).in(Immediate.class);
 
-                // User Provider Factory must be request scoped within a singleton.
-                // In order to achieve this with Jersey, a proxy object is needed.
-                bindFactory(UserProviderFactory.class)
-                        .proxy(true) // proxy cause a dynamic proxy to be created. So every time you access the service, it will be a proxy.
-                        .proxyForSameScope(false) // if the parent is in the same scope, i.e a request scope, don't make it a proxy, just use the real object
-                        .to(User.class)
-                        .in(RequestScoped.class);
                 bind(CreateCustomerUseCase.class).to(CreateCustomerUseCase.class);
                 bind(AddAddressUseCase.class).to(AddAddressUseCase.class);
                 bind(FindAddressByCustomerUuidUseCase.class).to(FindAddressByCustomerUuidUseCase.class);

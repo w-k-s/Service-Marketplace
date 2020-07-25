@@ -10,6 +10,7 @@ import org.jose4j.jwk.JsonWebKey;
 import org.jose4j.jws.AlgorithmIdentifiers;
 import org.jose4j.jwt.JwtClaims;
 import org.jose4j.jwt.MalformedClaimException;
+import org.jose4j.jwt.consumer.ErrorCodeValidator;
 import org.jose4j.jwt.consumer.InvalidJwtException;
 import org.jose4j.jwt.consumer.JwtConsumer;
 import org.jose4j.jwt.consumer.JwtConsumerBuilder;
@@ -19,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class KeycloakJwksValidator implements TokenValidator {
 
@@ -46,7 +48,7 @@ public class KeycloakJwksValidator implements TokenValidator {
     }
 
     @Override
-    public KeycloakUser getUserIfValid(String token) {
+    public KeycloakUser getUserIfValid(String token) throws InvalidTokenException {
         try {
             final JwtClaims claims = consumer.processToClaims(token);
 
@@ -63,13 +65,19 @@ public class KeycloakJwksValidator implements TokenValidator {
                     .build();
         } catch (InvalidJwtException e) {
             LOGGER.error("Invalid JWT Token: {}", e.getMessage(), e);
-            throw new InvalidTokenException(e.getMessage(), e);
+
+            final String message = e.getErrorDetails()
+                    .stream()
+                    .map(ErrorCodeValidator.Error::getErrorMessage)
+                    .collect(Collectors.joining(","));
+
+            throw new InvalidTokenException(message, e);
         } catch (MalformedClaimException e) {
             LOGGER.error("Invalid Claim: {}", e.getMessage(), e);
-            throw new InvalidTokenException("Failed to parse claims", e);
+            throw new InvalidTokenException("Token's claims could not be read", e);
         } catch (JsonProcessingException e) {
             LOGGER.error("Failed to process roles: {}", e.getMessage(), e);
-            throw new InvalidTokenException("Failed to parse roles", e);
+            throw new InvalidTokenException("Token's roles could not be read", e);
         }
     }
 

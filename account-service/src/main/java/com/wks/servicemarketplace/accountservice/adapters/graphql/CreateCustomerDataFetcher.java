@@ -31,6 +31,7 @@ public class CreateCustomerDataFetcher implements DataFetcher<CustomerResponse> 
             return useCase.execute(CustomerRequest.builder()
                     .firstName(environment.getArgument("firstName"))
                     .lastName(environment.getArgument("lastName"))
+                    .user(environment.getContext())
                     .build());
         } catch (UseCaseException e) {
             e.printStackTrace();

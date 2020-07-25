@@ -26,30 +26,27 @@ public class CreateCustomerUseCase implements UseCase<CustomerRequest, CustomerR
 
     private final CustomerDao customerDao;
     private final CustomerEventsPublisher customerEventsPublisher;
-    private final Provider<User> userProvider;
 
     @Inject
     public CreateCustomerUseCase(CustomerDao customerDao,
-                                 CustomerEventsPublisher customerEventsPublisher,
-                                 Provider<User> userProvider) {
+                                 CustomerEventsPublisher customerEventsPublisher) {
         this.customerDao = customerDao;
         this.customerEventsPublisher = customerEventsPublisher;
-        this.userProvider = userProvider;
     }
 
     @Override
     public CustomerResponse execute(CustomerRequest customerRequest) throws UseCaseException {
-        AuthorizationUtils.checkRole(userProvider, "Customer");
-
         Connection connection = null;
         try {
+            AuthorizationUtils.checkRole(customerRequest.getUser(), "Customer");
+
             connection = TransactionUtils.beginTransaction(customerDao.getConnection());
 
             ResultWithEvents<Customer, CustomerCreatedEvent> customerAndEvents = Customer.create(
                     customerDao.newCustomerExternalId(connection),
                     customerRequest.getFirstName(),
                     customerRequest.getLastName(),
-                    userProvider.get().getUsername()
+                    customerRequest.getUser().getUsername()
             );
             final Customer customer = customerAndEvents.getResult();
 

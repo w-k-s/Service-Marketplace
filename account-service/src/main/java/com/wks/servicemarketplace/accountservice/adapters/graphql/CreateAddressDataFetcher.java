@@ -1,17 +1,10 @@
 package com.wks.servicemarketplace.accountservice.adapters.graphql;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wks.servicemarketplace.accountservice.core.usecase.UseCaseException;
 import com.wks.servicemarketplace.accountservice.core.usecase.address.AddAddressUseCase;
 import com.wks.servicemarketplace.accountservice.core.usecase.address.AddressRequest;
 import com.wks.servicemarketplace.accountservice.core.usecase.address.AddressResponse;
-import com.wks.servicemarketplace.accountservice.core.usecase.customer.CreateCustomerUseCase;
-import com.wks.servicemarketplace.accountservice.core.usecase.customer.CustomerRequest;
-import com.wks.servicemarketplace.accountservice.core.usecase.customer.CustomerResponse;
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
-import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,6 +40,7 @@ public class CreateAddressDataFetcher implements DataFetcher<AddressResponse> {
                     .country(request.getCountry())
                     .latitude(request.getLatitude())
                     .longitude(request.getLongitude())
+                    .user(environment.getContext())
                     .build());
         } catch (Exception e) {
             throw new RuntimeException(e);

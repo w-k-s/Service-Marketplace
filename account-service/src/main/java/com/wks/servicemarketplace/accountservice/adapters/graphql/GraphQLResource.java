@@ -12,8 +12,10 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,20 +36,29 @@ public class GraphQLResource {
     @GET
     @Path("/graphql")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response query(@QueryParam("query") final String query) {
-        ExecutionResult data = filterGraphQLErrors(graphQL.execute(query));
+    public Response query(@QueryParam("query") final String query,
+                          @Context SecurityContext securityContext) {
+        final ExecutionInput executionInput = ExecutionInput.newExecutionInput()
+                .query(query)
+                .context(securityContext.getUserPrincipal())
+                .build();
+        ExecutionResult data = filterGraphQLErrors(graphQL.execute(executionInput));
         return Response.ok(data).build();
     }
 
     @POST
     @Path("/graphql")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response mutation(final GraphQLRequest graphQLRequest) {
-        ExecutionResult result = filterGraphQLErrors(graphQL.execute(
-                graphQLRequest.getQuery(),
-                graphQLRequest.getOperationName(),
-                null,
-                graphQLRequest.getVariables()));
+    public Response mutation(final GraphQLRequest graphQLRequest,
+                             @Context SecurityContext securityContext) {
+        final ExecutionInput executionInput = ExecutionInput.newExecutionInput()
+                .query(graphQLRequest.getQuery())
+                .operationName(graphQLRequest.getOperationName())
+                .variables(graphQLRequest.getVariables())
+                .context(securityContext.getUserPrincipal())
+                .build();
+
+        ExecutionResult result = filterGraphQLErrors(graphQL.execute(executionInput));
         return Response.ok(result).build();
     }
 

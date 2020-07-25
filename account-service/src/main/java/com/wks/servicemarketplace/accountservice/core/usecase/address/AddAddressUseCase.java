@@ -29,28 +29,24 @@ public class AddAddressUseCase implements UseCase<AddressRequest, AddressRespons
 
     private final CustomerDao customerDao;
     private final CustomerEventsPublisher customerEventsPublisher;
-    private final Provider<User> userProvider;
 
     @Inject
     public AddAddressUseCase(CustomerDao customerDao,
-                             CustomerEventsPublisher customerEventsPublisher,
-                             Provider<User> userProvider) {
+                             CustomerEventsPublisher customerEventsPublisher) {
         this.customerDao = customerDao;
         this.customerEventsPublisher = customerEventsPublisher;
-        this.userProvider = userProvider;
     }
 
     @Override
     public AddressResponse execute(AddressRequest request) throws UseCaseException {
-        AuthorizationUtils.checkRole(userProvider, "Customer");
-
         Connection connection = null;
         try {
+            AuthorizationUtils.checkRole(request.getUser(), "Customer");
 
             connection = TransactionUtils.beginTransaction(customerDao.getConnection());
             final ResultWithEvents<Address, AddressAddedEvent> addressWithEvents = Address.create(
                     customerDao.newAddressExternalId(connection),
-                    request.getCustomerExternalId(), // should be from token
+                    request.getCustomerExternalId(),
                     request.getName(),
                     request.getLine1(),
                     request.getLine2(),
@@ -58,7 +54,7 @@ public class AddAddressUseCase implements UseCase<AddressRequest, AddressRespons
                     new CountryCode(request.getCountry()),
                     request.getLatitude(),
                     request.getLongitude(),
-                    "John Doe" // from token
+                    request.getUser().getUsername()
             );
             final Address address = addressWithEvents.getResult();
 

@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.UUID;
 
 @Value
+@AllArgsConstructor
 public class Address {
 
     @NonNull
