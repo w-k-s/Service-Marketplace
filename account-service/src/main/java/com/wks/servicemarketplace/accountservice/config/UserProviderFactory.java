@@ -1,7 +1,6 @@
 package com.wks.servicemarketplace.accountservice.config;
 
-import com.wks.servicemarketplace.accountservice.adapters.auth.DefaultSecurityContextUserProvider;
-import com.wks.servicemarketplace.accountservice.core.auth.UserProvider;
+import com.wks.servicemarketplace.accountservice.core.auth.User;
 import org.glassfish.hk2.api.Factory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,11 +10,11 @@ import javax.ws.rs.core.SecurityContext;
 import java.security.Principal;
 import java.util.Optional;
 
-public class UserProviderFactory implements Factory<UserProvider> {
+public class UserProviderFactory implements Factory<User> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserProviderFactory.class);
 
-    private SecurityContext securityContext;
+    private User user;
 
     public UserProviderFactory(@Context SecurityContext securityContext) {
         LOGGER.info("Creating UserProviderFactory with securityContext for '{}'",
@@ -23,16 +22,19 @@ public class UserProviderFactory implements Factory<UserProvider> {
                         .map(SecurityContext::getUserPrincipal)
                         .map(Principal::getName)
                         .orElse(null));
-        this.securityContext = securityContext;
+
+        this.user = (User) Optional.ofNullable(securityContext)
+                .map(SecurityContext::getUserPrincipal)
+                .orElse(null);
     }
 
     @Override
-    public UserProvider provide() {
-        return new DefaultSecurityContextUserProvider(securityContext);
+    public User provide() {
+        return user;
     }
 
     @Override
-    public void dispose(UserProvider instance) {
+    public void dispose(User instance) {
 
     }
 }

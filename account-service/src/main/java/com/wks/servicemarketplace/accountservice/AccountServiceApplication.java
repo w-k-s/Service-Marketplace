@@ -4,14 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.wks.servicemarketplace.accountservice.adapters.auth.TokenValidator;
-import com.wks.servicemarketplace.accountservice.adapters.auth.keycloak.KeycloakJwksValidator;
 import com.wks.servicemarketplace.accountservice.adapters.db.dao.DataSource;
 import com.wks.servicemarketplace.accountservice.adapters.db.dao.DefaultCustomerDao;
 import com.wks.servicemarketplace.accountservice.adapters.events.DefaultCustomerEventsPublisher;
 import com.wks.servicemarketplace.accountservice.adapters.events.DefaultVerifyAddressEventReceiver;
 import com.wks.servicemarketplace.accountservice.adapters.graphql.*;
 import com.wks.servicemarketplace.accountservice.config.*;
-import com.wks.servicemarketplace.accountservice.core.auth.UserProvider;
+import com.wks.servicemarketplace.accountservice.core.auth.User;
 import com.wks.servicemarketplace.accountservice.core.daos.CustomerDao;
 import com.wks.servicemarketplace.accountservice.core.events.CustomerEventsPublisher;
 import com.wks.servicemarketplace.accountservice.core.usecase.address.AddAddressUseCase;
@@ -57,12 +56,12 @@ public class AccountServiceApplication extends ResourceConfig {
                 bind(DefaultCustomerEventsPublisher.class).to(CustomerEventsPublisher.class);
                 bindFactory(TokenValidatorFactory.class, Immediate.class).to(TokenValidator.class).in(Immediate.class);
 
-                // User Provider Factory must be request scoped, within a singleton.
+                // User Provider Factory must be request scoped within a singleton.
                 // In order to achieve this with Jersey, a proxy object is needed.
                 bindFactory(UserProviderFactory.class)
                         .proxy(true) // proxy cause a dynamic proxy to be created. So every time you access the service, it will be a proxy.
                         .proxyForSameScope(false) // if the parent is in the same scope, i.e a request scope, don't make it a proxy, just use the real object
-                        .to(UserProvider.class)
+                        .to(User.class)
                         .in(RequestScoped.class);
                 bind(CreateCustomerUseCase.class).to(CreateCustomerUseCase.class);
                 bind(AddAddressUseCase.class).to(AddAddressUseCase.class);

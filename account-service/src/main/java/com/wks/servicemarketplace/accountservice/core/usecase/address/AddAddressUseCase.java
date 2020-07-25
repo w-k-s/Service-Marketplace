@@ -2,7 +2,7 @@ package com.wks.servicemarketplace.accountservice.core.usecase.address;
 
 import com.google.common.collect.ImmutableMap;
 import com.wks.servicemarketplace.accountservice.core.auth.AuthorizationUtils;
-import com.wks.servicemarketplace.accountservice.core.auth.UserProvider;
+import com.wks.servicemarketplace.accountservice.core.auth.User;
 import com.wks.servicemarketplace.accountservice.core.daos.CustomerDao;
 import com.wks.servicemarketplace.accountservice.core.daos.TransactionUtils;
 import com.wks.servicemarketplace.accountservice.core.events.CustomerEventsPublisher;
@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import java.sql.Connection;
 
 public class AddAddressUseCase implements UseCase<AddressRequest, AddressResponse> {
@@ -28,12 +29,12 @@ public class AddAddressUseCase implements UseCase<AddressRequest, AddressRespons
 
     private final CustomerDao customerDao;
     private final CustomerEventsPublisher customerEventsPublisher;
-    private final UserProvider userProvider;
+    private final Provider<User> userProvider;
 
     @Inject
     public AddAddressUseCase(CustomerDao customerDao,
                              CustomerEventsPublisher customerEventsPublisher,
-                             UserProvider userProvider) {
+                             Provider<User> userProvider) {
         this.customerDao = customerDao;
         this.customerEventsPublisher = customerEventsPublisher;
         this.userProvider = userProvider;
