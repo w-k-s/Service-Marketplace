@@ -42,7 +42,7 @@ public class GraphQLResource {
                 .query(query)
                 .context(securityContext.getUserPrincipal())
                 .build();
-        ExecutionResult data = filterGraphQLErrors(graphQL.execute(executionInput));
+        ExecutionResult data = graphQL.execute(executionInput);
         return Response.ok(data).build();
     }
 
@@ -58,48 +58,7 @@ public class GraphQLResource {
                 .context(securityContext.getUserPrincipal())
                 .build();
 
-        ExecutionResult result = filterGraphQLErrors(graphQL.execute(executionInput));
+        ExecutionResult result = graphQL.execute(executionInput);
         return Response.ok(result).build();
-    }
-
-    private ExecutionResult filterGraphQLErrors(ExecutionResult executionResult) {
-        if (executionResult.getErrors().isEmpty()) {
-            return executionResult;
-        }
-        List<GraphQLError> graphQLErrorList = new ArrayList<>();
-        for (GraphQLError error : executionResult.getErrors()) {
-
-            if (!(error instanceof ExceptionWhileDataFetching)) {
-                graphQLErrorList.add(error);
-                continue;
-            }
-
-            graphQLErrorList.add(getGraphQLError((ExceptionWhileDataFetching) error));
-        }
-        return new ExecutionResultImpl(executionResult.getData(), graphQLErrorList, executionResult.getExtensions());
-    }
-
-    private GraphQLError getGraphQLError(ExceptionWhileDataFetching fetchError) {
-        if (fetchError.getException() instanceof UseCaseException) {
-            return new GraphQLUseCaseError((UseCaseException) fetchError.getException(), fetchError);
-        }
-        if (fetchError.getException().getCause() instanceof UseCaseException) {
-            return new GraphQLUseCaseError((UseCaseException) fetchError.getException().getCause(), fetchError);
-        }
-        if (fetchError.getException() instanceof AuthenticationRequiredException) {
-            return new GraphQLUseCaseError(new UseCaseException(
-                    ErrorType.UNAUTHENTICATED,
-                    fetchError.getException()
-            ), fetchError);
-        }
-        if (fetchError.getException() instanceof UnauthorizedException) {
-            return new GraphQLUseCaseError(new UseCaseException(
-                    ErrorType.UNAUTHORIZED,
-                    fetchError.getMessage(),
-                    ImmutableMap.of("requiredRole", ((UnauthorizedException) fetchError.getException()).getRequiredRole()),
-                    fetchError.getException()
-            ), fetchError);
-        }
-        return new SanitizedError(fetchError);
     }
 }

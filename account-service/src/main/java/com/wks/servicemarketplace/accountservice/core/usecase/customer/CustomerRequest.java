@@ -1,5 +1,7 @@
 package com.wks.servicemarketplace.accountservice.core.usecase.customer;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.wks.servicemarketplace.accountservice.core.auth.User;
 import com.wks.servicemarketplace.accountservice.core.utils.ModelValidator;
 
@@ -7,6 +9,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+@JsonDeserialize(builder = CustomerRequest.Builder.class)
 public class CustomerRequest {
 
     @NotBlank
@@ -39,13 +42,14 @@ public class CustomerRequest {
     }
 
     private static CustomerRequest create(Builder builder) {
-        return ModelValidator.validate(new CustomerRequest(builder), CustomerRequest.class);
+        return ModelValidator.validate(new CustomerRequest(builder));
     }
 
     public static Builder builder() {
         return new Builder();
     }
 
+    @JsonPOJOBuilder(withPrefix = "")
     public static class Builder {
         private String firstName;
         private String lastName;
@@ -62,7 +66,7 @@ public class CustomerRequest {
         }
 
         public Builder lastName(String lastName) {
-            this.lastName = firstName;
+            this.lastName = lastName;
             return this;
         }
 

@@ -34,8 +34,8 @@ public class CreateCustomerDataFetcher implements DataFetcher<CustomerResponse> 
                     .user(environment.getContext())
                     .build());
         } catch (UseCaseException e) {
-            e.printStackTrace();
-            return null;
+            LOGGER.error(e.getMessage(), e);
+            throw new RuntimeException(e);
         }
     }
 }

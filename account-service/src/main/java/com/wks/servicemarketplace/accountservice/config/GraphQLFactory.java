@@ -4,6 +4,7 @@ import com.wks.servicemarketplace.accountservice.adapters.graphql.AddressDataFet
 import com.wks.servicemarketplace.accountservice.adapters.graphql.CreateAddressDataFetcher;
 import com.wks.servicemarketplace.accountservice.adapters.graphql.CreateCustomerDataFetcher;
 import graphql.GraphQL;
+import graphql.execution.AsyncExecutionStrategy;
 import graphql.execution.instrumentation.ChainedInstrumentation;
 import graphql.schema.GraphQLSchema;
 import graphql.schema.idl.RuntimeWiring;
@@ -31,6 +32,8 @@ public class GraphQLFactory implements Factory<GraphQL> {
                 .excludeSubscriptionsFromApolloSdl(true)
                 .build();
         this.graphQL = GraphQL.newGraphQL(transformedGraphQLSchema)
+                .queryExecutionStrategy(new AsyncExecutionStrategy(new GraphQLDataFetcherExceptionHandler()))
+                .mutationExecutionStrategy(new AsyncExecutionStrategy(new GraphQLDataFetcherExceptionHandler()))
                 .instrumentation(new ChainedInstrumentation(Collections.singletonList(new FederatedTracingInstrumentation())))
                 .build();
     }

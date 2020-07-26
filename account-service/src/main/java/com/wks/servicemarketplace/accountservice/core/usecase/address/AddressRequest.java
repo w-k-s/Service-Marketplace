@@ -1,11 +1,14 @@
 package com.wks.servicemarketplace.accountservice.core.usecase.address;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.wks.servicemarketplace.accountservice.core.auth.User;
 import com.wks.servicemarketplace.accountservice.core.utils.ModelValidator;
 
 import javax.validation.constraints.*;
 import java.math.BigDecimal;
 
+@JsonDeserialize(builder = AddressRequest.Builder.class)
 public class AddressRequest {
 
     /**
@@ -97,13 +100,14 @@ public class AddressRequest {
     }
 
     private static AddressRequest create(Builder builder) {
-        return ModelValidator.validate(new AddressRequest(builder), AddressRequest.class);
+        return ModelValidator.validate(new AddressRequest(builder));
     }
 
     public static Builder builder() {
         return new Builder();
     }
 
+    @JsonPOJOBuilder(withPrefix = "")
     public static class Builder {
         private Long customerExternalId;
         private String name;
