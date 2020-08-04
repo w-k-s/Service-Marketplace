@@ -1,10 +1,13 @@
 package com.wks.servicesmarketplace.jobservice.core.usecases.serviceorder
 
-class ServiceOrderRequest {
-    var customerExternalId: Long = 0
-    var addressExternalId: Long = 0
-    var serviceCategoryId: Long = 0
-    var title: String? = null
-    var description: String? = null
-    var orderDateTime: String? = null
-}
+import com.wks.servicesmarketplace.jobservice.core.auth.User
+
+data class ServiceOrderRequest(
+        val customerExternalId: Long,
+        val addressExternalId: Long,
+        val serviceCategoryId: Long,
+        val title: String,
+        val description: String,
+        val orderDateTime: String,
+        val user: User
+)

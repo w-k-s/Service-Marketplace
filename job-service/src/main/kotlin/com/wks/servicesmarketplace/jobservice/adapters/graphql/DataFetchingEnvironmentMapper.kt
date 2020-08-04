@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component
 @Component
 class DataFetchingEnvironmentMapper(private val objectMapper: ObjectMapper) {
 
-
     @Throws(JsonProcessingException::class)
     fun <T> getArgument(env: DataFetchingEnvironment, argumentName: String?, clazz: TypeReference<T>?): T {
         val json = objectMapper.writeValueAsString(env.getArgument<T>(argumentName))

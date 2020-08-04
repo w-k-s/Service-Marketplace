@@ -1,5 +1,6 @@
 package com.wks.servicesmarketplace.jobservice.core.usecases.serviceorder
 
+import com.wks.servicesmarketplace.jobservice.core.auth.Authorization
 import com.wks.servicesmarketplace.jobservice.core.exceptions.ErrorType
 import com.wks.servicesmarketplace.jobservice.core.exceptions.UseCaseException
 import com.wks.servicesmarketplace.jobservice.core.models.serviceorder.commands.CreateServiceOrderCommand
@@ -11,6 +12,7 @@ import com.wks.servicesmarketplace.jobservice.core.usecases.UseCase
 import org.axonframework.commandhandling.callbacks.LoggingCallback
 import org.axonframework.commandhandling.gateway.CommandGateway
 import org.axonframework.eventhandling.EventHandler
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
 import java.time.ZonedDateTime
 import java.util.*
@@ -20,8 +22,9 @@ class CreateServiceOrderUseCase(private val commandGateway: CommandGateway,
                                 private val serviceOrderQueryRepository: ServiceOrderQueryRepository,
                                 private val customerAddressQueryRepository: CustomerAddressQueryRepository) : UseCase<ServiceOrderRequest, OrderIdResponse> {
 
+    @PreAuthorize("hasRole('ROLE_CUSTOMER')")
     override fun execute(request: ServiceOrderRequest): OrderIdResponse {
-
+        Authorization.hasRole(request.user, "Customer")
         val address = customerAddressQueryRepository.findByExternalIdAndCustomerExternalId(
                 request.addressExternalId,
                 request.customerExternalId
@@ -49,10 +52,8 @@ class CreateServiceOrderUseCase(private val commandGateway: CommandGateway,
                         address.version
                 ),
                 ZonedDateTime.parse(request.orderDateTime),
-                "Joe Doe" // TODO get from principal
+                request.user.username
         ), LoggingCallback.INSTANCE)
-
-        // TODO: start saga
 
         return OrderIdResponse(orderId)
     }

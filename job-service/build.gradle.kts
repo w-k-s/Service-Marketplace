@@ -29,7 +29,13 @@ repositories {
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.hibernate.validator:hibernate-validator:6.0.16.Final")
+
+	implementation("org.keycloak:keycloak-spring-boot-starter:11.0.0")
+//	implementation("org.keycloak:keycloak-adapter-bom:11.0.0"){
+//
+//	}
 
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310") // adds support for ZonedDateTime on Jacksom
@@ -44,6 +50,9 @@ dependencies {
 	implementation("com.graphql-java-kickstart:graphql-spring-boot-starter:7.1.0")
 	implementation("com.graphql-java-kickstart:graphiql-spring-boot-starter:7.1.0")
 	implementation("com.apollographql.federation:federation-graphql-java-support:0.5.0") // jCenter
+
+	// JWK
+	implementation("org.bitbucket.b_c:jose4j:0.7.2")
 
 	runtimeOnly("org.postgresql:postgresql")
 

@@ -1,11 +1,8 @@
 package com.wks.servicemarketplace.accountservice.adapters.graphql;
 
-import com.google.common.collect.ImmutableMap;
-import com.wks.servicemarketplace.accountservice.core.exceptions.AuthenticationRequiredException;
-import com.wks.servicemarketplace.accountservice.core.exceptions.UnauthorizedException;
-import com.wks.servicemarketplace.accountservice.core.usecase.UseCaseException;
-import com.wks.servicemarketplace.accountservice.core.usecase.errors.ErrorType;
-import graphql.*;
+import graphql.ExecutionInput;
+import graphql.ExecutionResult;
+import graphql.GraphQL;
 import org.glassfish.jersey.process.internal.RequestScoped;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,8 +13,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
-import java.util.ArrayList;
-import java.util.List;
 
 @Path("/")
 @RequestScoped

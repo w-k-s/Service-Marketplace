@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component
 class GetServiceOrderByIdDataFetcher(val serviceOrderByIdUseCase: GetServiceOrderByIdUseCase) : DataFetcher<ServiceOrderResponse> {
 
     override fun get(environment: DataFetchingEnvironment?): ServiceOrderResponse {
+
         val query = GetServiceOrderByIdQuery(environment!!.getArgument("orderId"))
         return serviceOrderByIdUseCase.execute(query)
     }
