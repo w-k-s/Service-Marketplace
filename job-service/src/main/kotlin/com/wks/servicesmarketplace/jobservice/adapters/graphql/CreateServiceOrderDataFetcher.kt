@@ -1,5 +1,6 @@
 package com.wks.servicesmarketplace.jobservice.adapters.graphql
 
+import com.wks.servicesmarketplace.jobservice.core.auth.AuthorizationException
 import com.wks.servicesmarketplace.jobservice.core.auth.User
 import com.wks.servicesmarketplace.jobservice.core.usecases.serviceorder.CreateServiceOrderUseCase
 import com.wks.servicesmarketplace.jobservice.core.usecases.serviceorder.OrderIdResponse
@@ -15,7 +16,7 @@ class CreateServiceOrderDataFetcher(val createServiceOrderUseCase: CreateService
     override fun get(environment: DataFetchingEnvironment): OrderIdResponse {
         val order = environment.getArgument<Map<String,Any>>("order")
         val user = environment.getContext<User>()
-        return createServiceOrderUseCase.execute(ServiceOrderRequest(
+        return createServiceOrderUseCase.execute(ServiceOrderRequest.create(
                 (order["customerExternalId"] as Int).toLong(),
                 (order["addressExternalId"] as Int).toLong(),
                 (order["serviceCategoryId"] as Int).toLong(),

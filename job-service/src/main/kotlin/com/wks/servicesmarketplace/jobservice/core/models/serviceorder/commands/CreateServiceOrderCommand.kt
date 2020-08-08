@@ -14,7 +14,7 @@ class CreateServiceOrderCommand(@field:TargetAggregateIdentifier @field:NotBlank
                                 @field:NotBlank @field:Length(min = 30, max = 255) var description: String?,
                                 @field:NotNull var address: Address?,
                                 @field:NotNull @field:ServiceOrderDateTime var orderDateTime: ZonedDateTime?,
-                                @field:NotBlank var createdBy: String?){
+                                @field:NotBlank var createdBy: String?) {
     class Address(
             @field:NotNull val externalId: Long?,
             @field:NotBlank val name: String?,

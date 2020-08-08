@@ -22,22 +22,22 @@ class CreateServiceOrderUseCase(private val commandGateway: CommandGateway,
                                 private val serviceOrderQueryRepository: ServiceOrderQueryRepository,
                                 private val customerAddressQueryRepository: CustomerAddressQueryRepository) : UseCase<ServiceOrderRequest, OrderIdResponse> {
 
-    @PreAuthorize("hasRole('ROLE_CUSTOMER')")
     override fun execute(request: ServiceOrderRequest): OrderIdResponse {
         Authorization.hasRole(request.user, "Customer")
+
         val address = customerAddressQueryRepository.findByExternalIdAndCustomerExternalId(
-                request.addressExternalId,
-                request.customerExternalId
-        ) ?: throw UseCaseException(ErrorType.ADDRESS_NOT_FOUND, "Address not found",userInfo = mapOf(
-            "addressId" to request.addressExternalId.toString(),
-            "customerId" to request.customerExternalId.toString()
+                request.addressExternalId!!,
+                request.customerExternalId!!
+        ) ?: throw UseCaseException(ErrorType.ADDRESS_NOT_FOUND, "Address not found", userInfo = mapOf(
+                "addressId" to request.addressExternalId.toString(),
+                "customerId" to request.customerExternalId.toString()
         ))
 
         val orderId = UUID.randomUUID().toString()
         commandGateway.send(CreateServiceOrderCommand(
                 orderId,
                 request.customerExternalId,
-                request.serviceCategoryId,
+                request.serviceCategoryId!!,
                 request.title,
                 request.description,
                 CreateServiceOrderCommand.Address(
@@ -52,7 +52,7 @@ class CreateServiceOrderUseCase(private val commandGateway: CommandGateway,
                         address.version
                 ),
                 ZonedDateTime.parse(request.orderDateTime),
-                request.user.username
+                request.user!!.username
         ), LoggingCallback.INSTANCE)
 
         return OrderIdResponse(orderId)
