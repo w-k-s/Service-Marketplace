@@ -1,9 +1,12 @@
 package com.wks.servicemarketplace.authservice
 
+import com.wks.servicemarketplace.authservice.adapters.graphql.LoginDataFetcher
+import com.wks.servicemarketplace.authservice.adapters.graphql.RegisterDataFetcher
 import com.wks.servicemarketplace.authservice.adapters.keycloak.KeycloakAdapter
-import com.wks.servicemarketplace.authservice.adapters.web.resources.AuthResource
+import com.wks.servicemarketplace.authservice.adapters.web.resources.GraphQLResource
 import com.wks.servicemarketplace.authservice.config.*
 import com.wks.servicemarketplace.authservice.core.IAMAdapter
+import graphql.GraphQL
 import org.glassfish.hk2.utilities.binding.AbstractBinder
 import org.glassfish.jersey.jetty.JettyHttpContainerFactory
 import org.glassfish.jersey.server.ResourceConfig
@@ -35,11 +38,15 @@ class AuthServiceApplication : ResourceConfig() {
             override fun configure() {
                 bindFactory(ApplicationParametersFactory::class.java).to(ApplicationParameters::class.java)
                 bindFactory(KeycloakConfigurationFactory::class.java).to(KeycloakConfiguration::class.java)
+                bindFactory(GraphQLFactory::class.java).to(GraphQL::class.java)
+                bindFactory(GraphQLFactory::class.java).to(GraphQL::class.java)
+                bind(LoginDataFetcher::class.java).to(LoginDataFetcher::class.java)
+                bind(RegisterDataFetcher::class.java).to(RegisterDataFetcher::class.java)
                 bind(KeycloakAdapter::class.java).to(IAMAdapter::class.java)
             }
         })
         register(ObjectMapperProvider::class.java)
-        register(AuthResource::class.java)
+        register(GraphQLResource::class.java)
     }
 
     fun run() {

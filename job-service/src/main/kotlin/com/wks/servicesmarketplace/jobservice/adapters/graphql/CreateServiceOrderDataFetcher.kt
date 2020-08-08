@@ -14,16 +14,16 @@ import java.math.BigInteger
 class CreateServiceOrderDataFetcher(val createServiceOrderUseCase: CreateServiceOrderUseCase) : DataFetcher<OrderIdResponse> {
 
     override fun get(environment: DataFetchingEnvironment): OrderIdResponse {
-        val order = environment.getArgument<Map<String,Any>>("order")
+        val order = environment.getArgument<Map<String, Any>>("order")
         val user = environment.getContext<User>()
-        return createServiceOrderUseCase.execute(ServiceOrderRequest.create(
-                (order["customerExternalId"] as Int).toLong(),
-                (order["addressExternalId"] as Int).toLong(),
-                (order["serviceCategoryId"] as Int).toLong(),
-                order["title"] as String,
-                order["description"] as String,
-                order["orderDateTime"] as String,
-                user
-        ))
+        return createServiceOrderUseCase.execute(ServiceOrderRequest.Builder()
+                .customerExternalId((order["customerExternalId"] as Int).toLong())
+                .addressExternalId((order["addressExternalId"] as Int).toLong())
+                .serviceCategoryId((order["serviceCategoryId"] as Int).toLong())
+                .title(order["title"] as String)
+                .description(order["description"] as String)
+                .orderDateTime(order["orderDateTime"] as String)
+                .user(user)
+                .build())
     }
 }

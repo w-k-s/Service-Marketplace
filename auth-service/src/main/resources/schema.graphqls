@@ -4,16 +4,15 @@ input SignInRequest {
 }
 
 type SignInResponse {
-    username: String!
-    token: String!
+    accessToken: String!
+    refreshToken: String!
 }
 
 input SignUpRequest{
     firstName: String!
     lastName: String!
     email: String!
-    username: String!
-    enabled: Boolean!
+    password: String!
     userType: UserType!
 }
 
@@ -23,12 +22,16 @@ enum UserType {
 }
 
 type SignUpResponse{
-    username: String!
+    id: String!
+}
+
+type Query{
+
 }
 
 type Mutation {
     signIn(data: SignInRequest!): SignInResponse!
-    signUp(data: SignUpRequest!): SignUpResonse
+    signUp(data: SignUpRequest!): SignUpResponse
 }
 
 schema {

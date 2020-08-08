@@ -7,6 +7,7 @@ version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
+    jcenter()
 }
 
 dependencies {
@@ -19,6 +20,11 @@ dependencies {
     implementation("ch.qos.logback:logback-core:1.2.3")
     implementation("org.slf4j:slf4j-log4j12:1.7.30")
 
+    // Validation
+    implementation("org.glassfish:javax.el:3.0.0")
+    implementation("javax.el:javax.el-api:3.0.0")
+    implementation("org.hibernate:hibernate-validator:6.1.5.Final")
+
     // Keycloak
     implementation("org.keycloak:keycloak-admin-client:10.0.2")
 
@@ -27,6 +33,11 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.0") // Support for java 8's time API
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.11.1")
     implementation("javax.activation:activation:1.1.1") // Needed by jackson-jaxrs-json-provider
+
+    // GraphQL
+    implementation("com.graphql-java:graphql-java:14.1")
+    implementation("com.graphql-java:graphql-java-tools:5.2.4")
+    implementation("io.gqljf:graphql-java-federation:0.1.16") // jCenter
 
     // Apache HttpClient
     implementation("org.apache.httpcomponents:httpclient:4.5.12")
