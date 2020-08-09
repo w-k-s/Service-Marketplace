@@ -1,5 +1,6 @@
 package com.wks.servicemarketplace.authservice.adapters.web.resources
 
+import com.wks.servicemarketplace.authservice.adapters.graphql.ApolloExecutionResult
 import graphql.ExecutionInput
 import graphql.ExecutionResult
 import graphql.GraphQL
@@ -24,7 +25,7 @@ class GraphQLResource @Inject constructor(private val graphQL: GraphQL) {
                 .variables(request.variables ?: emptyMap())
                 .build()
 
-        val data: ExecutionResult = graphQL.execute(executionInput)
+        val data: ExecutionResult = ApolloExecutionResult(graphQL.execute(executionInput))
         return Response.ok(data).build()
     }
 
@@ -32,7 +33,7 @@ class GraphQLResource @Inject constructor(private val graphQL: GraphQL) {
     @Path("/graphql")
     @Produces(MediaType.APPLICATION_JSON)
     fun get(query: String): Response {
-        val data: ExecutionResult = graphQL.execute(query)
+        val data: ExecutionResult = ApolloExecutionResult(graphQL.execute(query))
         return Response.ok(data).build()
     }
 }

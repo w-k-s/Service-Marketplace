@@ -3,12 +3,15 @@ const { ApolloGateway, RemoteGraphQLDataSource } = require("@apollo/gateway");
 
 class AuthenticatedDataSource extends RemoteGraphQLDataSource{
     willSendRequest({request, context}){
-        request.http.headers.set('Authorization', context.authHeaderValue);
+        if(context && context.authHeaderValue){
+            request.http.headers.set('Authorization', context.authHeaderValue);
+        }
     }
 }
 
 const gateway = new ApolloGateway({
     serviceList: [
+        {name: "auth-service", url: "http://localhost:8082/graphql"},
         {name: "account-service", url: "http://localhost:8081/graphql"},
         {name: "job-service", url: "http://localhost:8080/graphql"}
     ],
@@ -20,6 +23,7 @@ const gateway = new ApolloGateway({
 const server = new ApolloServer({
     gateway,
     subscriptions: false,
+    debug: false, // disables stacktrace
     context: ({req}) => ({
         authHeaderValue: req.headers.authorization
     })

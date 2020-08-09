@@ -37,7 +37,7 @@ public class GraphQLResource {
                 .query(query)
                 .context(securityContext.getUserPrincipal())
                 .build();
-        ExecutionResult data = graphQL.execute(executionInput);
+        ExecutionResult data = ApolloExecutionResult.of(graphQL.execute(executionInput));
         return Response.ok(data).build();
     }
 
@@ -53,7 +53,7 @@ public class GraphQLResource {
                 .context(securityContext.getUserPrincipal())
                 .build();
 
-        ExecutionResult result = graphQL.execute(executionInput);
+        ExecutionResult result = ApolloExecutionResult.of(graphQL.execute(executionInput));
         return Response.ok(result).build();
     }
 }
