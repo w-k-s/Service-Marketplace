@@ -9,6 +9,8 @@ import graphql.GraphQLError
  * This causes the service to not be detected.
  * As a workaround, ExecutionResult from GraphQL is wrapped in ApolloExecutionResult.
  * ApolloExecutionResult returns null when the errors array is empty.
+ *
+ * https://github.com/apollographql/apollo-client/issues/156
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class ApolloExecutionResult(private val executionResult: ExecutionResult?) : ExecutionResult {

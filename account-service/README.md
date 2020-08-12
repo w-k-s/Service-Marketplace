@@ -31,68 +31,50 @@ The key points are:
 - The `TransactionUtils` class in this project accomplishes the same thing but in a few lines of code that is specific to my needs. It does not need any extra library and certainly not one that uses reflection and proxying.
 
 ## Database Setup
-```postgresql
-CREATE DATABASE account;
 
-CREATE SEQUENCE customer_external_id;
+### On Local Machine
 
-CREATE TABLE IF NOT EXISTS customers(
-	id BIGSERIAL PRIMARY KEY NOT NULL,
-	external_id BIGSERIAL NOT NULL UNIQUE,
-	uuid VARCHAR(64) NOT NULL UNIQUE,
-	first_name VARCHAR(50) NOT NULL,
-	last_name VARCHAR(50) NOT NULL,
-	created_date timestamp without time zone default (now() at time zone 'utc'),
-	created_by VARCHAR(255) NOT NULL,
-	last_modified_date timestamp without time zone default (now() at time zone 'utc'),
-	last_modified_by VARCHAR(255),
-	version INT NOT NULL DEFAULT 0
-);
+1. Connect to your PostgreSQL database and create the `account` database using the command `CREATE DATABASE account`.
 
-CREATE SEQUENCE address_external_id;
+    ```shell script
+    $ psql
+    psql (11.5)
+    Type "help" for help.
+    
+    =# CREATE DATABASE account
+    CREATE DATABASE
+    ```
+2. Create a `gradle.properties` file in the same directory as `build.gradle`.
+3. Provide the following details in the `gradle.properties` file.
 
-CREATE TABLE IF NOT EXISTS addresses(
-	id BIGSERIAL PRIMARY KEY NOT NULL,
-	external_id BIGSERIAL NOT NULL UNIQUE,
-	uuid VARCHAR(64) NOT NULL UNIQUE,
-	customer_external_id BIGSERIAL NOT NULL REFERENCES customers(external_id) ON UPDATE cascade ON DELETE cascade,
-	name VARCHAR(50) NOT NULL check (length(name) >= 2),
-	line_1 VARCHAR(100) NOT NULL check (length(line_1) >= 2),
-	line_2 VARCHAR(100),
-	city VARCHAR(60) NOT NULL check(length(city) >= 2),
-	country_code VARCHAR(2) NOT NULL check(length(country_code) = 2),
-	latitude NUMERIC(9,5) NOT NULL check(latitude >= -90.0 AND latitude <= 90.0),
-    longitude NUMERIC(9,5) NOT NULL check(latitude >= -180.0 AND latitude <= 180.0),
-	created_date timestamp without time zone default (now() at time zone 'utc'),
-	created_by VARCHAR(255) NOT NULL,
-	last_modified_date timestamp without time zone default (now() at time zone 'utc'),
-	last_modified_by VARCHAR(255),
-	version INT NOT NULL DEFAULT 0
-);
+    ```
+    liquibaseTaskPrefix=liquibase
+    mainUrl=jdbc:postgresql://localhost:5432/account
+    username=<DB username>
+    password=<DB Password>
+    runList=main
+    ```
+    **NOTE**: This project uses the liquibase gradle plugin. This plugin creates a Gradle task for each command supported by Liquibase. The `liquibaseTaskPrefix` option will tell the liquibase plugin to capitalize the task name and prefix it with the given prefix. For example, if you put `liquibaseTaskPrefix=liquibase` in `gradle.properties`, then this plugin will create tasks named `liquibaseUpdate`, `liquibaseTag`. `liquibaseTaskPrefix` is optional, but recommended to avoid gradle task name collisions.
 
-create or replace function audit_record()
-returns trigger as $body$
-  begin
-    IF (TG_OP = 'UPDATE') THEN
-        new.version = old.version + 1;
-        new.last_modified_date = now() at time zone 'utc';
-    ELSIF (TG_OP = 'INSERT') THEN
-         new.created_date = now() at time zone 'utc';
-    END IF;
-    return new;
-  end
-$body$
-language plpgsql;
+4. At this point, you've created the database and provided the connection parameters and liquibase configurations in the `gradle.properties` file.
+You can now run the `liquibaseUpdate` command to set up the database:
 
-create trigger audit_customers 
-BEFORE update on customers
-for each row execute procedure audit_record();
-
-create trigger audit_addresses 
-BEFORE update on addresses
-for each row execute procedure audit_record();
-```
-
+    ```shell script
+    ./gradlew liquibaseUpdate
+    ```
+    
+    In case you did not set liquibaseTaskPrefix in the `gradle.properties` file, you would run:
+    
+    ```shell script
+    ./gradlew update
+    ```
+   
+   You can overwrite the parameters in the `gralde.properties` file from the command line
+   
+   ```shell script
+    ./gradlew liquibaseUpdate -PmainUrl=jdbc:postgresql://localhost:5432/account -Pusername=waqqassheikh -Ppassword=7713659 -PrunList=main 
+    ```
+   
 ## Environment Variables
 
 | Environmental Variable | Description                       | Example                                                                            | required |

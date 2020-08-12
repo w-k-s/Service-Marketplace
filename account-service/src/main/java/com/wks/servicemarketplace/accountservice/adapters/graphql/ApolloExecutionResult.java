@@ -11,6 +11,8 @@ import java.util.Map;
  * This causes the service to not be detected.
  * As a workaround, ExecutionResult from GraphQL is wrapped in ApolloExecutionResult.
  * ApolloExecutionResult returns null when the errors array is empty.
+ *
+ * https://github.com/apollographql/apollo-client/issues/156
  */
 class ApolloExecutionResult implements ExecutionResult {
 
