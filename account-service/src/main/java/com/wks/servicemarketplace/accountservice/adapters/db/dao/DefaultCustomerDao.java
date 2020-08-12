@@ -89,6 +89,7 @@ public class DefaultCustomerDao extends BaseDAO implements CustomerDao {
     @Override
     public List<Address> findAddressesByCustomerUuid(Connection connection, String customerUuid) throws SQLException {
         return create(connection)
+                // TODO: Avoid using asterisk
                 .select(table("addresses").as("a").asterisk())
                 .from(table("addresses").as("a"))
                 .leftJoin(table("customers").as("c"))
@@ -101,6 +102,7 @@ public class DefaultCustomerDao extends BaseDAO implements CustomerDao {
     public Optional<Address> findAddressByAddressIdAndCustomerId(Connection connection, long customerId, long addressId) throws SQLException {
         final Address address = create(connection)
                 .select()
+                // TODO: Avoid using asterisk
                 .from(table("addresses"))
                 .where(field("external_id").eq(addressId))
                 .and(field("customer_external_id").eq(customerId))

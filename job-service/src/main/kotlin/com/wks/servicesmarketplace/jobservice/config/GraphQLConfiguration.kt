@@ -2,26 +2,10 @@ package com.wks.servicesmarketplace.jobservice.config
 
 import com.apollographql.federation.graphqljava.Federation
 import com.apollographql.federation.graphqljava.tracing.FederatedTracingInstrumentation
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.wks.servicesmarketplace.jobservice.adapters.graphql.GraphQLSanitizedException
-import com.wks.servicesmarketplace.jobservice.adapters.graphql.GraphQLUseCaseError
-import com.wks.servicesmarketplace.jobservice.core.exceptions.ErrorType
-import com.wks.servicesmarketplace.jobservice.core.exceptions.InvalidStateTransitionException
-import com.wks.servicesmarketplace.jobservice.core.exceptions.UseCaseException
-import graphql.ExceptionWhileDataFetching
+import com.wks.servicesmarketplace.jobservice.adapters.graphql.GraphQLDataFetcherExceptionHandler
 import graphql.GraphQL
-import graphql.GraphQLError
 import graphql.execution.AsyncExecutionStrategy
-import graphql.execution.instrumentation.Instrumentation
-import graphql.kickstart.execution.error.GraphQLErrorHandler
-import graphql.kickstart.tools.ObjectMapperConfigurer
-import graphql.kickstart.tools.SchemaParserOptions
-import graphql.schema.GraphQLSchema
 import graphql.schema.idl.RuntimeWiring
-import org.axonframework.messaging.interceptors.JSR303ViolationException
-import org.axonframework.modelling.command.AggregateNotFoundException
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.core.io.Resource

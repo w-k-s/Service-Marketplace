@@ -1,7 +1,5 @@
-package com.wks.servicesmarketplace.jobservice.config
+package com.wks.servicesmarketplace.jobservice.adapters.graphql
 
-import com.wks.servicesmarketplace.jobservice.adapters.graphql.GraphQLSanitizedException
-import com.wks.servicesmarketplace.jobservice.adapters.graphql.GraphQLUseCaseError
 import com.wks.servicesmarketplace.jobservice.core.exceptions.ErrorType
 import com.wks.servicesmarketplace.jobservice.core.exceptions.InvalidStateTransitionException
 import com.wks.servicesmarketplace.jobservice.core.exceptions.UseCaseException

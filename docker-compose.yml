@@ -20,3 +20,34 @@ services:
       DB_PASSWORD: password
       DB_DATABASE: keycloak
 
+  axonserver:
+    image: axoniq/axonserver
+    hostname: axonserver
+    volumes:
+      - axonserver-data:/data
+      - axonserver-events:/eventdata
+      - axonserver-config:/config:ro
+    ports:
+      - '8024:8024'
+      - '8124:8124'
+      - '8224:8224'
+
+volumes:
+  axonserver-data:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${PWD}/docker-infra/axonserver/data
+      o: bind
+  axonserver-events:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${PWD}/docker-infra/axonserver/events
+      o: bind
+  axonserver-config:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${PWD}/docker-infra/axonserver/config
+      o: bind

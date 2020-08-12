@@ -30,3 +30,7 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Axon ###
+docker-infra/axonserver/events
+docker-infra/axonserver/data

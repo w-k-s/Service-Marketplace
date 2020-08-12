@@ -33,9 +33,6 @@ dependencies {
 	implementation("org.hibernate.validator:hibernate-validator:6.0.16.Final")
 
 	implementation("org.keycloak:keycloak-spring-boot-starter:11.0.0")
-//	implementation("org.keycloak:keycloak-adapter-bom:11.0.0"){
-//
-//	}
 
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310") // adds support for ZonedDateTime on Jacksom
@@ -43,9 +40,7 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
-	implementation("org.axonframework:axon-spring-boot-starter:4.3.4"){
-		exclude("org.axonframework", "axon-server-connector") // to auto configure EmbeddedEventStore (https://docs.axoniq.io/reference-guide/configuring-infrastructure-components/event-processing/event-bus-and-event-store)
-	}
+	implementation("org.axonframework:axon-spring-boot-starter:4.3.4")
 
 	implementation("com.graphql-java-kickstart:graphql-spring-boot-starter:7.1.0")
 	implementation("com.graphql-java-kickstart:graphiql-spring-boot-starter:7.1.0")
