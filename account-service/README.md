@@ -72,7 +72,7 @@ You can now run the `liquibaseUpdate` command to set up the database:
    You can overwrite the parameters in the `gralde.properties` file from the command line
    
    ```shell script
-    ./gradlew liquibaseUpdate -PmainUrl=jdbc:postgresql://localhost:5432/account -Pusername=waqqassheikh -Ppassword=7713659 -PrunList=main 
+    ./gradlew liquibaseUpdate -PmainUrl=jdbc:postgresql://localhost:5432/account -Pusername=john.doe -Ppassword=123456 -PrunList=main 
     ```
    
 ## Environment Variables

@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
 	id("org.springframework.boot") version "2.3.0.RELEASE"
 	id("io.spring.dependency-management") version "1.0.9.RELEASE"
+	id("org.liquibase.gradle") version "2.0.3"
 	kotlin("jvm") version "1.3.72"
 	kotlin("plugin.spring") version "1.3.72"
 	kotlin("plugin.jpa") version "1.3.72"
@@ -49,7 +50,15 @@ dependencies {
 	// JWK
 	implementation("org.bitbucket.b_c:jose4j:0.7.2")
 
+	// PostgreSQL
 	runtimeOnly("org.postgresql:postgresql")
+
+	// Liquibase
+	liquibaseRuntime("org.liquibase:liquibase-core:3.8.1")
+	liquibaseRuntime("javax.xml.bind:jaxb-api:2.3.1")
+	liquibaseRuntime("org.postgresql:postgresql")
+	liquibaseRuntime("ch.qos.logback:logback-core:1.2.3")
+	liquibaseRuntime("ch.qos.logback:logback-classic:1.2.3")
 
 	implementation("org.springframework.boot:spring-boot-starter-amqp")
 
@@ -68,4 +77,17 @@ tasks.withType<KotlinCompile> {
 		freeCompilerArgs = listOf("-Xjsr305=strict")
 		jvmTarget = "1.8"
 	}
+}
+
+liquibase {
+	activities.register("main") {
+		this.arguments = mapOf(
+				"logLevel" to "info",
+				"changeLogFile" to "src/main/resources/liquibase/jobService.changelog.xml",
+				"url" to project.extra.properties["mainUrl"],
+				"username" to project.extra.properties["username"],
+				"password" to project.extra.properties["password"]
+		)
+	}
+	runList = "main"
 }

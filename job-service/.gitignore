@@ -34,3 +34,4 @@ out/
 ### Axon ###
 docker-infra/axonserver/events
 docker-infra/axonserver/data
+gradle.properties
