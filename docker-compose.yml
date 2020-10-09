@@ -13,12 +13,15 @@ services:
     environment:
       KEYCLOAK_USER: admin
       KEYCLOAK_PASSWORD: admin
+      KEYCLOAK_IMPORT: /tmp/service-marketplace-app-realm.json
       DB_VENDOR: postgres
       DB_ADDR: host.docker.internal
       DB_PORT: 5432
       DB_USER: keycloak
       DB_PASSWORD: password
       DB_DATABASE: keycloak
+    volumes:
+    - keycloak:/tmp
 
   axonserver:
     image: axoniq/axonserver
@@ -31,6 +34,25 @@ services:
       - '8024:8024'
       - '8124:8124'
       - '8224:8224'
+
+  account-service:
+    build:
+      context: ./account-service
+      dockerfile: Dockerfile
+    image: wkas/sm-account-service
+    restart: on-failure
+    environment:
+      jdbcUrl: jdbc:postgresql://docker.for.mac.host.internal:5432/account
+      jdbcUsername: waqqassheikh
+      jdbcPassword: 7713659
+      amqpHost: rabbitmq
+      amqpPort: 5672
+      serverHost: http://0.0.0.0
+      serverPort: 8081
+      keycloakKeySetUrl: http://keycloak:8180/auth/realms/ServiceMarketplace/protocol/openid-connect
+    depends_on:
+      - rabbitmq
+      - keycloak
 
 volumes:
   axonserver-data:
@@ -50,4 +72,10 @@ volumes:
     driver_opts:
       type: none
       device: ${PWD}/docker-infra/axonserver/config
+      o: bind
+  keycloak:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${PWD}/docker-infra/keycloak
       o: bind
