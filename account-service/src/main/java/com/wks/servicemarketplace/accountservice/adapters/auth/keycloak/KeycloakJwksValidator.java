@@ -41,10 +41,14 @@ public class KeycloakJwksValidator implements TokenValidator {
     }
 
     public static KeycloakJwksValidator withKeySetFromURL(String keySetURLString, ObjectMapper objectMapper) throws JoseException, IOException {
-        LOGGER.info("Loading keySet From Keycloak");
-        HttpsJwks httpsJwks = new HttpsJwks(keySetURLString);
-        LOGGER.info("Keysets loaded successfully");
-        return new KeycloakJwksValidator(httpsJwks.getJsonWebKeys().get(0), objectMapper);
+        try {
+            LOGGER.info("Loading keySet From Keycloak");
+            HttpsJwks httpsJwks = new HttpsJwks(keySetURLString);
+            return new KeycloakJwksValidator(httpsJwks.getJsonWebKeys().get(0), objectMapper);
+        } catch (Exception e) {
+            LOGGER.error("Failed to load keysets from keycloak", e);
+            throw e;
+        }
     }
 
     @Override

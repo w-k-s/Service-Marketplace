@@ -1,5 +1,6 @@
 package com.wks.servicemarketplace.accountservice;
 
+import com.codahale.metrics.health.HealthCheckRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -11,8 +12,10 @@ import com.wks.servicemarketplace.accountservice.adapters.events.DefaultVerifyAd
 import com.wks.servicemarketplace.accountservice.adapters.graphql.AddressDataFetcher;
 import com.wks.servicemarketplace.accountservice.adapters.graphql.CreateAddressDataFetcher;
 import com.wks.servicemarketplace.accountservice.adapters.graphql.CreateCustomerDataFetcher;
-import com.wks.servicemarketplace.accountservice.adapters.graphql.GraphQLResource;
+import com.wks.servicemarketplace.accountservice.adapters.web.GraphQLResource;
+import com.wks.servicemarketplace.accountservice.adapters.web.HealthResource;
 import com.wks.servicemarketplace.accountservice.config.*;
+import com.wks.servicemarketplace.accountservice.config.healthchecks.HealthChecksFactory;
 import com.wks.servicemarketplace.accountservice.core.daos.CustomerDao;
 import com.wks.servicemarketplace.accountservice.core.events.CustomerEventsPublisher;
 import com.wks.servicemarketplace.accountservice.core.usecase.address.AddAddressUseCase;
@@ -53,6 +56,7 @@ public class AccountServiceApplication extends ResourceConfig {
                 bindFactory(AmqpChannelFactory.class, Immediate.class).to(Channel.class).in(Immediate.class);
                 bindFactory(DefaultVerifyAddressEventReceiverFactory.class, Immediate.class).to(DefaultVerifyAddressEventReceiver.class).in(Immediate.class);
                 bindFactory(GraphQLFactory.class, Immediate.class).to(GraphQL.class).in(Immediate.class);
+                bindFactory(HealthChecksFactory.class, Immediate.class).to(HealthCheckRegistry.class).in(Immediate.class);
                 bind(DefaultCustomerDao.class).to(CustomerDao.class);
                 bind(DefaultCustomerEventsPublisher.class).to(CustomerEventsPublisher.class);
                 bindFactory(TokenValidatorFactory.class, Immediate.class).to(TokenValidator.class).in(Immediate.class);
@@ -67,17 +71,20 @@ public class AccountServiceApplication extends ResourceConfig {
             }
         });
         register(GraphQLResource.class);
+        register(HealthResource.class);
     }
 
-    public void run() throws InterruptedException {
+    public void run() throws Exception {
         final URI uri = UriBuilder
                 .fromUri(System.getenv("serverHost"))
                 .port(Integer.parseInt(System.getenv("serverPort")))
                 .build();
 
-        final Server server = JettyHttpContainerFactory.createServer(uri, this);
+        final Server server = JettyHttpContainerFactory.createServer(uri, this, false);
+
         try {
             LOGGER.info("Started listening on {}:{}", uri.getHost(), uri.getPort());
+            server.start();
             server.join();
         } finally {
             server.destroy();

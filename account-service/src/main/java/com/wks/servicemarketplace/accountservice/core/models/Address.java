@@ -2,16 +2,13 @@ package com.wks.servicemarketplace.accountservice.core.models;
 
 import com.wks.servicemarketplace.accountservice.core.models.events.AddressAddedEvent;
 import com.wks.servicemarketplace.accountservice.core.utils.ModelValidator;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.Value;
 
-import javax.persistence.Column;
 import javax.validation.constraints.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.UUID;

@@ -14,7 +14,7 @@ import java.util.Map;
  *
  * https://github.com/apollographql/apollo-client/issues/156
  */
-class ApolloExecutionResult implements ExecutionResult {
+public class ApolloExecutionResult implements ExecutionResult {
 
     private ExecutionResult executionResult;
 

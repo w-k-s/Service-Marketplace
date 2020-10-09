@@ -1,5 +1,7 @@
-package com.wks.servicemarketplace.accountservice.adapters.graphql;
+package com.wks.servicemarketplace.accountservice.adapters.web;
 
+import com.wks.servicemarketplace.accountservice.adapters.graphql.ApolloExecutionResult;
+import com.wks.servicemarketplace.accountservice.adapters.graphql.GraphQLRequest;
 import graphql.ExecutionInput;
 import graphql.ExecutionResult;
 import graphql.GraphQL;
