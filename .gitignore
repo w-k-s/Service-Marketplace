@@ -31,7 +31,13 @@ out/
 ### VS Code ###
 .vscode/
 
-#axon
+#axon-server files
 axon-server/AxonIQ.pid
 axon-server/axonserver-cli.jar
-axon-server/data/
+axon-server/data/*
+
+#axonserver data volume for docker
+docker-infra/axonserver
+
+#keycloak data volume for docker
+docker-infra/keycloak
