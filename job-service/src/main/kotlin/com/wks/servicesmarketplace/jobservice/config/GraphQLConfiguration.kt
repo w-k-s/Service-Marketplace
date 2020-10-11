@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.core.io.Resource
 import org.springframework.stereotype.Component
+import java.io.BufferedReader
 
 
 @Component
@@ -17,8 +18,9 @@ class GraphQLConfiguration(private val dataFetchers: GraphQLDataFetchers) {
 
 
     @Bean
-    fun graphQL(@Value("classpath:schema.graphqls") sdl: Resource): GraphQL {
-        val schema = Federation.transform(sdl.file, createRuntimeWiring()).build()
+    fun graphQL(): GraphQL {
+        val sdl = javaClass.classLoader.getResourceAsStream("schema.graphqls")!!.bufferedReader().use(BufferedReader::readText)
+        val schema = Federation.transform(sdl, createRuntimeWiring()).build()
         return GraphQL.newGraphQL(schema)
                 .queryExecutionStrategy(AsyncExecutionStrategy(GraphQLDataFetcherExceptionHandler()))
                 .mutationExecutionStrategy(AsyncExecutionStrategy(GraphQLDataFetcherExceptionHandler()))
