@@ -10,6 +10,17 @@ repositories {
     jcenter()
 }
 
+tasks.withType<Jar> {
+    manifest {
+        attributes["Main-Class"] = "com.wks.servicemarketplace.authservice.AuthServiceApplication"
+    }
+    from(sourceSets.main.get().output)
+    dependsOn(configurations.runtimeClasspath)
+    from({
+        configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
+    })
+}
+
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation("org.glassfish.jersey.containers:jersey-container-jetty-http:2.31")
@@ -26,7 +37,7 @@ dependencies {
     implementation("org.hibernate:hibernate-validator:6.1.5.Final")
 
     // Keycloak
-    implementation("org.keycloak:keycloak-admin-client:10.0.2")
+    implementation("org.keycloak:keycloak-admin-client:11.0.2")
 
     // Jackson
     implementation("com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.1") // Jackson Provider for Jax-RS

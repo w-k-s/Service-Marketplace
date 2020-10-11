@@ -7,6 +7,7 @@ import com.wks.servicemarketplace.authservice.adapters.web.resources.GraphQLReso
 import com.wks.servicemarketplace.authservice.config.*
 import com.wks.servicemarketplace.authservice.core.IAMAdapter
 import graphql.GraphQL
+import org.glassfish.hk2.api.Immediate
 import org.glassfish.hk2.utilities.binding.AbstractBinder
 import org.glassfish.jersey.jetty.JettyHttpContainerFactory
 import org.glassfish.jersey.server.ResourceConfig
@@ -25,6 +26,7 @@ class AuthServiceApplication : ResourceConfig() {
                 application.run()
             } catch (e: Exception) {
                 LOGGER.error("Application execution failed", e)
+                throw e
             }
         }
     }
@@ -34,15 +36,16 @@ class AuthServiceApplication : ResourceConfig() {
     }
 
     private fun registerResources() {
+        register(ImmediateFeature::class.java)
         register(object : AbstractBinder() {
             override fun configure() {
-                bindFactory(ApplicationParametersFactory::class.java).to(ApplicationParameters::class.java)
+                bindFactory(ApplicationParametersFactory::class.java, Immediate::class.java).to(ApplicationParameters::class.java).`in`(Immediate::class.java)
                 bindFactory(KeycloakConfigurationFactory::class.java).to(KeycloakConfiguration::class.java)
                 bindFactory(GraphQLFactory::class.java).to(GraphQL::class.java)
                 bindFactory(GraphQLFactory::class.java).to(GraphQL::class.java)
                 bind(LoginDataFetcher::class.java).to(LoginDataFetcher::class.java)
                 bind(RegisterDataFetcher::class.java).to(RegisterDataFetcher::class.java)
-                bind(KeycloakAdapter::class.java).to(IAMAdapter::class.java)
+                bind(KeycloakAdapter::class.java).to(IAMAdapter::class.java).`in`(Immediate::class.java)
             }
         })
         register(ObjectMapperProvider::class.java)
@@ -51,8 +54,8 @@ class AuthServiceApplication : ResourceConfig() {
 
     fun run() {
         val uri = UriBuilder
-                .fromUri("http://localhost")
-                .port("8082".toInt())
+                .fromUri(System.getenv("serverHost"))
+                .port(Integer.parseInt(System.getenv("serverPort")))
                 .build()
 
         val server = JettyHttpContainerFactory.createServer(uri, this)

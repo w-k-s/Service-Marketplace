@@ -49,7 +49,6 @@ class KeycloakAdapter @Inject constructor(private val config: KeycloakConfigurat
                 .clientSecret(config.adminSecret)
                 .build()
 
-        realmResource = keycloak.realm(config.realm)
         objectMapper = ObjectMapper()
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
@@ -60,11 +59,17 @@ class KeycloakAdapter @Inject constructor(private val config: KeycloakConfigurat
         // 4. Select `Service Accunt Roles`
         // 5. From Client Roles, select realm `realm-management`
         // 6. Select role `view-clients`
-        val clientRepresentation = realmResource.clients().findByClientId(config.clientId).first()
-        val rolesResource = realmResource.clients().get(clientRepresentation.id).roles()
-        customerRoleRepresentation = rolesResource[UserType.CUSTOMER.code].toRepresentation()
-        serviceProviderRoleRepresentation = rolesResource[UserType.SERVICE_PROVIDER.code].toRepresentation()
-        clientId = clientRepresentation.id
+        try {
+            realmResource = keycloak.realm(config.realm)
+            val clientRepresentation = realmResource.clients().findByClientId(config.clientId).first()
+            val rolesResource = realmResource.clients().get(clientRepresentation.id).roles()
+            customerRoleRepresentation = rolesResource[UserType.CUSTOMER.code].toRepresentation()
+            serviceProviderRoleRepresentation = rolesResource[UserType.SERVICE_PROVIDER.code].toRepresentation()
+            clientId = clientRepresentation.id
+        } catch (e: Exception) {
+            LOGGER.error("Failed to load keycloak configuration", e)
+            throw e
+        }
     }
 
     override fun login(credentials: Credentials): KeycloakToken {

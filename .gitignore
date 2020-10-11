@@ -40,4 +40,4 @@ axon-server/data/*
 docker-infra/axonserver
 
 #keycloak data volume for docker
-docker-infra/keycloak
+docker-infra/keycloak/hsperfdata_jboss

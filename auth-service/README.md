@@ -25,6 +25,8 @@ GRANT ALL PRIVILEGES ON DATABASE keycloak TO keycloak;
 | keycloakAdminSecret    | Admin Client Secret         | 254461e0-a74b-4756-8ab0-4a8e941c0f09        | true     |
 | keycloakClientId       | Client Id                   | service-marketplace-app                     | true     |
 | keycloakClientSecret   | Client secret               | a5505bca-746d-4b4d-a82d-755bcda7efa8        | true     |
+| serverHost             | Listen Address              | http://localhost                            | true     |
+| serverPort             | Listen Port                 | 8082                                        | true     |
 
 **To View keycloakAdminSecret:**
 

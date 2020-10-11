@@ -7,12 +7,10 @@ services:
       - 15672:15672
 
   keycloak:
-    image: jboss/keycloak
-    ports:
-      - 8180:8080
+    image: jboss/keycloak:11.0.2
     environment:
-      KEYCLOAK_USER: admin
-      KEYCLOAK_PASSWORD: admin
+      #KEYCLOAK_USER: admin
+      #KEYCLOAK_PASSWORD: admin
       KEYCLOAK_IMPORT: /tmp/service-marketplace-app-realm.json
       DB_VENDOR: postgres
       DB_ADDR: host.docker.internal
@@ -20,27 +18,48 @@ services:
       DB_USER: keycloak
       DB_PASSWORD: password
       DB_DATABASE: keycloak
+    ports:
+      - 8180:8080
     volumes:
-    - keycloak:/tmp
+    - ./docker-infra/keycloak:/tmp
 
   axonserver:
     image: axoniq/axonserver
     hostname: axonserver
     volumes:
-      - axonserver-data:/data
-      - axonserver-events:/eventdata
-      - axonserver-config:/config:ro
+      - ./docker-infra/axonserver/data:/data
+      - ./docker-infra/axonserver/events:/eventdata
+      - ./docker-infra/axonserver/config:/config:ro
     ports:
       - '8024:8024'
       - '8124:8124'
       - '8224:8224'
+
+  auth-service:
+    build:
+      context: ./auth-service
+      dockerfile: Dockerfile
+    image: wkas/sm-auth-service
+    restart: always
+    environment:
+      keycloakServerUrl: http://keycloak:8080
+      keycloakRealm: ServiceMarket
+      keycloakAdminId: admin-cli
+      keycloakAdminSecret: 254461e0-a74b-4756-8ab0-4a8e941c0f09
+      keycloakClientId: service-marketplace-app
+      keycloakClientSecret: a5505bca-746d-4b4d-a82d-755bcda7efa8
+      serverHost: http://0.0.0.0
+      serverPort: 8082
+    ports:
+      - 8082:8082
+    entrypoint: ["./wait-for-it.sh", "keycloak:8080","-t","0","--strict","--","java","-jar","/app.jar"]
 
   account-service:
     build:
       context: ./account-service
       dockerfile: Dockerfile
     image: wkas/sm-account-service
-    restart: on-failure
+    restart: always
     environment:
       jdbcUrl: jdbc:postgresql://docker.for.mac.host.internal:5432/account
       jdbcUsername: waqqassheikh
@@ -49,33 +68,31 @@ services:
       amqpPort: 5672
       serverHost: http://0.0.0.0
       serverPort: 8081
-      keycloakKeySetUrl: http://keycloak:8180/auth/realms/ServiceMarketplace/protocol/openid-connect
-    depends_on:
-      - rabbitmq
-      - keycloak
+      keycloakKeySetUrl: http://keycloak:8080/auth/realms/ServiceMarketplace/protocol/openid-connect/certs
+    entrypoint: ["./wait-for-it.sh", "keycloak:8080","-t","0","--strict","--","java","-jar","/app.jar"]
 
 volumes:
   axonserver-data:
     driver: local
     driver_opts:
       type: none
-      device: ${PWD}/docker-infra/axonserver/data
+      device: ./docker-infra/axonserver/data
       o: bind
   axonserver-events:
     driver: local
     driver_opts:
       type: none
-      device: ${PWD}/docker-infra/axonserver/events
+      device: ./docker-infra/axonserver/events
       o: bind
   axonserver-config:
     driver: local
     driver_opts:
       type: none
-      device: ${PWD}/docker-infra/axonserver/config
+      device: ./docker-infra/axonserver/config
       o: bind
   keycloak:
     driver: local
     driver_opts:
       type: none
-      device: ${PWD}/docker-infra/keycloak
+      device: ./docker-infra/keycloak
       o: bind
