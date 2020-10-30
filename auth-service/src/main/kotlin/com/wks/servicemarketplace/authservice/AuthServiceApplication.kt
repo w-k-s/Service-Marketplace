@@ -1,8 +1,9 @@
 package com.wks.servicemarketplace.authservice
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.wks.servicemarketplace.authservice.adapters.fusionauth.FusionAuthAdapter
 import com.wks.servicemarketplace.authservice.adapters.graphql.LoginDataFetcher
 import com.wks.servicemarketplace.authservice.adapters.graphql.RegisterDataFetcher
-import com.wks.servicemarketplace.authservice.adapters.keycloak.KeycloakAdapter
 import com.wks.servicemarketplace.authservice.adapters.web.resources.GraphQLResource
 import com.wks.servicemarketplace.authservice.config.*
 import com.wks.servicemarketplace.authservice.core.IAMAdapter
@@ -40,12 +41,13 @@ class AuthServiceApplication : ResourceConfig() {
         register(object : AbstractBinder() {
             override fun configure() {
                 bindFactory(ApplicationParametersFactory::class.java, Immediate::class.java).to(ApplicationParameters::class.java).`in`(Immediate::class.java)
-                bindFactory(KeycloakConfigurationFactory::class.java).to(KeycloakConfiguration::class.java)
+                bindFactory(FusionAuthConfigurationFactory::class.java).to(FusionAuthConfiguration::class.java)
                 bindFactory(GraphQLFactory::class.java).to(GraphQL::class.java)
                 bindFactory(GraphQLFactory::class.java).to(GraphQL::class.java)
+                bindFactory(ObjectMapperFactory::class.java).to(ObjectMapper::class.java)
                 bind(LoginDataFetcher::class.java).to(LoginDataFetcher::class.java)
                 bind(RegisterDataFetcher::class.java).to(RegisterDataFetcher::class.java)
-                bind(KeycloakAdapter::class.java).to(IAMAdapter::class.java).`in`(Immediate::class.java)
+                bind(FusionAuthAdapter::class.java).to(IAMAdapter::class.java).`in`(Immediate::class.java)
             }
         })
         register(ObjectMapperProvider::class.java)

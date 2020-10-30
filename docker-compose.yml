@@ -6,22 +6,19 @@ services:
       - 5672:5672
       - 15672:15672
 
-  keycloak:
-    image: jboss/keycloak:11.0.2
+  fusionauth:
+    image: fusionauth/fusionauth-app:latest
     environment:
-      #KEYCLOAK_USER: admin
-      #KEYCLOAK_PASSWORD: admin
-      KEYCLOAK_IMPORT: /tmp/service-marketplace-app-realm.json
-      DB_VENDOR: postgres
-      DB_ADDR: host.docker.internal
-      DB_PORT: 5432
-      DB_USER: keycloak
-      DB_PASSWORD: password
-      DB_DATABASE: keycloak
+      DATABASE_URL: jdbc:postgresql://host.docker.internal:5432/fusionauth
+      DATABASE_ROOT_USER: postgres
+      DATABASE_ROOT_PASSWORD: 7713659
+      DATABASE_USER: fusionauth
+      DATABASE_PASSWORD: password
+      FUSIONAUTH_MEMORY: 512M
+      FUSIONAUTH_SEARCH_ENGINE_TYPE: database
+    restart: unless-stopped
     ports:
-      - 8180:8080
-    volumes:
-    - ./docker-infra/keycloak:/tmp
+      - 9011:9011
 
   axonserver:
     image: axoniq/axonserver
@@ -42,17 +39,17 @@ services:
     image: wkas/sm-auth-service
     restart: always
     environment:
-      keycloakServerUrl: http://keycloak:8080
-      keycloakRealm: ServiceMarket
-      keycloakAdminId: admin-cli
-      keycloakAdminSecret: 254461e0-a74b-4756-8ab0-4a8e941c0f09
-      keycloakClientId: service-marketplace-app
-      keycloakClientSecret: a5505bca-746d-4b4d-a82d-755bcda7efa8
+      fusionServerUrl: http://fusionauth:9011
+      fusionApplicationId: d64656ea-4f62-4127-b312-91afeeca96f9
+      fusionTenantId: a84b174a-965c-44fe-807d-623efc3bff9c
+      fusionApiKey: 9Am1DMurFnQo6B_Zae3qLdSqd2mOk7w4APyPoCTnLHw
+      fusionCustomerGroupId: 84c432eb-4649-412e-8499-d06d7d37ad31
+      fusionServiceProviderGroupId: fb3bab1e-9388-4d63-8690-b947115ccf1a
       serverHost: http://0.0.0.0
       serverPort: 8082
     ports:
       - 8082:8082
-    entrypoint: ["./wait-for-it.sh", "keycloak:8080","-t","0","--strict","--","java","-jar","/app.jar"]
+    entrypoint: ["./wait-for-it.sh", "fusionauth:9011","-t","0","--strict","--","java","-jar","/app.jar"]
 
   account-service:
     build:

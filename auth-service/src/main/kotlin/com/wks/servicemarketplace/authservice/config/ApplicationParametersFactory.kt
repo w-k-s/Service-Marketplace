@@ -5,15 +5,15 @@ import org.glassfish.hk2.api.Factory
 class ApplicationParametersFactory : Factory<ApplicationParameters> {
 
     private val applicationParameters: ApplicationParameters = ApplicationParameters(
-            KeycloakConfiguration(
-                    serverUrl = System.getenv("keycloakServerUrl"),
-                    realm = System.getenv("keycloakRealm"),
-                    adminId = System.getenv("keycloakAdminId"),
-                    adminSecret = System.getenv("keycloakAdminSecret"),
-                    clientId = System.getenv("keycloakClientId"),
-                    clientSecret = System.getenv("keycloakClientSecret")
+            FusionAuthConfiguration(
+                    serverUrl = System.getenv("fusionServerUrl"),
+                    applicationId = System.getenv("fusionApplicationId"),
+                    tenantId = System.getenv("fusionTenantId"),
+                    apiKey = System.getenv("fusionApiKey"),
+                    customerGroupId = System.getenv("fusionCustomerGroupId"),
+                    serviceProviderGroupId = System.getenv("fusionServiceProviderGroupId")
             )
-    );
+    )
 
     override fun provide() = applicationParameters
 

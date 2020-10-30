@@ -4,16 +4,31 @@ enum class ErrorType(val code: Int) {
     UNKNOWN(ErrorType.GENERAL_ERROR_UNKNOWN),
     VALIDATION(ErrorType.GENERAL_ERROR_VALIDATION),
     NOT_FOUND(ErrorType.GENERAL_ERROR_NOT_FOUND),
-    INVALID_STATE(ErrorType.GENERAL_ERROR_INVALID_STATE);
+    INVALID_STATE(ErrorType.GENERAL_ERROR_INVALID_STATE),
 
+    AUTHENTICATION(ErrorType.AUTHENTICATION_ERROR_INCORRECT_CREDENTIALS),
+
+    DUPLICATE_USERNAME(ErrorType.REGISTRATION_ERROR_DUPLICATE_USERNAME);
+
+    /**
+     * Error Code Format: S_CC_EEE
+     *
+     * S: Service Code i.e. Microservice code (n-digits)
+     * CC: Category Code i.e. Error Group code (2-digits)
+     * EEE: Error Code i.e. Error Code (3 digits)
+     */
     companion object {
-        private const val SERVICE_CODE = 3_00_000
 
-        // -- Generic Errors
-        private const val CATEGORY_CODE_GENERAL_ERROR = 0
-        private const val GENERAL_ERROR_UNKNOWN: Int = SERVICE_CODE + CATEGORY_CODE_GENERAL_ERROR + 0                   // 300000
-        private const val GENERAL_ERROR_VALIDATION: Int = SERVICE_CODE + CATEGORY_CODE_GENERAL_ERROR + 1                // 300001
-        private const val GENERAL_ERROR_NOT_FOUND: Int = SERVICE_CODE + CATEGORY_CODE_GENERAL_ERROR + 10                // 300010
-        private const val GENERAL_ERROR_INVALID_STATE: Int = SERVICE_CODE + CATEGORY_CODE_GENERAL_ERROR + 20            // 300020
+        // General Errors
+        private const val GENERAL_ERROR_UNKNOWN: Int = 3_00_000
+        private const val GENERAL_ERROR_VALIDATION: Int = 3_00_001
+        private const val GENERAL_ERROR_NOT_FOUND: Int = 3_00_010
+        private const val GENERAL_ERROR_INVALID_STATE: Int = 3_00_020
+
+        // Authentication Errors
+        private const val AUTHENTICATION_ERROR_INCORRECT_CREDENTIALS: Int = 3_01_000
+
+        // Authentication Errors
+        private const val REGISTRATION_ERROR_DUPLICATE_USERNAME: Int = 3_02_000
     }
 }

@@ -25,6 +25,7 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation("org.glassfish.jersey.containers:jersey-container-jetty-http:2.31")
     implementation("org.glassfish.jersey.inject:jersey-hk2:2.31")
+    implementation("javax.xml.bind:jaxb-api:2.3.1")
 
     // Logging
     implementation("ch.qos.logback:logback-classic:1.2.3")
@@ -35,9 +36,6 @@ dependencies {
     implementation("org.glassfish:javax.el:3.0.0")
     implementation("javax.el:javax.el-api:3.0.0")
     implementation("org.hibernate:hibernate-validator:6.1.5.Final")
-
-    // Keycloak
-    implementation("org.keycloak:keycloak-admin-client:11.0.2")
 
     // Jackson
     implementation("com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.1") // Jackson Provider for Jax-RS

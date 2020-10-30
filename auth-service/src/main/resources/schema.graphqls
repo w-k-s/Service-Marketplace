@@ -30,7 +30,7 @@ type Query{
 }
 
 type Mutation {
-    signIn(data: SignInRequest!): SignInResponse!
+    signIn(data: SignInRequest!): SignInResponse
     signUp(data: SignUpRequest!): SignUpResponse
 }
 
