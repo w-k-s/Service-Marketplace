@@ -2,6 +2,7 @@ package com.wks.servicemarketplace.authservice.adapters.graphql
 
 import com.wks.servicemarketplace.authservice.core.IAMAdapter
 import com.wks.servicemarketplace.authservice.core.Token
+import com.wks.servicemarketplace.authservice.core.dtos.SignInRequest
 import graphql.schema.DataFetcher
 import graphql.schema.DataFetchingEnvironment
 import javax.inject.Inject

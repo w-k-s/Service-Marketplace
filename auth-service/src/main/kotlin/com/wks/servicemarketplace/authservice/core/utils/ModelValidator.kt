@@ -1,5 +1,6 @@
-package com.wks.servicemarketplace.authservice.adapters.utils
+package com.wks.servicemarketplace.authservice.core.utils
 
+import com.wks.servicemarketplace.authservice.core.errors.ValidationException
 import javax.validation.Validation
 
 object ModelValidator {

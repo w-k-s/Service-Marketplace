@@ -1,5 +1,6 @@
 package com.wks.servicemarketplace.authservice.config
 
+import com.wks.servicemarketplace.authservice.adapters.graphql.GraphQLDataFetcherExceptionHandler
 import com.wks.servicemarketplace.authservice.adapters.graphql.LoginDataFetcher
 import com.wks.servicemarketplace.authservice.adapters.graphql.RegisterDataFetcher
 import graphql.GraphQL

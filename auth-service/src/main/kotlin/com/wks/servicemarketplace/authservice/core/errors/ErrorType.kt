@@ -1,4 +1,4 @@
-package com.wks.servicemarketplace.authservice.adapters.errors
+package com.wks.servicemarketplace.authservice.core.errors
 
 enum class ErrorType(val code: Int) {
     UNKNOWN(ErrorType.GENERAL_ERROR_UNKNOWN),

@@ -1,7 +1,6 @@
-package com.wks.servicemarketplace.authservice.adapters.graphql
+package com.wks.servicemarketplace.authservice.core.dtos
 
-import com.wks.servicemarketplace.authservice.adapters.graphql.validation.Password
-import com.wks.servicemarketplace.authservice.adapters.utils.ModelValidator
+import com.wks.servicemarketplace.authservice.core.utils.ModelValidator
 import com.wks.servicemarketplace.authservice.core.Credentials
 import javax.validation.constraints.Email
 import javax.validation.constraints.NotBlank

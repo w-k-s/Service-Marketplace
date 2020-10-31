@@ -3,6 +3,9 @@ package com.wks.servicemarketplace.authservice.adapters.fusionauth
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.wks.servicemarketplace.authservice.config.FusionAuthConfiguration
 import com.wks.servicemarketplace.authservice.core.*
+import com.wks.servicemarketplace.authservice.core.errors.DuplicateUsernameException
+import com.wks.servicemarketplace.authservice.core.errors.UnauthorizedException
+import com.wks.servicemarketplace.authservice.core.errors.UserNotFoundException
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.client.utils.URIBuilder
 import org.apache.http.entity.ContentType

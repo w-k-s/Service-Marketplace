@@ -1,4 +1,4 @@
-package com.wks.servicemarketplace.authservice.adapters.graphql.validation
+package com.wks.servicemarketplace.authservice.core.dtos
 
 import javax.validation.Constraint
 import javax.validation.ConstraintValidator
