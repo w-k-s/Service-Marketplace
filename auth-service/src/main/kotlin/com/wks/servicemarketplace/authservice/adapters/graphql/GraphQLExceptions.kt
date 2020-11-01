@@ -18,7 +18,7 @@ class GraphQLSanitizedException(inner: ExceptionWhileDataFetching)
 }
 
 data class GraphQLCoreException(private val description: String?,
-                                private val userInfo: Map<String, String> = emptyMap(),
+                                private val userInfo: Map<String, List<String>> = emptyMap(),
                                 private val errorType: ErrorType) : GraphQLError {
 
     private val extensions = mutableMapOf<String, Any?>()

@@ -48,6 +48,12 @@ dependencies {
     implementation("com.graphql-java:graphql-java-tools:5.2.4")
     implementation("io.gqljf:graphql-java-federation:0.1.16") // jCenter
 
+    // FusionAuth
+    implementation("io.fusionauth:fusionauth-java-client:1.20.0")
+
+    // JWT
+    implementation("org.bitbucket.b_c:jose4j:0.7.2")
+
     // Apache HttpClient
     implementation("org.apache.httpcomponents:httpclient:4.5.12")
 }

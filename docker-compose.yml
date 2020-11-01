@@ -43,8 +43,6 @@ services:
       fusionApplicationId: d64656ea-4f62-4127-b312-91afeeca96f9
       fusionTenantId: a84b174a-965c-44fe-807d-623efc3bff9c
       fusionApiKey: 9Am1DMurFnQo6B_Zae3qLdSqd2mOk7w4APyPoCTnLHw
-      fusionCustomerGroupId: 84c432eb-4649-412e-8499-d06d7d37ad31
-      fusionServiceProviderGroupId: fb3bab1e-9388-4d63-8690-b947115ccf1a
       serverHost: http://0.0.0.0
       serverPort: 8082
     ports:

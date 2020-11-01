@@ -4,34 +4,24 @@ import java.util.*
 
 interface CoreException {
     val errorType: ErrorType
-    val fields: Map<String, String>?
+    val fields: Map<String, List<String>>
     val message: String?
 }
 
-data class UserNotFoundException(val username: String) : CoreException, RuntimeException("'$username' is not a registered user") {
-    override val errorType = ErrorType.NOT_FOUND
-    override val fields = mapOf("username" to this.username)
-}
+data class LoginFailedException(override val fields: Map<String, List<String>> = emptyMap(),
+                                override val message: String? = fields.toString(key = " "),
+                                override val errorType: ErrorType) : CoreException, RuntimeException(message)
 
-data class DuplicateUsernameException(val username: String) : CoreException, RuntimeException("'$username' is already registered") {
-    override val errorType = ErrorType.DUPLICATE_USERNAME
-    override val fields = mapOf("username" to this.username)
-}
+data class RegistrationFailedException(override val fields: Map<String, List<String>> = emptyMap(),
+                                       override val message: String? = fields.toString(key = " "),
+                                       override val errorType: ErrorType) : CoreException, RuntimeException(message)
 
-class UnauthorizedException : CoreException, RuntimeException("Unauthorized") {
-    override val errorType = ErrorType.AUTHENTICATION
-    override val fields = emptyMap<String, String>()
-}
-
-class ValidationException(fields: Map<String, String>) : CoreException, RuntimeException(buildErrorMessage(fields)) {
+class ValidationException(fields: Map<String, List<String>>) : CoreException, RuntimeException(fields.toString(key = " ")) {
     override val errorType = ErrorType.VALIDATION
-    override val fields: Map<String, String> = Collections.unmodifiableMap(fields)
+    override val fields: Map<String, List<String>> = Collections.unmodifiableMap(fields)
+}
 
-    companion object {
-        private fun buildErrorMessage(fields: Map<String, String>): String {
-            return fields.entries
-                    .map { "${it.key}: ${it.value}" }
-                    .joinToString(",")
-        }
-    }
+fun Map<String, List<String>>.toString(value: String = ",",
+                                       key: String = "\n"): String {
+    return this.map { it.value.joinToString(value) }.joinToString(key)
 }

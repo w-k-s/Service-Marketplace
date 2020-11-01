@@ -9,9 +9,7 @@ class ApplicationParametersFactory : Factory<ApplicationParameters> {
                     serverUrl = System.getenv("fusionServerUrl"),
                     applicationId = System.getenv("fusionApplicationId"),
                     tenantId = System.getenv("fusionTenantId"),
-                    apiKey = System.getenv("fusionApiKey"),
-                    customerGroupId = System.getenv("fusionCustomerGroupId"),
-                    serviceProviderGroupId = System.getenv("fusionServiceProviderGroupId")
+                    apiKey = System.getenv("fusionApiKey")
             )
     )
 
