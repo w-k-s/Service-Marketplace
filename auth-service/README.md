@@ -15,6 +15,26 @@
 
 ### Roles & Permissions
 
+| Role           | Customer                                                                          | ServiceProvider.ProfilePending                        | ServiceProvider    | Admin              |
+|----------------|-----------------------------------------------------------------------------------|-------------------------------------------------------|--------------------|--------------------|
+| order.create   | :heavy_check_mark:                                                                |                                                       |                    | :heavy_check_mark: |
+| order.delete   | :heavy_check_mark:                                                                |                                                       |                    | :heavy_check_mark: |
+| order.edit     | :heavy_check_mark:                                                                |                                                       |                    | :heavy_check_mark: |
+| order.view     | :heavy_check_mark:<br/> **ABAC: Only own order**                                  | :heavy_check_mark:                                    | :heavy_check_mark: | :heavy_check_mark: |
+| bid.create     |                                                                                   |                                                       | :heavy_check_mark: | :heavy_check_mark: |
+| bid.delete     |                                                                                   |                                                       | :heavy_check_mark: | :heavy_check_mark: |
+| bid.view       | :heavy_check_mark: <br/> **ABAC: Only bids they've received**                     |                                                       | :heavy_check_mark: | :heavy_check_mark: |
+| bid.edit       |                                                                                   |                                                       | :heavy_check_mark: | :heavy_check_mark: |
+| bid.accept     | :heavy_check_mark: <br/> **ABAC: Only bids they've received**                     |                                                       |                    | :heavy_check_mark: |
+| account.create | :heavy_check_mark:                                                                | :heavy_check_mark:                                    | :heavy_check_mark: | :heavy_check_mark: |
+| account.delete | :heavy_check_mark: <br/>   **ABAC: Only own account**                             | :heavy_check_mark: <br/>  **ABAC: Only own account**  | :heavy_check_mark: | :heavy_check_mark: |
+| account.edit   | :heavy_check_mark: <br/>   **ABAC: Only own account**                             | :heavy_check_mark: <br/>  **ABAC: Only own account**  | :heavy_check_mark: | :heavy_check_mark: |
+| account.view   | :heavy_check_mark: <br/>   **ABAC: Only own account + service providers account** | :heavy_check_mark: <br/>  **ABAC: Only own account**  | :heavy_check_mark: | :heavy_check_mark: |
+| address.create | :heavy_check_mark:<br/>   **ABAC: Only own address**                              | :heavy_check_mark: <br/>  **ABAC: Only own address**  | :heavy_check_mark: | :heavy_check_mark: |
+| address.delete | :heavy_check_mark:<br/>   **ABAC: Only own address**                              | :heavy_check_mark: <br/>  **ABAC: Only own address**  | :heavy_check_mark: | :heavy_check_mark: |
+| address.edit   | :heavy_check_mark: <br/>   **ABAC: Only own address**                             | :heavy_check_mark: <br/>  **ABAC: Only own address**  | :heavy_check_mark: | :heavy_check_mark: |
+| address.view   | :heavy_check_mark: <br/>   **ABAC: Only own address**                             | :heavy_check_mark: <br/>   **ABAC: Only own address** | :heavy_check_mark: | :heavy_check_mark: |
+
 ## Generating Key Pairs
 
 ```shell script
@@ -49,5 +69,9 @@ curl -X POST -H 'Content-Type: application/json' --data-raw '{"query": "mutation
 
 **Register**
 ```shell script
-
+curl --location --request POST 'http://localhost:8082/graphql' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+	"query": "mutation { signUp(data: {firstName: \"Jack\",lastName: \"Torrence\",email: \"jack.torrence+2@theoverlook.com\", password: \"ThisIsMy1P@ssword\",userType: CUSTOMER}) { id } }"
+}'
 ```

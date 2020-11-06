@@ -16,23 +16,21 @@ class TokenService @Inject constructor(private val iam: IAMAdapter,
     fun login(credentials: Credentials): Token {
         val user = iam.login(credentials)
 
-        // Create IAM Independent, standard key
-        val claims = JwtClaims()
-        claims.setIssuedAtToNow()
-        claims.expirationTime = NumericDate.fromMilliseconds(Instant.now().plus(1L, ChronoUnit.HOURS).toEpochMilli())
-        claims.subject = user.username
-        claims.setClaim("role", user.role)
-        claims.setStringListClaim("permissions", user.permissions)
+        val jws = JsonWebSignature().also {
+            it.payload = JwtClaims().also {
+                it.setIssuedAtToNow()
+                it.setIssuedAtToNow()
+                it.expirationTime = NumericDate.fromMilliseconds(Instant.now().plus(1L, ChronoUnit.HOURS).toEpochMilli())
+                it.subject = user.username
+                it.setClaim("role", user.role)
+                it.setStringListClaim("permissions", user.permissions)
+            }.toJson()
+            it.key = privateKey
+            it.algorithmHeaderValue = AlgorithmIdentifiers.RSA_USING_SHA256
+        }
 
-        val jws = JsonWebSignature()
-        jws.payload = claims.toJson()
-        jws.key = privateKey
-
-        jws.algorithmHeaderValue = AlgorithmIdentifiers.RSA_USING_SHA256
         return StandardToken(jws.compactSerialization)
     }
 
-    fun register(registration: Registration): Identity {
-        return iam.register(registration)
-    }
+    fun register(registration: Registration) = iam.register(registration)
 }
