@@ -1,6 +1,6 @@
 package com.wks.servicemarketplace.authservice.adapters.graphql
 
-import com.wks.servicemarketplace.authservice.core.errors.*
+import com.wks.servicemarketplace.authservice.core.errors.CoreException
 import graphql.ExceptionWhileDataFetching
 import graphql.execution.DataFetcherExceptionHandler
 import graphql.execution.DataFetcherExceptionHandlerParameters
@@ -21,6 +21,6 @@ class GraphQLDataFetcherExceptionHandler : DataFetcherExceptionHandler {
 
 fun CoreException.toDataFetcherExceptionHandlerResult(): DataFetcherExceptionHandlerResult {
     return DataFetcherExceptionHandlerResult.newResult(
-            GraphQLCoreException(this.message, this.fields ?: emptyMap(), this.errorType)
+            GraphQLCoreException(this.message, this.fields, this.errorType)
     ).build()
 }

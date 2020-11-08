@@ -1,12 +1,16 @@
 package com.wks.servicemarketplace.authservice
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.rabbitmq.client.Channel
+import com.rabbitmq.client.Connection
+import com.wks.servicemarketplace.authservice.adapters.events.DefaultEventPublisher
 import com.wks.servicemarketplace.authservice.adapters.fusionauth.FusionAuthAdapter
 import com.wks.servicemarketplace.authservice.adapters.graphql.LoginDataFetcher
 import com.wks.servicemarketplace.authservice.adapters.graphql.RegisterDataFetcher
 import com.wks.servicemarketplace.authservice.adapters.web.resources.GraphQLResource
 import com.wks.servicemarketplace.authservice.config.*
 import com.wks.servicemarketplace.authservice.core.IAMAdapter
+import com.wks.servicemarketplace.authservice.core.events.EventPublisher
 import com.wks.servicemarketplace.authservice.core.iam.TokenService
 import graphql.GraphQL
 import org.glassfish.hk2.api.Immediate
@@ -47,6 +51,10 @@ class AuthServiceApplication : ResourceConfig() {
                 bindFactory(GraphQLFactory::class.java, Immediate::class.java).to(GraphQL::class.java).`in`(Immediate::class.java)
                 bindFactory(ObjectMapperFactory::class.java, Immediate::class.java).to(ObjectMapper::class.java).`in`(Immediate::class.java)
                 bindFactory(PrivateKeyFactory::class.java, Immediate::class.java).to(PrivateKey::class.java).`in`(Immediate::class.java)
+                bindFactory(AmqpConnectionFactory::class.java, Immediate::class.java).to(Connection::class.java).`in`(Immediate::class.java)
+                bindFactory(AmqpChannelFactory::class.java, Immediate::class.java).to(Channel::class.java).`in`(Immediate::class.java)
+
+                bind(DefaultEventPublisher::class.java).to(EventPublisher::class.java)
                 bind(FusionAuthAdapter::class.java).to(IAMAdapter::class.java).`in`(Immediate::class.java)
                 bind(LoginDataFetcher::class.java).to(LoginDataFetcher::class.java)
                 bind(RegisterDataFetcher::class.java).to(RegisterDataFetcher::class.java)

@@ -8,3 +8,9 @@ class QueueName {
         const val ADDRESS_VERIFICATION_FAILED = "com.wks.servicemarketplace.account.queue.addressVerificationFailed";
     }
 }
+
+class RoutingKey{
+    companion object{
+        const val CUSTOMER_ADDRESS_ADDED = "com.wks.servicemarketplace.customer.address.added"
+    }
+}

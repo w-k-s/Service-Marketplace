@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration
 class AmqpConfiguration {
 
     companion object {
-        const val EXCHANGE_NAME = "com.wks.servicemarketplace.account.exchange"
+        const val EXCHANGE_NAME = "com.wks.servicemarketplace.customer.exchange"
     }
 
     @Bean
@@ -35,7 +35,7 @@ class AmqpConfiguration {
     fun addressVerificationFailedQueue() = Queue(QueueName.ADDRESS_VERIFICATION_FAILED, true, false, true)
 
     @Bean
-    fun addressAddedBinding(topicExchange: TopicExchange, addressAddedQueue: Queue) : Binding = BindingBuilder.bind(addressAddedQueue)
+    fun addressAddedBinding(topicExchange: TopicExchange, addressAddedQueue: Queue): Binding = BindingBuilder.bind(addressAddedQueue)
             .to(topicExchange)
-            .with("com.wks.servicemarketplace.account.customer.address.added")
+            .with(RoutingKey.CUSTOMER_ADDRESS_ADDED)
 }

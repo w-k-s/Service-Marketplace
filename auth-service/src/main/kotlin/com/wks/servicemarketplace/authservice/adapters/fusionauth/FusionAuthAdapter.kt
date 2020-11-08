@@ -14,6 +14,7 @@ import io.fusionauth.domain.api.LoginRequest
 import io.fusionauth.domain.api.LoginResponse
 import io.fusionauth.domain.api.MemberRequest
 import io.fusionauth.domain.api.user.RegistrationRequest
+import io.fusionauth.domain.api.user.RegistrationResponse
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.*
@@ -35,7 +36,11 @@ class FusionAuthAdapter @Inject constructor(
         val group = groups.first { it.id == login.user.memberships.first().groupId }
 
         return FusionAuthUser(
+                login.user.id.toString(),
+                login.user.firstName,
+                login.user.lastName,
                 login.user.username,
+                login.user.email,
                 group.name,
                 login.user.registrations.first { it.applicationId == UUID.fromString(config.applicationId) }.roles.toList(),
                 login.token
@@ -49,22 +54,14 @@ class FusionAuthAdapter @Inject constructor(
                         credentials.username,
                         credentials.password
                 )
-        )
+        ).also {
+            LOGGER.info("Login: Username: {}. Error: {}. Exception: {}", credentials.username, it.errorResponse, it.exception)
+        }
         when {
-            response.wasSuccessful() -> {
-                return response.successResponse
-            }
-            response.status == 404 -> {
-                throw LoginFailedException(message = "User does not exist or password incorrect", errorType = ErrorType.NOT_FOUND)
-            }
-            response.errorResponse != null -> {
-                LOGGER.info("Login: Username: {}. Error: {}", credentials.username, response.errorResponse)
-                throw LoginFailedException(fields = response.errorResponse.allErrors(), errorType = response.errorResponse.errorType())
-            }
-            response.exception != null -> {
-                LOGGER.info("Login: Username: {}. Exception: {}", credentials.username, response.exception.message)
-                throw LoginFailedException(message = response.exception.message, errorType = ErrorType.UNKNOWN)
-            }
+            response.wasSuccessful() -> return response.successResponse
+            response.status == 404 -> throw LoginFailedException(message = "User does not exist or password incorrect", errorType = ErrorType.NOT_FOUND)
+            response.errorResponse != null -> throw LoginFailedException(fields = response.errorResponse.allErrors(), errorType = response.errorResponse.errorType())
+            response.exception != null -> throw LoginFailedException(message = response.exception.message, errorType = ErrorType.UNKNOWN)
             else -> throw LoginFailedException(message = "Login Failed", errorType = ErrorType.UNKNOWN)
         }
     }
@@ -93,31 +90,23 @@ class FusionAuthAdapter @Inject constructor(
                             it.username = registration.username
                         }
                 )
-        )
+        ).also {
+            LOGGER.info("Register: Username: {}. Error: {}. Exception: {}", registration.username, it.errorResponse, it.exception)
+        }
+
         when {
-            response.wasSuccessful() -> {
-                return FusionAuthRegistration(response.successResponse.user.id.toString())
-            }
-            response.errorResponse != null -> {
-                LOGGER.info("Register: Username: {}. Error: {}", registration.username, response.errorResponse)
-                throw RegistrationFailedException(response.errorResponse.allErrors(), errorType = response.errorResponse.errorType())
-            }
-            response.exception != null -> {
-                LOGGER.info("Register: Username: {}. Exception: {}", registration.username, response.exception.message)
-                throw RegistrationFailedException(message = response.exception.message, errorType = ErrorType.UNKNOWN)
-            }
+            response.wasSuccessful() -> return response.successResponse.toFusionAuthRegistration(registration.userType)
+            response.errorResponse != null -> throw RegistrationFailedException(response.errorResponse.allErrors(), errorType = response.errorResponse.errorType())
+            response.exception != null -> throw RegistrationFailedException(message = response.exception.message, errorType = ErrorType.UNKNOWN)
             else -> throw RegistrationFailedException(message = "Registration Failed", errorType = ErrorType.UNKNOWN)
         }
     }
 
     private fun loadGroups(): List<Group> {
         val response = fusionAuthClient.retrieveGroups()
+                .also { LOGGER.error("Retrieve groups. Error: {}. Exception: {}", it.errorResponse, it.exception) }
+
         if (!response.wasSuccessful()) {
-            LOGGER.error(
-                    "Failed to retrieve groups. Error: {}. Exception: {}",
-                    response.errorResponse,
-                    response.exception
-            )
             throw RuntimeException("Failed to retrieve groups")
         }
         return response.successResponse.groups
@@ -127,23 +116,30 @@ class FusionAuthAdapter @Inject constructor(
 
         val actualRole = when (role) {
             UserType.CUSTOMER -> role.code
-            UserType.SERVICE_PROVIDER -> "ProfilePendingServiceProvider"
+            UserType.SERVICE_PROVIDER -> "ServiceProvider.ProfilePending"
         }
 
         val group = groups.firstOrNull { it.name == actualRole } ?: throw RuntimeException("Role not found")
         val response = fusionAuthClient.createGroupMembers(MemberRequest(group.id, listOf(GroupMember().with {
             it.userId = UUID.fromString(userId)
             it.groupId = group.id
-        })))
+        }))).also { LOGGER.error("Add user $userId to group. Error: {}. Exception: {}", it.errorResponse, it.exception) }
+
         if (!response.wasSuccessful()) {
-            LOGGER.error(
-                    "Failed to add user to group. Error: {}. Exception: {}",
-                    response.errorResponse,
-                    response.exception
-            )
-            throw RuntimeException("Failed to add user to group")
+            throw RuntimeException("Failed to add user $userId to group")
         }
     }
+}
+
+fun RegistrationResponse.toFusionAuthRegistration(type: UserType): FusionAuthRegistration {
+    return FusionAuthRegistration(
+            this.user.id.toString(),
+            this.user.username,
+            this.user.firstName,
+            this.user.lastName,
+            this.user.email,
+            type
+    )
 }
 
 fun Errors.isDuplicateUsername() = allCodes().let { it.contains("[duplicate]user.email") || it.contains("[duplicate]user.username") }

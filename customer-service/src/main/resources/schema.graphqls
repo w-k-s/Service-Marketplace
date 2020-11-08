@@ -1,0 +1,44 @@
+type Customer{
+    externalId: Long!
+    uuid: String!
+    firstName: String!
+    lastName: String!
+    version: Long!
+}
+
+type AddressResponse{
+    externalId: Long!
+    uuid: String!
+    name: String!
+    line1: String!
+    line2: String
+    city: String!
+    country: String!
+    latitude: Float!
+    longitude: Float!
+    version: Long!
+}
+
+type Query {
+    address(customerUuid: String!): [AddressResponse]
+}
+
+input AddressRequest{
+    customerExternalId: Long!,
+    name: String!,
+    line1: String!,
+    line2: String,
+    city: String!,
+    country: String!,
+    latitude: Float!,
+    longitude: Float!
+}
+
+type Mutation{
+    createAddress(address: AddressRequest!): AddressResponse
+}
+
+schema {
+  query: Query
+  mutation: Mutation
+}

@@ -1,36 +1,36 @@
 package com.wks.servicemarketplace.authservice.core.iam
 
 import com.wks.servicemarketplace.authservice.core.*
-import org.jose4j.jws.AlgorithmIdentifiers
-import org.jose4j.jws.JsonWebSignature
-import org.jose4j.jwt.JwtClaims
-import org.jose4j.jwt.NumericDate
+import com.wks.servicemarketplace.authservice.core.events.AccountCreatedEvent
+import com.wks.servicemarketplace.authservice.core.events.EventPublisher
 import java.security.PrivateKey
-import java.time.Instant
+import java.time.Duration
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 
 class TokenService @Inject constructor(private val iam: IAMAdapter,
-                                       private val privateKey: PrivateKey) {
+                                       private val privateKey: PrivateKey,
+                                       private val eventPublisher: EventPublisher) {
 
     fun login(credentials: Credentials): Token {
         val user = iam.login(credentials)
-
-        val jws = JsonWebSignature().also {
-            it.payload = JwtClaims().also {
-                it.setIssuedAtToNow()
-                it.setIssuedAtToNow()
-                it.expirationTime = NumericDate.fromMilliseconds(Instant.now().plus(1L, ChronoUnit.HOURS).toEpochMilli())
-                it.subject = user.username
-                it.setClaim("role", user.role)
-                it.setStringListClaim("permissions", user.permissions)
-            }.toJson()
-            it.key = privateKey
-            it.algorithmHeaderValue = AlgorithmIdentifiers.RSA_USING_SHA256
-        }
-
-        return StandardToken(jws.compactSerialization)
+        return StandardToken(
+                user.username,
+                StandardToken.User(user.id, user.firstName, user.lastName, user.username, user.email, user.role),
+                user.permissions,
+                Duration.of(1, ChronoUnit.HOURS),
+                privateKey = privateKey
+        )
     }
 
-    fun register(registration: Registration) = iam.register(registration)
+    fun register(registration: Registration): Identity {
+        val identity = iam.register(registration)
+
+        when (identity.type) {
+            UserType.CUSTOMER -> eventPublisher.customerAccountCreated(AccountCreatedEvent(identity))
+            UserType.SERVICE_PROVIDER -> eventPublisher.serviceProviderAccountCreated(AccountCreatedEvent(identity))
+        }
+
+        return identity
+    }
 }

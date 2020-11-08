@@ -48,6 +48,9 @@ dependencies {
     implementation("com.graphql-java:graphql-java-tools:5.2.4")
     implementation("io.gqljf:graphql-java-federation:0.1.16") // jCenter
 
+    // RabbitMQ
+    implementation("com.rabbitmq:amqp-client:5.9.0")
+
     // FusionAuth
     implementation("io.fusionauth:fusionauth-java-client:1.20.0")
 
@@ -60,9 +63,9 @@ dependencies {
 
 tasks {
     compileKotlin {
-        kotlinOptions.jvmTarget = "1.8"
+        kotlinOptions.jvmTarget = "13"
     }
     compileTestKotlin {
-        kotlinOptions.jvmTarget = "1.8"
+        kotlinOptions.jvmTarget = "13"
     }
 }

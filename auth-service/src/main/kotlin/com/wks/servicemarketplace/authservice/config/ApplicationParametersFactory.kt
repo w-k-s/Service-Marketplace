@@ -10,7 +10,9 @@ class ApplicationParametersFactory : Factory<ApplicationParameters> {
                     applicationId = System.getenv("fusionApplicationId"),
                     tenantId = System.getenv("fusionTenantId"),
                     apiKey = System.getenv("fusionApiKey")
-            )
+            ),
+            amqpHost = System.getenv("amqpHost"),
+            amqpPort = System.getenv("amqpPort").toInt()
     )
 
     override fun provide() = applicationParameters

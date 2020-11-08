@@ -2,6 +2,8 @@
 
 ## FusionAuth Setup
 
+FusionAuth v1.19.8
+
 1. Create Tenant named `ServiceMarketplace`. Set General > Issuer to `ServiceMarketplace`.
 1. Create Application `ServiceMarketplace` in Tenant `ServiceMarketplace`. Add all roles listed below.
 1. Create Groups in tenant `ServiceMarketplace` and organise roles as tabulated below.
