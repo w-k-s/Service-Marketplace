@@ -7,6 +7,7 @@ enum class ErrorType(val code: Int) {
     INVALID_STATE(ErrorType.GENERAL_ERROR_INVALID_STATE),
 
     AUTHENTICATION(ErrorType.AUTHENTICATION_ERROR_INCORRECT_CREDENTIALS),
+    AUTHORIZATION(ErrorType.AUTHORIZATION_ERROR_INCORRECT_PERMISSIONS),
 
     DUPLICATE_USERNAME(ErrorType.REGISTRATION_ERROR_DUPLICATE_USERNAME);
 
@@ -28,7 +29,10 @@ enum class ErrorType(val code: Int) {
         // Authentication Errors
         private const val AUTHENTICATION_ERROR_INCORRECT_CREDENTIALS: Int = 3_01_000
 
-        // Authentication Errors
-        private const val REGISTRATION_ERROR_DUPLICATE_USERNAME: Int = 3_02_000
+        // Authorization Errors
+        private const val AUTHORIZATION_ERROR_INCORRECT_PERMISSIONS: Int = 3_02_000
+
+        // Registration Errors
+        private const val REGISTRATION_ERROR_DUPLICATE_USERNAME: Int = 3_03_000
     }
 }

@@ -4,6 +4,6 @@ import java.io.IOException
 
 interface EventPublisher {
     @Throws(IOException::class)
-    fun customerAccountCreated(event: AccountCreatedEvent)
-    fun serviceProviderAccountCreated(event: AccountCreatedEvent)
+    fun customerAccountCreated(token: String, event: AccountCreatedEvent)
+    fun serviceProviderAccountCreated(token: String, event: AccountCreatedEvent)
 }

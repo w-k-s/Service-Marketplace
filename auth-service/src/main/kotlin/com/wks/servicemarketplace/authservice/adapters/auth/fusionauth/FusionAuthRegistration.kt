@@ -1,4 +1,4 @@
-package com.wks.servicemarketplace.authservice.adapters.fusionauth
+package com.wks.servicemarketplace.authservice.adapters.auth.fusionauth
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.wks.servicemarketplace.authservice.core.Identity

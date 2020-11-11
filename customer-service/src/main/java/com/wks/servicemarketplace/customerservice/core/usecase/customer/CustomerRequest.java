@@ -1,11 +1,14 @@
 package com.wks.servicemarketplace.customerservice.core.usecase.customer;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import com.wks.servicemarketplace.customerservice.core.auth.Authentication;
 import com.wks.servicemarketplace.customerservice.core.utils.ModelValidator;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @JsonDeserialize(builder = CustomerRequest.Builder.class)
@@ -23,6 +26,9 @@ public class CustomerRequest {
     @Email
     private final String email;
 
+    @NotNull
+    private final Authentication authentication;
+
     public String getFirstName() {
         return firstName;
     }
@@ -35,10 +41,15 @@ public class CustomerRequest {
         return email;
     }
 
+    public Authentication getAuthentication() {
+        return authentication;
+    }
+
     private CustomerRequest(Builder builder) {
         this.firstName = builder.firstName;
         this.lastName = builder.lastName;
         this.email = builder.email;
+        this.authentication = builder.authentication;
     }
 
     private static CustomerRequest create(Builder builder) {
@@ -51,9 +62,13 @@ public class CustomerRequest {
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class Builder {
+        @JsonProperty("firstName")
         private String firstName;
+        @JsonProperty("lastName")
         private String lastName;
+        @JsonProperty("email")
         private String email;
+        private Authentication authentication;
 
         public Builder firstName(String firstName) {
             this.firstName = firstName;
@@ -67,6 +82,11 @@ public class CustomerRequest {
 
         public Builder email(String email) {
             this.email = email;
+            return this;
+        }
+
+        public Builder authentication(Authentication authentication) {
+            this.authentication = authentication;
             return this;
         }
 

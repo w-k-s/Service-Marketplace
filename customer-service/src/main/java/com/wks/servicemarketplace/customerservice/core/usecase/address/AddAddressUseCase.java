@@ -39,7 +39,7 @@ public class AddAddressUseCase implements UseCase<AddressRequest, AddressRespons
     public AddressResponse execute(AddressRequest request) throws UseCaseException {
         Connection connection = null;
         try {
-            AuthorizationUtils.checkRole(request.getAuthentication(), "Customer");
+            AuthorizationUtils.checkRole(request.getAuthentication(), "address.create");
 
             connection = TransactionUtils.beginTransaction(customerDao.getConnection());
             final ResultWithEvents<Address, AddressAddedEvent> addressWithEvents = Address.create(

@@ -22,24 +22,28 @@ data class DefaultEventPublisher @Inject constructor(private val channel: Channe
         channel.exchangeDeclare(EXCHANGE_NAME, BuiltinExchangeType.TOPIC, true, true, emptyMap())
     }
 
-    override fun customerAccountCreated(event: AccountCreatedEvent) {
+    override fun customerAccountCreated(token: String, event: AccountCreatedEvent) {
         channel.queueDeclare(CUSTOMER_ACCOUNT_CREATED, true, false, true, mutableMapOf<String, Any>())
 
         channel.basicPublish(
                 EXCHANGE_NAME,
                 CUSTOMER_ACCOUNT_CREATED,
-                MessageProperties.PERSISTENT_TEXT_PLAIN,
+                MessageProperties.PERSISTENT_TEXT_PLAIN.builder()
+                        .headers(mapOf("Authorization" to "Bearer $token"))
+                        .build(),
                 objectMapper.writeValueAsBytes(event)
         )
     }
 
-    override fun serviceProviderAccountCreated(event: AccountCreatedEvent) {
+    override fun serviceProviderAccountCreated(token: String, event: AccountCreatedEvent) {
         channel.queueDeclare(SERVICE_PROVIDER_ACCOUNT_CREATED, true, false, true, mutableMapOf<String, Any>())
 
         channel.basicPublish(
                 EXCHANGE_NAME,
                 SERVICE_PROVIDER_ACCOUNT_CREATED,
-                MessageProperties.PERSISTENT_TEXT_PLAIN,
+                MessageProperties.PERSISTENT_TEXT_PLAIN.builder()
+                        .headers(mapOf("Authorization" to "Bearer $token"))
+                        .build(),
                 objectMapper.writeValueAsBytes(event)
         )
     }

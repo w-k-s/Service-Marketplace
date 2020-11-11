@@ -1,4 +1,4 @@
-package com.wks.servicemarketplace.authservice.adapters.fusionauth
+package com.wks.servicemarketplace.authservice.adapters.auth.fusionauth
 
 import com.wks.servicemarketplace.authservice.core.User
 

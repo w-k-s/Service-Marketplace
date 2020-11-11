@@ -38,6 +38,8 @@ services:
       dockerfile: Dockerfile
     image: wkas/sm-auth-service
     restart: always
+    env_file:
+      - docker-infra/auth-service.env
     environment:
       fusionServerUrl: http://fusionauth:9011
       fusionApplicationId: d64656ea-4f62-4127-b312-91afeeca96f9

@@ -36,7 +36,7 @@ public class CreateCustomerUseCase implements UseCase<CustomerRequest, CustomerR
     public CustomerResponse execute(CustomerRequest customerRequest) throws UseCaseException {
         Connection connection = null;
         try {
-            //AuthorizationUtils.checkRole(customerRequest.getUser(), "Customer");
+           AuthorizationUtils.checkRole(customerRequest.getAuthentication(), "account.create");
 
             connection = TransactionUtils.beginTransaction(customerDao.getConnection());
 

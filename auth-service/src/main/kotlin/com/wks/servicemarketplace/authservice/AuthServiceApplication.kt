@@ -3,8 +3,9 @@ package com.wks.servicemarketplace.authservice
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.rabbitmq.client.Channel
 import com.rabbitmq.client.Connection
+import com.wks.servicemarketplace.authservice.adapters.auth.fusionauth.FusionAuthAdapter
 import com.wks.servicemarketplace.authservice.adapters.events.DefaultEventPublisher
-import com.wks.servicemarketplace.authservice.adapters.fusionauth.FusionAuthAdapter
+import com.wks.servicemarketplace.authservice.adapters.graphql.ApiTokenDataFetcher
 import com.wks.servicemarketplace.authservice.adapters.graphql.LoginDataFetcher
 import com.wks.servicemarketplace.authservice.adapters.graphql.RegisterDataFetcher
 import com.wks.servicemarketplace.authservice.adapters.web.resources.GraphQLResource
@@ -58,6 +59,7 @@ class AuthServiceApplication : ResourceConfig() {
                 bind(FusionAuthAdapter::class.java).to(IAMAdapter::class.java).`in`(Immediate::class.java)
                 bind(LoginDataFetcher::class.java).to(LoginDataFetcher::class.java)
                 bind(RegisterDataFetcher::class.java).to(RegisterDataFetcher::class.java)
+                bind(ApiTokenDataFetcher::class.java).to(ApiTokenDataFetcher::class.java)
                 bind(TokenService::class.java).to(TokenService::class.java)
             }
         })

@@ -20,7 +20,6 @@ public class ApplicationParametersFactory implements Factory<ApplicationParamete
                 .jdbcPassword(System.getenv("jdbcPassword"))
                 .amqpHost(System.getenv("amqpHost"))
                 .amqpPort(Integer.parseInt(System.getenv("amqpPort")))
-                .keycloakKeySetUrl(System.getenv("keycloakKeySetUrl"))
                 .build();
     }
 

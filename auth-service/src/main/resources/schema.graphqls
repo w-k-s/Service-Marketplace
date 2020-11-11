@@ -8,6 +8,12 @@ type SignInResponse {
     refreshToken: String!
 }
 
+input ClientCredentialsRequest {
+    clientId: String!
+    clientSecret: String!
+    requestedPermissions: [String]!
+}
+
 input SignUpRequest{
     firstName: String!
     lastName: String!
@@ -32,6 +38,7 @@ type Query{
 type Mutation {
     signIn(data: SignInRequest!): SignInResponse
     signUp(data: SignUpRequest!): SignUpResponse
+    apiToken(data: ClientCredentialsRequest!): SignInResponse
 }
 
 schema {

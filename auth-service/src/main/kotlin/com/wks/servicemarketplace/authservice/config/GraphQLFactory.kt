@@ -1,5 +1,6 @@
 package com.wks.servicemarketplace.authservice.config
 
+import com.wks.servicemarketplace.authservice.adapters.graphql.ApiTokenDataFetcher
 import com.wks.servicemarketplace.authservice.adapters.graphql.GraphQLDataFetcherExceptionHandler
 import com.wks.servicemarketplace.authservice.adapters.graphql.LoginDataFetcher
 import com.wks.servicemarketplace.authservice.adapters.graphql.RegisterDataFetcher
@@ -13,7 +14,8 @@ import org.glassfish.hk2.api.Factory
 import javax.inject.Inject
 
 class GraphQLFactory @Inject constructor(private val loginDataFetcher: LoginDataFetcher,
-                                         private val registerDataFetcher: RegisterDataFetcher) : Factory<GraphQL> {
+                                         private val registerDataFetcher: RegisterDataFetcher,
+                                         private val apiTokenFetcher: ApiTokenDataFetcher) : Factory<GraphQL> {
 
     private val graphQL: GraphQL
 
@@ -37,6 +39,7 @@ class GraphQLFactory @Inject constructor(private val loginDataFetcher: LoginData
                 .type("Mutation") { builder ->
                     builder.dataFetcher("signIn", loginDataFetcher)
                             .dataFetcher("signUp", registerDataFetcher)
+                            .dataFetcher("apiToken", apiTokenFetcher)
                 }
                 .build()
     }

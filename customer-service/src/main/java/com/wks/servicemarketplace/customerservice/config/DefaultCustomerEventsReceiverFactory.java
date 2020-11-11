@@ -2,6 +2,7 @@ package com.wks.servicemarketplace.customerservice.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.Channel;
+import com.wks.servicemarketplace.customerservice.adapters.auth.TokenValidator;
 import com.wks.servicemarketplace.customerservice.adapters.events.DefaultCustomerEventsReceiver;
 import com.wks.servicemarketplace.customerservice.core.usecase.address.verifyaddress.VerifyAddressUseCase;
 import com.wks.servicemarketplace.customerservice.core.usecase.customer.CreateCustomerUseCase;
@@ -17,10 +18,12 @@ public class DefaultCustomerEventsReceiverFactory implements Factory<DefaultCust
     public DefaultCustomerEventsReceiverFactory(VerifyAddressUseCase addressUseCase,
                                                 CreateCustomerUseCase createCustomerUseCase,
                                                 ObjectMapper objectMapper,
+                                                TokenValidator tokenValidator,
                                                 Channel channel){
         this.eventReceiver = new DefaultCustomerEventsReceiver(
                 addressUseCase,
                 createCustomerUseCase,
+                tokenValidator,
                 objectMapper,
                 channel
         );

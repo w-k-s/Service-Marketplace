@@ -1,8 +1,9 @@
-package com.wks.servicemarketplace.authservice.adapters.fusionauth
+package com.wks.servicemarketplace.authservice.adapters.auth.fusionauth
 
 import com.inversoft.error.Errors
 import com.wks.servicemarketplace.authservice.config.FusionAuthConfiguration
 import com.wks.servicemarketplace.authservice.core.*
+import com.wks.servicemarketplace.authservice.core.dtos.SignInRequest
 import com.wks.servicemarketplace.authservice.core.errors.ErrorType
 import com.wks.servicemarketplace.authservice.core.errors.RegistrationFailedException
 import com.wks.servicemarketplace.authservice.core.errors.LoginFailedException
@@ -28,7 +29,7 @@ class FusionAuthAdapter @Inject constructor(
         val LOGGER: Logger = LoggerFactory.getLogger(FusionAuthAdapter::class.java)
     }
 
-    private val fusionAuthClient = FusionAuthClient(config.apiKey, config.serverUrl, config.tenantId)
+    private val fusionAuthUserClient = FusionAuthClient(config.apiKey, config.serverUrl, config.tenantId)
     private val groups by lazy { loadGroups() }
 
     override fun login(credentials: Credentials): User {
@@ -48,14 +49,14 @@ class FusionAuthAdapter @Inject constructor(
     }
 
     private fun getUser(credentials: Credentials): LoginResponse {
-        val response = fusionAuthClient.login(
+        val response = fusionAuthUserClient.login(
                 LoginRequest(
                         UUID.fromString(config.applicationId),
                         credentials.username,
                         credentials.password
                 )
         ).also {
-            LOGGER.info("Login: Username: {}. Error: {}. Exception: {}", credentials.username, it.errorResponse, it.exception)
+            LOGGER.info("Login: Username: {}. Status: {}. Error: {}. Exception: {}", it.status,credentials.username, it.errorResponse, it.exception)
         }
         when {
             response.wasSuccessful() -> return response.successResponse
@@ -74,7 +75,7 @@ class FusionAuthAdapter @Inject constructor(
     private fun createUser(registration: Registration): Identity {
         val id = UUID.randomUUID()
 
-        val response = fusionAuthClient.register(
+        val response = fusionAuthUserClient.register(
                 id,
                 RegistrationRequest(
                         io.fusionauth.domain.User().with {
@@ -103,8 +104,8 @@ class FusionAuthAdapter @Inject constructor(
     }
 
     private fun loadGroups(): List<Group> {
-        val response = fusionAuthClient.retrieveGroups()
-                .also { LOGGER.error("Retrieve groups. Error: {}. Exception: {}", it.errorResponse, it.exception) }
+        val response = fusionAuthUserClient.retrieveGroups()
+                .also { LOGGER.info("Retrieve groups. Status: {}. Error: {}. Exception: {}", it.status, it.errorResponse, it.exception) }
 
         if (!response.wasSuccessful()) {
             throw RuntimeException("Failed to retrieve groups")
@@ -120,14 +121,25 @@ class FusionAuthAdapter @Inject constructor(
         }
 
         val group = groups.firstOrNull { it.name == actualRole } ?: throw RuntimeException("Role not found")
-        val response = fusionAuthClient.createGroupMembers(MemberRequest(group.id, listOf(GroupMember().with {
+        val response = fusionAuthUserClient.createGroupMembers(MemberRequest(group.id, listOf(GroupMember().with {
             it.userId = UUID.fromString(userId)
             it.groupId = group.id
-        }))).also { LOGGER.error("Add user $userId to group. Error: {}. Exception: {}", it.errorResponse, it.exception) }
+        }))).also { LOGGER.info("Add user $userId to group. Status: {}. Error: {}. Exception: {}", it.status, it.errorResponse, it.exception) }
 
         if (!response.wasSuccessful()) {
             throw RuntimeException("Failed to add user $userId to group")
         }
+    }
+
+    /**
+     * FusionAuth does not support client credentials.
+     * Official Workaround: https://github.com/FusionAuth/fusionauth-issues/issues/155
+     *
+     */
+    override fun apiToken(clientCredentials: ClientCredentials): Client {
+        return getUser(SignInRequest(clientCredentials.clientId, clientCredentials.clientSecret))
+                .let { it.user }
+                .let { FusionAuthM2MClient(it.username, it.getRoleNamesForApplication(UUID.fromString(config.applicationId)).toList()) }
     }
 }
 

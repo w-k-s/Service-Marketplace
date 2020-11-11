@@ -86,7 +86,6 @@ You can now run the `liquibaseUpdate` command to set up the database:
 | amqpPort               | RabbitMQ Broker port              | 5672                                                                               | true     |
 | serverHost             | Listen to requests from host      | http://localhost                                                                   | true     |
 | serverPort             | Listen to requests for port       | 8081                                                                               | true     |
-| keycloakKeySetUrl      | URL that returns Keycloak's KeySet| http://localhost:8180/auth/realms/ServiceMarketplace/protocol/openid-connect/certs | true     |
 
 ## Sample Requests
 
