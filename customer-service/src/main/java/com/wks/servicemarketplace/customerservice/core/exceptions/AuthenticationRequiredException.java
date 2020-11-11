@@ -1,7 +1,7 @@
 package com.wks.servicemarketplace.customerservice.core.exceptions;
 
-public class AuthenticationRequiredException extends RuntimeException {
+public class AuthenticationRequiredException extends CoreException {
     public AuthenticationRequiredException() {
-        super("User must be authenticated to perform this request");
+        super(ErrorType.UNAUTHENTICATED, "User must be authenticated to perform this request");
     }
 }

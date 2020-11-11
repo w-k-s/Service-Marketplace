@@ -1,7 +1,7 @@
 package com.wks.servicemarketplace.customerservice.core.daos;
 
-import com.wks.servicemarketplace.customerservice.core.models.Address;
-import com.wks.servicemarketplace.customerservice.core.models.Customer;
+import com.wks.servicemarketplace.customerservice.core.usecase.address.Address;
+import com.wks.servicemarketplace.customerservice.core.usecase.customer.Customer;
 
 import java.sql.Connection;
 import java.sql.SQLException;

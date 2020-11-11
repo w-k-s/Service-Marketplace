@@ -1,4 +1,4 @@
-package com.wks.servicemarketplace.customerservice.core.utils;
+package com.wks.servicemarketplace.customerservice.core.exceptions;
 
 import java.util.Collections;
 import java.util.Map;

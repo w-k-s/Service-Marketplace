@@ -3,10 +3,10 @@ package com.wks.servicemarketplace.customerservice.core.usecase.address.verifyad
 import com.google.common.collect.ImmutableMap;
 import com.wks.servicemarketplace.customerservice.core.daos.CustomerDao;
 import com.wks.servicemarketplace.customerservice.core.events.CustomerEventsPublisher;
-import com.wks.servicemarketplace.customerservice.core.models.Address;
+import com.wks.servicemarketplace.customerservice.core.usecase.address.Address;
 import com.wks.servicemarketplace.customerservice.core.usecase.UseCase;
-import com.wks.servicemarketplace.customerservice.core.usecase.UseCaseException;
-import com.wks.servicemarketplace.customerservice.core.usecase.errors.ErrorType;
+import com.wks.servicemarketplace.customerservice.core.exceptions.CoreException;
+import com.wks.servicemarketplace.customerservice.core.exceptions.ErrorType;
 import com.wks.servicemarketplace.customerservice.core.utils.CloseableUtils;
 
 import javax.inject.Inject;
@@ -28,7 +28,7 @@ public class VerifyAddressUseCase implements UseCase<VerifyAddressRequest, Void>
     }
 
     @Override
-    public Void execute(VerifyAddressRequest request) throws UseCaseException, IOException {
+    public Void execute(VerifyAddressRequest request) throws CoreException, IOException {
         final Map<String, String> userInfo = ImmutableMap.of(
                 "orderId", request.getOrderId(),
                 "customerId", request.getCustomerExternalId().toString(),
@@ -39,14 +39,14 @@ public class VerifyAddressUseCase implements UseCase<VerifyAddressRequest, Void>
         try {
             connection = customerDao.getConnection();
             final Address address = customerDao.findAddressByAddressIdAndCustomerId(connection, request.getCustomerExternalId(), request.getAddressExternalId())
-                    .orElseThrow(() -> new UseCaseException(ErrorType.ADDRESS_NOT_FOUND, userInfo));
+                    .orElseThrow(() -> new CoreException(ErrorType.ADDRESS_NOT_FOUND, userInfo));
 
             final boolean addressVerified = address.getLatitude().equals(request.getAddressLatitude())
                     && address.getLongitude().equals(request.getAddressLongitude())
                     && address.getVersion().equals(request.getAddressVersion());
 
             if (!addressVerified) {
-                throw new UseCaseException(ErrorType.ADDRESS_OUTDATED, userInfo);
+                throw new CoreException(ErrorType.ADDRESS_OUTDATED, userInfo);
             }
 
             customerEventsPublisher.addressVerified(new AddressVerifiedEvent(
@@ -54,7 +54,7 @@ public class VerifyAddressUseCase implements UseCase<VerifyAddressRequest, Void>
                     request.getCustomerExternalId(),
                     request.getAddressExternalId()
             ));
-        } catch (UseCaseException e) {
+        } catch (CoreException e) {
             customerEventsPublisher.addressVerificationFailed(new AddressVerificationFailedEvent(
                     request.getOrderId(),
                     e.getErrorType().code,
@@ -71,7 +71,7 @@ public class VerifyAddressUseCase implements UseCase<VerifyAddressRequest, Void>
                     exception.getMessage(),
                     userInfo
             ));
-            throw new UseCaseException(ErrorType.DATABASE, exception.getMessage(), userInfo, exception);
+            throw new CoreException(ErrorType.DATABASE, exception.getMessage(), userInfo, exception);
         } finally {
             CloseableUtils.close(connection);
         }

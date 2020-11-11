@@ -1,5 +1,6 @@
 package com.wks.servicemarketplace.customerservice.core.usecase.address;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.wks.servicemarketplace.customerservice.core.auth.Authentication;
@@ -109,13 +110,21 @@ public class AddressRequest {
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class Builder {
+        @JsonProperty("customerExternalId")
         private Long customerExternalId;
+        @JsonProperty("name")
         private String name;
+        @JsonProperty("line1")
         private String line1;
+        @JsonProperty("line2")
         private String line2;
+        @JsonProperty("city")
         private String city;
+        @JsonProperty("country")
         private String country;
+        @JsonProperty("latitude")
         private BigDecimal latitude;
+        @JsonProperty("longitude")
         private BigDecimal longitude;
         private Authentication authentication;
 
@@ -159,7 +168,7 @@ public class AddressRequest {
             return this;
         }
 
-        public Builder user(Authentication authentication) {
+        public Builder authentication(Authentication authentication) {
             this.authentication = authentication;
             return this;
         }

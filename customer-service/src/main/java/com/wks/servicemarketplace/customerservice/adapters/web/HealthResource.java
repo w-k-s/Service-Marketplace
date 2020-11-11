@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Path("/health")
+@Path("/")
 public class HealthResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HealthResource.class.getSimpleName());
@@ -28,7 +28,7 @@ public class HealthResource {
     }
 
     @GET
-    @Path("/")
+    @Path("/health")
     @Produces(MediaType.APPLICATION_JSON)
     public Response healthCheck() {
         final List<String> failedHealthChecks = healthCheckRegistry.runHealthChecks()

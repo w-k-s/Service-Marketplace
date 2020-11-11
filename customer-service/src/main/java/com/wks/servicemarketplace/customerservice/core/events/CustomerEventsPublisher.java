@@ -1,7 +1,7 @@
 package com.wks.servicemarketplace.customerservice.core.events;
 
-import com.wks.servicemarketplace.customerservice.core.models.events.AddressAddedEvent;
-import com.wks.servicemarketplace.customerservice.core.models.events.CustomerCreatedEvent;
+import com.wks.servicemarketplace.customerservice.core.usecase.address.AddressAddedEvent;
+import com.wks.servicemarketplace.customerservice.core.usecase.customer.CustomerCreatedEvent;
 import com.wks.servicemarketplace.customerservice.core.usecase.address.verifyaddress.AddressVerificationFailedEvent;
 import com.wks.servicemarketplace.customerservice.core.usecase.address.verifyaddress.AddressVerifiedEvent;
 

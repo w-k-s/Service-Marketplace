@@ -1,11 +1,14 @@
 package com.wks.servicemarketplace.customerservice.core.exceptions;
 
-public class UnauthorizedException extends RuntimeException {
+public class UnauthorizedException extends CoreException {
 
     private final String requiredRole;
 
     private UnauthorizedException(String requiredRole) {
-        super(String.format("User must have role %s to perform this action", requiredRole));
+        super(
+                ErrorType.UNAUTHORIZED,
+                String.format("User must have role %s to perform this action", requiredRole)
+        );
         this.requiredRole = requiredRole;
     }
 

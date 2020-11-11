@@ -6,14 +6,11 @@ import com.wks.servicemarketplace.customerservice.core.daos.CustomerDao;
 import com.wks.servicemarketplace.customerservice.core.daos.TransactionUtils;
 import com.wks.servicemarketplace.customerservice.core.events.CustomerEventsPublisher;
 import com.wks.servicemarketplace.customerservice.core.exceptions.CountryCodeNotFoundException;
-import com.wks.servicemarketplace.customerservice.core.models.Address;
-import com.wks.servicemarketplace.customerservice.core.models.CountryCode;
-import com.wks.servicemarketplace.customerservice.core.models.ResultWithEvents;
-import com.wks.servicemarketplace.customerservice.core.models.events.AddressAddedEvent;
+import com.wks.servicemarketplace.customerservice.core.usecase.ResultWithEvents;
 import com.wks.servicemarketplace.customerservice.core.usecase.UseCase;
-import com.wks.servicemarketplace.customerservice.core.usecase.UseCaseException;
+import com.wks.servicemarketplace.customerservice.core.exceptions.CoreException;
 import com.wks.servicemarketplace.customerservice.core.usecase.customer.CreateCustomerUseCase;
-import com.wks.servicemarketplace.customerservice.core.usecase.errors.ErrorType;
+import com.wks.servicemarketplace.customerservice.core.exceptions.ErrorType;
 import com.wks.servicemarketplace.customerservice.core.utils.CloseableUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +33,7 @@ public class AddAddressUseCase implements UseCase<AddressRequest, AddressRespons
     }
 
     @Override
-    public AddressResponse execute(AddressRequest request) throws UseCaseException {
+    public AddressResponse execute(AddressRequest request) throws CoreException {
         Connection connection = null;
         try {
             AuthorizationUtils.checkRole(request.getAuthentication(), "address.create");
@@ -79,11 +76,11 @@ public class AddAddressUseCase implements UseCase<AddressRequest, AddressRespons
         } catch (CountryCodeNotFoundException e) {
             LOGGER.error("Failed to add address.", e);
             TransactionUtils.rollback(connection);
-            throw new UseCaseException(ErrorType.INVALID_COUNTRY, e.getMessage(), ImmutableMap.of("countryCode", e.getCountryCode()), e);
+            throw new CoreException(ErrorType.INVALID_COUNTRY, e.getMessage(), ImmutableMap.of("countryCode", e.getCountryCode()), e);
         } catch (Exception e) {
             LOGGER.error("Failed to add address.", e);
             TransactionUtils.rollback(connection);
-            throw new UseCaseException(ErrorType.ADDRESS_NOT_CREATED, e);
+            throw new CoreException(ErrorType.ADDRESS_NOT_CREATED, e);
         } finally {
             CloseableUtils.close(connection);
         }

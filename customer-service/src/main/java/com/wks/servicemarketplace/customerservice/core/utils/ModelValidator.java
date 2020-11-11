@@ -1,5 +1,7 @@
 package com.wks.servicemarketplace.customerservice.core.utils;
 
+import com.wks.servicemarketplace.customerservice.core.exceptions.ValidationException;
+
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;

@@ -1,6 +1,7 @@
-package com.wks.servicemarketplace.customerservice.core.models;
+package com.wks.servicemarketplace.customerservice.core.usecase.customer;
 
-import com.wks.servicemarketplace.customerservice.core.models.events.CustomerCreatedEvent;
+import com.wks.servicemarketplace.customerservice.core.usecase.ResultWithEvents;
+import com.wks.servicemarketplace.customerservice.core.usecase.address.Address;
 import com.wks.servicemarketplace.customerservice.core.utils.ModelValidator;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

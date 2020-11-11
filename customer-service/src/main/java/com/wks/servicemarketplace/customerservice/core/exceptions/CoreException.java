@@ -1,30 +1,30 @@
-package com.wks.servicemarketplace.customerservice.core.usecase;
+package com.wks.servicemarketplace.customerservice.core.exceptions;
 
 import com.google.common.base.Preconditions;
-import com.wks.servicemarketplace.customerservice.core.usecase.errors.ErrorType;
+import com.wks.servicemarketplace.customerservice.core.exceptions.ErrorType;
 
 import java.util.Collections;
 import java.util.Map;
 
-public class UseCaseException extends Exception {
+public class CoreException extends Exception {
 
     private final ErrorType errorType;
     private final String description;
     private final Map<String, String> userInfo;
 
-    public UseCaseException(ErrorType errorType, String description) {
+    public CoreException(ErrorType errorType, String description) {
         this(errorType, description, Collections.emptyMap(), null);
     }
 
-    public UseCaseException(ErrorType errorType, Map<String, String> userInfo) {
+    public CoreException(ErrorType errorType, Map<String, String> userInfo) {
         this(errorType, null, userInfo, null);
     }
 
-    public UseCaseException(ErrorType errorType, Throwable cause) {
+    public CoreException(ErrorType errorType, Throwable cause) {
         this(errorType, cause.getMessage(), Collections.emptyMap(), cause);
     }
 
-    public UseCaseException(ErrorType errorType, String description, Map<String, String> userInfo, Throwable cause) {
+    public CoreException(ErrorType errorType, String description, Map<String, String> userInfo, Throwable cause) {
         super(description, cause);
         Preconditions.checkNotNull(errorType);
 

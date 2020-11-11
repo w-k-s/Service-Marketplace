@@ -4,12 +4,10 @@ import com.wks.servicemarketplace.customerservice.core.auth.AuthorizationUtils;
 import com.wks.servicemarketplace.customerservice.core.daos.CustomerDao;
 import com.wks.servicemarketplace.customerservice.core.daos.TransactionUtils;
 import com.wks.servicemarketplace.customerservice.core.events.CustomerEventsPublisher;
-import com.wks.servicemarketplace.customerservice.core.models.Customer;
-import com.wks.servicemarketplace.customerservice.core.models.ResultWithEvents;
-import com.wks.servicemarketplace.customerservice.core.models.events.CustomerCreatedEvent;
+import com.wks.servicemarketplace.customerservice.core.usecase.ResultWithEvents;
 import com.wks.servicemarketplace.customerservice.core.usecase.UseCase;
-import com.wks.servicemarketplace.customerservice.core.usecase.UseCaseException;
-import com.wks.servicemarketplace.customerservice.core.usecase.errors.ErrorType;
+import com.wks.servicemarketplace.customerservice.core.exceptions.CoreException;
+import com.wks.servicemarketplace.customerservice.core.exceptions.ErrorType;
 import com.wks.servicemarketplace.customerservice.core.utils.CloseableUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +31,7 @@ public class CreateCustomerUseCase implements UseCase<CustomerRequest, CustomerR
     }
 
     @Override
-    public CustomerResponse execute(CustomerRequest customerRequest) throws UseCaseException {
+    public CustomerResponse execute(CustomerRequest customerRequest) throws CoreException {
         Connection connection = null;
         try {
            AuthorizationUtils.checkRole(customerRequest.getAuthentication(), "account.create");
@@ -65,7 +63,7 @@ public class CreateCustomerUseCase implements UseCase<CustomerRequest, CustomerR
         } catch (Exception e) {
             LOGGER.error("Failed to create customer.", e);
             TransactionUtils.rollback(connection);
-            throw new UseCaseException(ErrorType.CUSTOMER_NOT_CREATED, e.getMessage(), null, e);
+            throw new CoreException(ErrorType.CUSTOMER_NOT_CREATED, e.getMessage(), null, e);
         } finally {
             CloseableUtils.close(connection);
         }

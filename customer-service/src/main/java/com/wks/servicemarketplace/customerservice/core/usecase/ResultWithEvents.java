@@ -1,7 +1,6 @@
-package com.wks.servicemarketplace.customerservice.core.models;
+package com.wks.servicemarketplace.customerservice.core.usecase;
 
 import com.google.common.base.Preconditions;
-import com.wks.servicemarketplace.customerservice.core.models.events.DomainEvent;
 import lombok.Value;
 
 import java.util.List;

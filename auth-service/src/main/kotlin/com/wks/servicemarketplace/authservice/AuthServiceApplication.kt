@@ -9,6 +9,7 @@ import com.wks.servicemarketplace.authservice.adapters.graphql.ApiTokenDataFetch
 import com.wks.servicemarketplace.authservice.adapters.graphql.LoginDataFetcher
 import com.wks.servicemarketplace.authservice.adapters.graphql.RegisterDataFetcher
 import com.wks.servicemarketplace.authservice.adapters.web.resources.GraphQLResource
+import com.wks.servicemarketplace.authservice.adapters.web.resources.HealthResource
 import com.wks.servicemarketplace.authservice.config.*
 import com.wks.servicemarketplace.authservice.core.IAMAdapter
 import com.wks.servicemarketplace.authservice.core.events.EventPublisher
@@ -55,16 +56,17 @@ class AuthServiceApplication : ResourceConfig() {
                 bindFactory(AmqpConnectionFactory::class.java, Immediate::class.java).to(Connection::class.java).`in`(Immediate::class.java)
                 bindFactory(AmqpChannelFactory::class.java, Immediate::class.java).to(Channel::class.java).`in`(Immediate::class.java)
 
-                bind(DefaultEventPublisher::class.java).to(EventPublisher::class.java)
+                bind(DefaultEventPublisher::class.java).to(EventPublisher::class.java).`in`(Immediate::class.java)
                 bind(FusionAuthAdapter::class.java).to(IAMAdapter::class.java).`in`(Immediate::class.java)
-                bind(LoginDataFetcher::class.java).to(LoginDataFetcher::class.java)
-                bind(RegisterDataFetcher::class.java).to(RegisterDataFetcher::class.java)
-                bind(ApiTokenDataFetcher::class.java).to(ApiTokenDataFetcher::class.java)
-                bind(TokenService::class.java).to(TokenService::class.java)
+                bind(LoginDataFetcher::class.java).to(LoginDataFetcher::class.java).`in`(Immediate::class.java)
+                bind(RegisterDataFetcher::class.java).to(RegisterDataFetcher::class.java).`in`(Immediate::class.java)
+                bind(ApiTokenDataFetcher::class.java).to(ApiTokenDataFetcher::class.java).`in`(Immediate::class.java)
+                bind(TokenService::class.java).to(TokenService::class.java).`in`(Immediate::class.java)
             }
         })
         register(ObjectMapperProvider::class.java)
         register(GraphQLResource::class.java)
+        register(HealthResource::class.java)
     }
 
     fun run() {

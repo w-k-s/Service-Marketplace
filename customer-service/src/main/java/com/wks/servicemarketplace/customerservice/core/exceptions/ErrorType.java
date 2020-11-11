@@ -1,4 +1,4 @@
-package com.wks.servicemarketplace.customerservice.core.usecase.errors;
+package com.wks.servicemarketplace.customerservice.core.exceptions;
 
 public enum ErrorType {
     UNKNOWN(ErrorType.GENERAL_ERROR_UNKNOWN),

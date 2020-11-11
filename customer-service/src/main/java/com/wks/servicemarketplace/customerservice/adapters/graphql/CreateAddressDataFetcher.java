@@ -1,9 +1,9 @@
 package com.wks.servicemarketplace.customerservice.adapters.graphql;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wks.servicemarketplace.customerservice.core.usecase.address.AddAddressUseCase;
 import com.wks.servicemarketplace.customerservice.core.usecase.address.AddressRequest;
 import com.wks.servicemarketplace.customerservice.core.usecase.address.AddressResponse;
-import com.wks.servicemarketplace.customerservice.core.utils.Dictionary;
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
 import org.slf4j.Logger;
@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.math.BigDecimal;
 
 @Singleton
 public class CreateAddressDataFetcher implements DataFetcher<AddressResponse> {
@@ -19,29 +18,23 @@ public class CreateAddressDataFetcher implements DataFetcher<AddressResponse> {
     private static final Logger LOGGER = LoggerFactory.getLogger(CreateAddressDataFetcher.class);
 
     private final AddAddressUseCase useCase;
+    private final ObjectMapper objectMapper;
 
     @Inject
-    public CreateAddressDataFetcher(AddAddressUseCase useCase) {
+    public CreateAddressDataFetcher(AddAddressUseCase useCase,
+                                    ObjectMapper objectMapper) {
         LOGGER.info("Creating instance of CreateAddressDataFetcher");
         this.useCase = useCase;
+        this.objectMapper = objectMapper;
     }
 
     @Override
     public AddressResponse get(DataFetchingEnvironment environment) {
         try {
-            final Dictionary<String> address = Dictionary.of(environment.getArgument("address"));
-
-            return useCase.execute(AddressRequest.builder()
-                    .customerExternalId(address.get("customerExternalId"))
-                    .name(address.get("name"))
-                    .line1(address.get("line1"))
-                    .line2(address.get("line2"))
-                    .city(address.get("city"))
-                    .country(address.get("country"))
-                    .latitude(new BigDecimal(address.get("latitude").toString()))
-                    .longitude(new BigDecimal(address.get("longitude").toString()))
-                    .user(environment.getContext())
-                    .build());
+            final AddressRequest address = GraphQLUtils.getArgument(environment, "address", AddressRequest.Builder.class, objectMapper)
+                    .map(builder -> builder.authentication(environment.getContext()).build())
+                    .orElseThrow(() -> new IllegalArgumentException("Failed to parse request"));
+            return useCase.execute(address);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
             throw new RuntimeException(e);

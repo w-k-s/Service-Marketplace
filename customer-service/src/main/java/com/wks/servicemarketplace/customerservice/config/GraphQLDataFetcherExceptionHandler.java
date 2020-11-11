@@ -1,13 +1,10 @@
 package com.wks.servicemarketplace.customerservice.config;
 
-import com.google.common.collect.ImmutableMap;
 import com.wks.servicemarketplace.customerservice.adapters.graphql.GraphQLUseCaseError;
 import com.wks.servicemarketplace.customerservice.adapters.graphql.SanitizedError;
-import com.wks.servicemarketplace.customerservice.core.exceptions.AuthenticationRequiredException;
-import com.wks.servicemarketplace.customerservice.core.exceptions.UnauthorizedException;
-import com.wks.servicemarketplace.customerservice.core.usecase.UseCaseException;
-import com.wks.servicemarketplace.customerservice.core.usecase.errors.ErrorType;
-import com.wks.servicemarketplace.customerservice.core.utils.ValidationException;
+import com.wks.servicemarketplace.customerservice.core.exceptions.CoreException;
+import com.wks.servicemarketplace.customerservice.core.exceptions.ErrorType;
+import com.wks.servicemarketplace.customerservice.core.exceptions.ValidationException;
 import graphql.ExceptionWhileDataFetching;
 import graphql.GraphQLError;
 import graphql.execution.DataFetcherExceptionHandler;
@@ -24,29 +21,15 @@ public class GraphQLDataFetcherExceptionHandler implements DataFetcherExceptionH
     }
 
     private GraphQLError getGraphQLError(ExceptionWhileDataFetching fetchError) {
-        if (fetchError.getException() instanceof UseCaseException) {
-            return new GraphQLUseCaseError((UseCaseException) fetchError.getException(), fetchError);
+        if (fetchError.getException() instanceof CoreException) {
+            return new GraphQLUseCaseError((CoreException) fetchError.getException(), fetchError);
         }
-        if (fetchError.getException().getCause() instanceof UseCaseException) {
-            return new GraphQLUseCaseError((UseCaseException) fetchError.getException().getCause(), fetchError);
-        }
-        if (fetchError.getException() instanceof AuthenticationRequiredException) {
-            return new GraphQLUseCaseError(new UseCaseException(
-                    ErrorType.UNAUTHENTICATED,
-                    fetchError.getException()
-            ), fetchError);
-        }
-        if (fetchError.getException() instanceof UnauthorizedException) {
-            return new GraphQLUseCaseError(new UseCaseException(
-                    ErrorType.UNAUTHORIZED,
-                    fetchError.getMessage(),
-                    ImmutableMap.of("requiredRole", ((UnauthorizedException) fetchError.getException()).getRequiredRole()),
-                    fetchError.getException()
-            ), fetchError);
+        if (fetchError.getException().getCause() instanceof CoreException) {
+            return new GraphQLUseCaseError((CoreException) fetchError.getException().getCause(), fetchError);
         }
         if (fetchError.getException() instanceof ValidationException) {
             final ValidationException validationException = (ValidationException) fetchError.getException();
-            return new GraphQLUseCaseError(new UseCaseException(
+            return new GraphQLUseCaseError(new CoreException(
                     ErrorType.VALIDATION,
                     validationException.getMessage(),
                     validationException.getFields(),

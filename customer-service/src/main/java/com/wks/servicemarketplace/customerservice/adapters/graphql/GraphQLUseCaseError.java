@@ -2,8 +2,8 @@ package com.wks.servicemarketplace.customerservice.adapters.graphql;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.wks.servicemarketplace.customerservice.core.usecase.UseCaseException;
-import com.wks.servicemarketplace.customerservice.core.usecase.errors.ErrorType;
+import com.wks.servicemarketplace.customerservice.core.exceptions.CoreException;
+import com.wks.servicemarketplace.customerservice.core.exceptions.ErrorType;
 import graphql.ExceptionWhileDataFetching;
 import graphql.execution.ExecutionPath;
 import graphql.language.SourceLocation;
@@ -23,7 +23,7 @@ public class GraphQLUseCaseError extends ExceptionWhileDataFetching {
     private final String message;
     private final Map<String, Object> extensions;
 
-    public GraphQLUseCaseError(UseCaseException useCaseException,
+    public GraphQLUseCaseError(CoreException useCaseException,
                                ExceptionWhileDataFetching cause) {
         super(ExecutionPath.fromList(cause.getPath()), useCaseException, cause.getLocations().get(0));
         this.message = useCaseException.getDescription();

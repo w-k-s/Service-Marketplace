@@ -1,6 +1,6 @@
-package com.wks.servicemarketplace.customerservice.core.models;
+package com.wks.servicemarketplace.customerservice.core.usecase.address;
 
-import com.wks.servicemarketplace.customerservice.core.models.events.AddressAddedEvent;
+import com.wks.servicemarketplace.customerservice.core.usecase.ResultWithEvents;
 import com.wks.servicemarketplace.customerservice.core.utils.ModelValidator;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;

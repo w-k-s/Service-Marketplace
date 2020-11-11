@@ -6,7 +6,7 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DeliverCallback;
 import com.wks.servicemarketplace.customerservice.adapters.auth.InvalidTokenException;
 import com.wks.servicemarketplace.customerservice.adapters.auth.TokenValidator;
-import com.wks.servicemarketplace.customerservice.core.usecase.UseCaseException;
+import com.wks.servicemarketplace.customerservice.core.exceptions.CoreException;
 import com.wks.servicemarketplace.customerservice.core.usecase.address.verifyaddress.VerifyAddressRequest;
 import com.wks.servicemarketplace.customerservice.core.usecase.address.verifyaddress.VerifyAddressUseCase;
 import com.wks.servicemarketplace.customerservice.core.usecase.customer.CreateCustomerUseCase;
@@ -48,7 +48,7 @@ public class DefaultCustomerEventsReceiver {
                 final VerifyAddressRequest request = objectMapper.readValue(message.getBody(), VerifyAddressRequest.class);
                 verifyAddressUseCase.execute(request);
                 channel.basicAck(message.getEnvelope().getDeliveryTag(), false);
-            } catch (UseCaseException e) {
+            } catch (CoreException e) {
                 LOGGER.error(e.getMessage(), e);
             }
         };
@@ -63,12 +63,13 @@ public class DefaultCustomerEventsReceiver {
             try {
                 final String token = message.getProperties().getHeaders().get("Authorization").toString().substring("Bearer".length()).trim();
 
-                final CustomerRequest.Builder requestBuilder = objectMapper.readValue(message.getBody(), CustomerRequest.Builder.class);
-                requestBuilder.authentication(tokenValidator.authenticate(token));
+                final CustomerRequest customerRequest = objectMapper.readValue(message.getBody(), CustomerRequest.Builder.class)
+                        .authentication(tokenValidator.authenticate(token))
+                        .build();
 
-                createCustomerUseCase.execute(requestBuilder.build());
+                createCustomerUseCase.execute(customerRequest);
                 channel.basicAck(message.getEnvelope().getDeliveryTag(), false);
-            } catch (UseCaseException | InvalidTokenException e) {
+            } catch (CoreException | InvalidTokenException e) {
                 LOGGER.error(e.getMessage(), e);
                 // TODO: handle properly (e.g. put in error queue)
             }

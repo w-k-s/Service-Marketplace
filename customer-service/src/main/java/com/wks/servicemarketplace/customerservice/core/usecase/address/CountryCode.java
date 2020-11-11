@@ -1,4 +1,4 @@
-package com.wks.servicemarketplace.customerservice.core.models;
+package com.wks.servicemarketplace.customerservice.core.usecase.address;
 
 import com.wks.servicemarketplace.customerservice.core.exceptions.CountryCodeNotFoundException;
 import lombok.NonNull;

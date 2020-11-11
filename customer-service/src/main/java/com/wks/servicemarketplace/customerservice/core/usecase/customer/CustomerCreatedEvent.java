@@ -1,6 +1,6 @@
-package com.wks.servicemarketplace.customerservice.core.models.events;
+package com.wks.servicemarketplace.customerservice.core.usecase.customer;
 
-import com.wks.servicemarketplace.customerservice.core.models.Customer;
+import com.wks.servicemarketplace.customerservice.core.usecase.DomainEvent;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
