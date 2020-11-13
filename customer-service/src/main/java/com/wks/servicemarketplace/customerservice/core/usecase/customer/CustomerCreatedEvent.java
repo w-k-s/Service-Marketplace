@@ -11,10 +11,10 @@ import lombok.Value;
 public class CustomerCreatedEvent implements DomainEvent {
 
     @NonNull
-    private Long externalId;
+    private CustomerId externalId;
 
     @NonNull
-    private String uuid;
+    private CustomerUUID uuid;
 
     @NonNull
     private String firstName;

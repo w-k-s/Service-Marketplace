@@ -1,8 +1,10 @@
 package com.wks.servicemarketplace.customerservice.core.usecase.address;
 
+import com.google.common.base.Preconditions;
 import com.wks.servicemarketplace.customerservice.core.usecase.ResultWithEvents;
+import com.wks.servicemarketplace.customerservice.core.usecase.customer.Customer;
+import com.wks.servicemarketplace.customerservice.core.usecase.customer.CustomerId;
 import com.wks.servicemarketplace.customerservice.core.utils.ModelValidator;
-import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.Value;
 
@@ -10,26 +12,22 @@ import javax.validation.constraints.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.OffsetDateTime;
-import java.time.ZonedDateTime;
 import java.util.Collections;
-import java.util.UUID;
 
 @Value
-@AllArgsConstructor
 public class Address {
 
-    @NonNull
-    @NotNull
-    @PositiveOrZero
-    private final Long externalId;
+    private static final int MAX_ADDRESSES = 5;
 
     @NonNull
-    @NotBlank
-    private final String uuid;
+    private final AddressId externalId;
+
+    @NonNull
+    private final AddressUUID uuid;
 
     @NonNull
     @NotNull
-    private final Long customerExternalId;
+    private final CustomerId customerExternalId;
 
     @NonNull
     @NotBlank
@@ -84,20 +82,23 @@ public class Address {
         return this.longitude.setScale(5, RoundingMode.HALF_UP);
     }
 
-    public static Address create(long externalId,
-                                 long customerExternalId,
-                                 String addressName,
-                                 String line1,
-                                 String line2,
-                                 String city,
-                                 CountryCode country,
-                                 BigDecimal latitude,
-                                 BigDecimal longitude,
-                                 String createdBy) {
+    static ResultWithEvents<Address, AddressAddedEvent> create(Customer customer,
+                                                               AddressId externalId,
+                                                               String addressName,
+                                                               String line1,
+                                                               String line2,
+                                                               String city,
+                                                               CountryCode country,
+                                                               BigDecimal latitude,
+                                                               BigDecimal longitude,
+                                                               String createdBy) {
+        Preconditions.checkNotNull(customer);
+        Preconditions.checkArgument(customer.getAddresses().size() < MAX_ADDRESSES, "Customer can not have more than 5 addresses");
+
         final Address address = new Address(
                 externalId,
-                UUID.randomUUID().toString(),
-                customerExternalId,
+                AddressUUID.random(),
+                customer.getExternalId(),
                 addressName,
                 line1,
                 line2,
@@ -112,6 +113,6 @@ public class Address {
                 0L
         );
 
-        return ModelValidator.validate(address);
+        return ResultWithEvents.of(ModelValidator.validate(address), Collections.singletonList(AddressAddedEvent.of(address)));
     }
 }

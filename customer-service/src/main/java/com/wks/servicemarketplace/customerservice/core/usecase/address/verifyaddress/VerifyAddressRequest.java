@@ -2,6 +2,8 @@ package com.wks.servicemarketplace.customerservice.core.usecase.address.verifyad
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import com.wks.servicemarketplace.customerservice.core.usecase.address.AddressId;
+import com.wks.servicemarketplace.customerservice.core.usecase.customer.CustomerId;
 import lombok.Builder;
 import lombok.Value;
 
@@ -12,8 +14,8 @@ import java.math.BigDecimal;
 @Builder(builderClassName = "Builder", toBuilder = true)
 public class VerifyAddressRequest {
     private String orderId;
-    private Long customerExternalId;
-    private Long addressExternalId;
+    private CustomerId customerExternalId;
+    private AddressId addressExternalId;
     private BigDecimal addressLatitude;
     private BigDecimal addressLongitude;
     private Long addressVersion;

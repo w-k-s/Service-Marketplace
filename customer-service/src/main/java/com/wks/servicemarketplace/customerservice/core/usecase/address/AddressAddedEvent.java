@@ -1,5 +1,6 @@
 package com.wks.servicemarketplace.customerservice.core.usecase.address;
 
+import com.wks.servicemarketplace.customerservice.core.usecase.customer.CustomerId;
 import com.wks.servicemarketplace.customerservice.core.usecase.DomainEvent;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -14,10 +15,10 @@ import java.math.BigDecimal;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class AddressAddedEvent implements DomainEvent {
 
-    private final Long externalId;
+    private final AddressId externalId;
 
     @NonNull
-    private final Long customerExternalId;
+    private final CustomerId customerExternalId;
 
     @NonNull
     private final String name;

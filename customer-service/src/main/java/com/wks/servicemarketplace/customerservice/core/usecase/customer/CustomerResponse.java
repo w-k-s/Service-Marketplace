@@ -10,9 +10,9 @@ import java.util.List;
 @Builder
 public class CustomerResponse {
     @NonNull
-    private String uuid;
+    private CustomerUUID uuid;
     @NonNull
-    private Long externalId;
+    private CustomerId externalId;
     @NonNull
     private String firstName;
     @NonNull

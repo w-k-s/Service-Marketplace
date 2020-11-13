@@ -1,5 +1,6 @@
 package com.wks.servicemarketplace.customerservice.core.usecase.address;
 
+import com.wks.servicemarketplace.customerservice.core.usecase.customer.CustomerId;
 import lombok.*;
 
 import javax.validation.constraints.NotNull;
@@ -10,11 +11,11 @@ import java.math.BigDecimal;
 @Builder
 public class AddressResponse {
     @NonNull
-    private final String uuid;
+    private final AddressUUID uuid;
     @NonNull
-    private final Long externalId;
+    private final AddressId externalId;
     @NonNull
-    private final Long customerExternalId;
+    private final CustomerId customerExternalId;
     @NonNull
     private final String name;
     @NonNull

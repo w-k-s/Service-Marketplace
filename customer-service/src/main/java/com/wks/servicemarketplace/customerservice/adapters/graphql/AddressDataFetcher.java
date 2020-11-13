@@ -2,6 +2,7 @@ package com.wks.servicemarketplace.customerservice.adapters.graphql;
 
 import com.wks.servicemarketplace.customerservice.core.usecase.address.AddressResponse;
 import com.wks.servicemarketplace.customerservice.core.usecase.address.FindAddressByCustomerUuidUseCase;
+import com.wks.servicemarketplace.customerservice.core.usecase.customer.CustomerUUID;
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
 import org.slf4j.Logger;
@@ -27,7 +28,7 @@ public class AddressDataFetcher implements DataFetcher<List<AddressResponse>> {
     @Override
     public List<AddressResponse> get(DataFetchingEnvironment environment) {
         try {
-            return useCase.execute(environment.getArgument("customerUuid"));
+            return useCase.execute(CustomerUUID.of(environment.getArgument("customerUuid").toString()));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

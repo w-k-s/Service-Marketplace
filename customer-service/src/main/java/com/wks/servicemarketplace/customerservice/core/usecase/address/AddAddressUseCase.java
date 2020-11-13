@@ -13,6 +13,7 @@ import com.wks.servicemarketplace.customerservice.core.usecase.ResultWithEvents;
 import com.wks.servicemarketplace.customerservice.core.usecase.UseCase;
 import com.wks.servicemarketplace.customerservice.core.usecase.customer.CreateCustomerUseCase;
 import com.wks.servicemarketplace.customerservice.core.usecase.customer.Customer;
+import com.wks.servicemarketplace.customerservice.core.usecase.customer.CustomerUUID;
 import com.wks.servicemarketplace.customerservice.core.utils.CloseableUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,12 +48,13 @@ public class AddAddressUseCase implements UseCase<AddressRequest, AddressRespons
                     request.getAuthentication()
                             .getUser()
                             .map(User::getId)
+                            .map(CustomerUUID::of)
                             .orElseThrow(AuthenticationRequiredException::new)
             ).orElseThrow(UserNotFoundException::new);
 
-            final Address address = Address.create(
+            final ResultWithEvents<Address, AddressAddedEvent> addressAndEvents = Address.create(
+                    customer,
                     customerDao.newAddressExternalId(connection),
-                    customer.getExternalId(),
                     request.getName(),
                     request.getLine1(),
                     request.getLine2(),
@@ -63,12 +65,11 @@ public class AddAddressUseCase implements UseCase<AddressRequest, AddressRespons
                     request.getAuthentication().getName()
             );
 
-            final ResultWithEvents<Customer, AddressAddedEvent> customerWithEvents = customer.addAddress(address, request.getAuthentication().getName());
-
+            final Address address = addressAndEvents.getResult();
             customerDao.saveAddress(connection, address);
             connection.commit();
 
-            customerEventsPublisher.addressAdded(customerWithEvents.getEvents());
+            customerEventsPublisher.addressAdded(addressAndEvents.getEvents());
 
             return AddressResponse.builder()
                     .uuid(address.getUuid())

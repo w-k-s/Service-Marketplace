@@ -1,6 +1,6 @@
 package com.wks.servicemarketplace.customerservice.core.exceptions;
 
-public class UnauthorizedException extends CoreException {
+public class UnauthorizedException extends CoreRuntimeException {
 
     private final String requiredRole;
 
