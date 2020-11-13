@@ -11,9 +11,10 @@ import javax.validation.constraints.NotEmpty
 import javax.validation.constraints.NotNull
 
 @JsonDeserialize(builder = ClientCredentialsRequest.Builder::class)
-data class ClientCredentialsRequest constructor(override val clientId: String,
-                                                override val clientSecret: String,
-                                                override val requestedPermissions: List<String> = emptyList()) : ClientCredentials {
+data class ClientCredentialsRequest internal constructor(override val clientId: String,
+                                                         override val clientSecret: String,
+                                                         override val requestedPermissions: List<String> = emptyList(),
+                                                         override val impersonationToken: String? = null) : ClientCredentials {
 
     @JsonPOJOBuilder(buildMethodName = "build", withPrefix = "")
     class Builder {
@@ -26,6 +27,8 @@ data class ClientCredentialsRequest constructor(override val clientId: String,
         @field:NotEmpty
         @field:NotNull
         var requestedPermission: List<String> = emptyList()
+
+        var impersonationToken: String? = null
 
         fun clientId(clientId: String?): Builder {
             this.clientId = clientId
@@ -42,9 +45,19 @@ data class ClientCredentialsRequest constructor(override val clientId: String,
             return this
         }
 
+        fun impersonationToken(impersonationToken: String): Builder {
+            this.impersonationToken = impersonationToken
+            return this
+        }
+
         fun build(): ClientCredentialsRequest {
             ModelValidator.validate(this)
-            return ClientCredentialsRequest(this.clientSecret!!, this.clientSecret!!, this.requestedPermission)
+            return ClientCredentialsRequest(
+                    this.clientSecret!!,
+                    this.clientSecret!!,
+                    this.requestedPermission,
+                    this.impersonationToken
+            )
         }
     }
 }

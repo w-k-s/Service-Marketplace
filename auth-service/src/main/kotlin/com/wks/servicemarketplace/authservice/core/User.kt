@@ -7,5 +7,6 @@ interface User {
     val username: String
     val email: String
     val role: String
+    val type: UserType
     val permissions: List<String>
 }

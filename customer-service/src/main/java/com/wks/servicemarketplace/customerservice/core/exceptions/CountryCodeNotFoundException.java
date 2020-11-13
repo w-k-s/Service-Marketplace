@@ -2,7 +2,7 @@ package com.wks.servicemarketplace.customerservice.core.exceptions;
 
 import com.google.common.collect.ImmutableMap;
 
-public class CountryCodeNotFoundException extends CoreException {
+public class CountryCodeNotFoundException extends CoreRuntimeException {
 
     private final String countryCode;
 

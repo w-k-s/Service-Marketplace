@@ -4,7 +4,7 @@ import java.security.Principal;
 import java.util.Optional;
 
 public interface Authentication extends Principal {
-    Optional<Principal> getUser();
+    Optional<User> getUser();
 
     boolean hasRole(String role);
 }

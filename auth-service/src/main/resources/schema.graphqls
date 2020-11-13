@@ -12,6 +12,7 @@ input ClientCredentialsRequest {
     clientId: String!
     clientSecret: String!
     requestedPermissions: [String]!
+    impersonationToken: String
 }
 
 input SignUpRequest{

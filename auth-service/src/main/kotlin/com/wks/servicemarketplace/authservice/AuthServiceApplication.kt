@@ -21,6 +21,7 @@ import org.glassfish.jersey.jetty.JettyHttpContainerFactory
 import org.glassfish.jersey.server.ResourceConfig
 import org.slf4j.LoggerFactory
 import java.security.PrivateKey
+import java.security.PublicKey
 import javax.ws.rs.core.UriBuilder
 
 class AuthServiceApplication : ResourceConfig() {
@@ -53,6 +54,7 @@ class AuthServiceApplication : ResourceConfig() {
                 bindFactory(GraphQLFactory::class.java, Immediate::class.java).to(GraphQL::class.java).`in`(Immediate::class.java)
                 bindFactory(ObjectMapperFactory::class.java, Immediate::class.java).to(ObjectMapper::class.java).`in`(Immediate::class.java)
                 bindFactory(PrivateKeyFactory::class.java, Immediate::class.java).to(PrivateKey::class.java).`in`(Immediate::class.java)
+                bindFactory(PublicKeyFactory::class.java, Immediate::class.java).to(PublicKey::class.java).`in`(Immediate::class.java)
                 bindFactory(AmqpConnectionFactory::class.java, Immediate::class.java).to(Connection::class.java).`in`(Immediate::class.java)
                 bindFactory(AmqpChannelFactory::class.java, Immediate::class.java).to(Channel::class.java).`in`(Immediate::class.java)
 

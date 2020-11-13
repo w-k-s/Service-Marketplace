@@ -2,14 +2,20 @@ package com.wks.servicemarketplace.authservice.core.iam
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.wks.servicemarketplace.authservice.core.Token
+import com.wks.servicemarketplace.authservice.core.UserType
+import org.jose4j.jwa.AlgorithmConstraints
 import org.jose4j.jws.AlgorithmIdentifiers
 import org.jose4j.jws.JsonWebSignature
 import org.jose4j.jwt.JwtClaims
 import org.jose4j.jwt.NumericDate
+import org.jose4j.jwt.consumer.ErrorCodes
+import org.jose4j.jwt.consumer.InvalidJwtException
+import org.jose4j.jwt.consumer.JwtConsumerBuilder
 import java.security.PrivateKey
+import java.security.PublicKey
 import java.time.Duration
 import java.time.Instant
-import java.util.*
+
 
 class StandardToken(subject: String,
                     user: User? = null,
@@ -18,6 +24,12 @@ class StandardToken(subject: String,
                     otherClaims: Map<String, String> = emptyMap(),
                     privateKey: PrivateKey
 ) : Token {
+
+    data class Claims(
+            val subject: String,
+            val user: User? = null,
+            val permissions: List<String>
+    )
 
     data class User(
             val id: String,
@@ -43,4 +55,26 @@ class StandardToken(subject: String,
     }.compactSerialization
 
     override val refreshToken: String? = null
+
+    companion object {
+        fun parseClaims(token: String, publicKey: PublicKey): Claims {
+            val jwtConsumer = JwtConsumerBuilder()
+                    .setRequireExpirationTime()
+                    .setAllowedClockSkewInSeconds(30)
+                    .setRequireSubject()
+                    .setVerificationKey(publicKey)
+                    .setJwsAlgorithmConstraints(
+                            AlgorithmConstraints.ConstraintType.PERMIT, AlgorithmIdentifiers.RSA_USING_SHA256)
+                    .build()
+
+            val jwtClaims = jwtConsumer.processToClaims(token)
+            return jwtClaims.let {
+                Claims(
+                        it.subject,
+                        it.getClaimValue("user", User::class.java),
+                        it.getStringListClaimValue("permissions")
+                )
+            }
+        }
+    }
 }

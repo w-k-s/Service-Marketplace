@@ -8,9 +8,15 @@ interface CoreException {
     val message: String?
 }
 
-data class LoginFailedException(override val fields: Map<String, List<String>> = emptyMap(),
-                                override val message: String? = fields.toString(key = " "),
-                                override val errorType: ErrorType) : CoreException, RuntimeException(message)
+data class UnauthorizedException(override val message: String) : CoreException, RuntimeException(message) {
+    override val errorType = ErrorType.AUTHORIZATION
+    override val fields: Map<String, List<String>> = emptyMap()
+}
+
+data class LoginFailedException(
+        override val fields: Map<String, List<String>> = emptyMap(),
+        override val message: String? = fields.toString(key = " "),
+        override val errorType: ErrorType) : CoreException, RuntimeException(message)
 
 data class RegistrationFailedException(override val fields: Map<String, List<String>> = emptyMap(),
                                        override val message: String? = fields.toString(key = " "),

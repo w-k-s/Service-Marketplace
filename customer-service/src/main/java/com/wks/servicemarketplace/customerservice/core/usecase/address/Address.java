@@ -9,6 +9,7 @@ import lombok.Value;
 import javax.validation.constraints.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.UUID;
@@ -64,11 +65,11 @@ public class Address {
     @DecimalMax("180")
     private final BigDecimal longitude;
 
-    private final ZonedDateTime createdDate;
+    private final OffsetDateTime createdDate;
 
     private final String createdBy;
 
-    private final ZonedDateTime lastModifiedDate;
+    private final OffsetDateTime lastModifiedDate;
 
     private final String lastModifiedBy;
 
@@ -83,16 +84,16 @@ public class Address {
         return this.longitude.setScale(5, RoundingMode.HALF_UP);
     }
 
-    public static ResultWithEvents<Address, AddressAddedEvent> create(long externalId,
-                                                                      long customerExternalId,
-                                                                      String addressName,
-                                                                      String line1,
-                                                                      String line2,
-                                                                      String city,
-                                                                      CountryCode country,
-                                                                      BigDecimal latitude,
-                                                                      BigDecimal longitude,
-                                                                      String createdBy) {
+    public static Address create(long externalId,
+                                 long customerExternalId,
+                                 String addressName,
+                                 String line1,
+                                 String line2,
+                                 String city,
+                                 CountryCode country,
+                                 BigDecimal latitude,
+                                 BigDecimal longitude,
+                                 String createdBy) {
         final Address address = new Address(
                 externalId,
                 UUID.randomUUID().toString(),
@@ -110,8 +111,7 @@ public class Address {
                 null,
                 0L
         );
-        ModelValidator.validate(address);
 
-        return ResultWithEvents.of(address, Collections.singletonList(AddressAddedEvent.of(address)));
+        return ModelValidator.validate(address);
     }
 }

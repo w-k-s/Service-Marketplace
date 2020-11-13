@@ -43,8 +43,8 @@ class FusionAuthAdapter @Inject constructor(
                 login.user.username,
                 login.user.email,
                 group.name,
-                login.user.registrations.first { it.applicationId == UUID.fromString(config.applicationId) }.roles.toList(),
-                login.token
+                UserType.of(login.user.data["userType"].toString()),
+                login.user.registrations.first { it.applicationId == UUID.fromString(config.applicationId) }.roles.toList()
         )
     }
 
@@ -56,7 +56,7 @@ class FusionAuthAdapter @Inject constructor(
                         credentials.password
                 )
         ).also {
-            LOGGER.info("Login: Username: {}. Status: {}. Error: {}. Exception: {}", it.status,credentials.username, it.errorResponse, it.exception)
+            LOGGER.info("Login: Username: {}. Status: {}. Error: {}. Exception: {}", it.status, credentials.username, it.errorResponse, it.exception)
         }
         when {
             response.wasSuccessful() -> return response.successResponse
@@ -67,12 +67,27 @@ class FusionAuthAdapter @Inject constructor(
         }
     }
 
-    override fun register(registration: Registration): Identity {
-        return createUser(registration)
-                .also { addUserToGroup(registration.userType, it.id) }
+    override fun register(registration: Registration): User {
+        val actualRole = when (registration.userType) {
+            UserType.CUSTOMER -> registration.userType.code
+            UserType.SERVICE_PROVIDER -> "ServiceProvider.ProfilePending"
+        }
+
+        val user = createUser(registration).user
+        val permisions = assignGroup(actualRole, user.id.toString())
+        return FusionAuthUser(
+                user.id.toString(),
+                user.username,
+                user.firstName,
+                user.lastName,
+                user.email,
+                actualRole,
+                registration.userType,
+                permisions
+        )
     }
 
-    private fun createUser(registration: Registration): Identity {
+    private fun createUser(registration: Registration): RegistrationResponse {
         val id = UUID.randomUUID()
 
         val response = fusionAuthUserClient.register(
@@ -85,6 +100,7 @@ class FusionAuthAdapter @Inject constructor(
                             it.lastName = registration.lastName
                             it.username = registration.username
                             it.password = registration.password
+                            it.data = mapOf("userType" to registration.userType.code)
                         },
                         UserRegistration().with {
                             it.applicationId = UUID.fromString(config.applicationId)
@@ -96,7 +112,7 @@ class FusionAuthAdapter @Inject constructor(
         }
 
         when {
-            response.wasSuccessful() -> return response.successResponse.toFusionAuthRegistration(registration.userType)
+            response.wasSuccessful() -> return response.successResponse
             response.errorResponse != null -> throw RegistrationFailedException(response.errorResponse.allErrors(), errorType = response.errorResponse.errorType())
             response.exception != null -> throw RegistrationFailedException(message = response.exception.message, errorType = ErrorType.UNKNOWN)
             else -> throw RegistrationFailedException(message = "Registration Failed", errorType = ErrorType.UNKNOWN)
@@ -113,22 +129,21 @@ class FusionAuthAdapter @Inject constructor(
         return response.successResponse.groups
     }
 
-    private fun addUserToGroup(role: UserType, userId: String) {
+    private fun assignGroup(role: String, userId: String): List<String> {
 
-        val actualRole = when (role) {
-            UserType.CUSTOMER -> role.code
-            UserType.SERVICE_PROVIDER -> "ServiceProvider.ProfilePending"
-        }
-
-        val group = groups.firstOrNull { it.name == actualRole } ?: throw RuntimeException("Role not found")
+        val group = groups.firstOrNull { it.name == role } ?: throw RuntimeException("Role not found")
         val response = fusionAuthUserClient.createGroupMembers(MemberRequest(group.id, listOf(GroupMember().with {
             it.userId = UUID.fromString(userId)
             it.groupId = group.id
-        }))).also { LOGGER.info("Add user $userId to group. Status: {}. Error: {}. Exception: {}", it.status, it.errorResponse, it.exception) }
+        }))).also {
+            LOGGER.info("Add user $userId to group. Status: {}. Error: {}. Exception: {}", it.status, it.errorResponse, it.exception)
+        }
 
         if (!response.wasSuccessful()) {
             throw RuntimeException("Failed to add user $userId to group")
         }
+
+        return group.roles.values.flatten().map { it.name }.toList()
     }
 
     /**
@@ -141,17 +156,6 @@ class FusionAuthAdapter @Inject constructor(
                 .let { it.user }
                 .let { FusionAuthM2MClient(it.username, it.getRoleNamesForApplication(UUID.fromString(config.applicationId)).toList()) }
     }
-}
-
-fun RegistrationResponse.toFusionAuthRegistration(type: UserType): FusionAuthRegistration {
-    return FusionAuthRegistration(
-            this.user.id.toString(),
-            this.user.username,
-            this.user.firstName,
-            this.user.lastName,
-            this.user.email,
-            type
-    )
 }
 
 fun Errors.isDuplicateUsername() = allCodes().let { it.contains("[duplicate]user.email") || it.contains("[duplicate]user.username") }

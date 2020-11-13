@@ -5,7 +5,7 @@ import com.wks.servicemarketplace.authservice.core.Credentials
 import javax.validation.constraints.Email
 import javax.validation.constraints.NotBlank
 
-data class SignInRequest constructor(override val username: String,
+data class SignInRequest internal constructor(override val username: String,
                                      override val password: String) : Credentials {
 
     class Builder {

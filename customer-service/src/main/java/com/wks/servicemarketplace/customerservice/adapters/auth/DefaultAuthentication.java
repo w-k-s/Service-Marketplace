@@ -1,6 +1,7 @@
 package com.wks.servicemarketplace.customerservice.adapters.auth;
 
 import com.wks.servicemarketplace.customerservice.core.auth.Authentication;
+import com.wks.servicemarketplace.customerservice.core.auth.User;
 
 import javax.validation.constraints.NotNull;
 import java.security.Principal;
@@ -10,7 +11,7 @@ import java.util.Optional;
 
 public class DefaultAuthentication implements Authentication {
     @NotNull
-    private final Optional<Principal> user;
+    private final Optional<User> user;
     @NotNull
     private final String name;
     @NotNull
@@ -28,7 +29,7 @@ public class DefaultAuthentication implements Authentication {
     }
 
     @Override
-    public Optional<Principal> getUser() {
+    public Optional<User> getUser() {
         return user;
     }
 
@@ -45,14 +46,14 @@ public class DefaultAuthentication implements Authentication {
     }
 
     public static final class Builder {
-        private Principal user;
+        private User user;
         private String name;
         private List<String> permissions;
 
         private Builder() {
         }
 
-        public Builder user(Principal user) {
+        public Builder user(User user) {
             this.user = user;
             return this;
         }

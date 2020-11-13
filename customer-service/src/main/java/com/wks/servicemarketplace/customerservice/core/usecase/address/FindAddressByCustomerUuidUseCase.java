@@ -2,8 +2,10 @@ package com.wks.servicemarketplace.customerservice.core.usecase.address;
 
 import com.wks.servicemarketplace.customerservice.core.daos.CustomerDao;
 import com.wks.servicemarketplace.customerservice.core.usecase.UseCase;
+import com.wks.servicemarketplace.customerservice.core.usecase.customer.Customer;
 
 import javax.inject.Inject;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,7 +20,9 @@ public class FindAddressByCustomerUuidUseCase implements UseCase<String, List<Ad
 
     @Override
     public List<AddressResponse> execute(String customerUuid) throws Exception {
-        return customerDao.findAddressesByCustomerUuid(customerDao.getConnection(), customerUuid)
+        return customerDao.findCustomerByUuid(customerDao.getConnection(), customerUuid)
+                .map(Customer::getAddresses)
+                .orElseGet(Collections::emptyList)
                 .stream()
                 .map(it -> AddressResponse.builder()
                         .uuid(it.getUuid())

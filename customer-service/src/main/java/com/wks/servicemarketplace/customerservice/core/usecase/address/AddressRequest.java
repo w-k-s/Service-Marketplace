@@ -12,13 +12,6 @@ import java.math.BigDecimal;
 @JsonDeserialize(builder = AddressRequest.Builder.class)
 public class AddressRequest {
 
-    /**
-     * TODO: Remove, customerExternalId will be from token
-     */
-    @NotNull
-    @PositiveOrZero
-    private final Long customerExternalId;
-
     @NotBlank
     @Size(min = 2, max = 50)
     private final String name;
@@ -51,10 +44,6 @@ public class AddressRequest {
 
     @NotNull
     private final Authentication authentication;
-
-    public Long getCustomerExternalId() {
-        return customerExternalId;
-    }
 
     public String getName() {
         return name;
@@ -89,7 +78,6 @@ public class AddressRequest {
     }
 
     private AddressRequest(Builder builder) {
-        this.customerExternalId = builder.customerExternalId;
         this.name = builder.name;
         this.line1 = builder.line1;
         this.line2 = builder.line2;
@@ -110,8 +98,6 @@ public class AddressRequest {
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class Builder {
-        @JsonProperty("customerExternalId")
-        private Long customerExternalId;
         @JsonProperty("name")
         private String name;
         @JsonProperty("line1")
@@ -127,11 +113,6 @@ public class AddressRequest {
         @JsonProperty("longitude")
         private BigDecimal longitude;
         private Authentication authentication;
-
-        public Builder customerExternalId(Long customerExternalId) {
-            this.customerExternalId = customerExternalId;
-            return this;
-        }
 
         public Builder name(String name) {
             this.name = name;

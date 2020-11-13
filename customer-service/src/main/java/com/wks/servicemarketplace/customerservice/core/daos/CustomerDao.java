@@ -13,8 +13,10 @@ public interface CustomerDao extends Dao{
     void saveCustomer(Connection connection, Customer customer) throws SQLException;
 
     Long newAddressExternalId(Connection connection);
+    //TODO: Remove this. Should load aggregate root (i.e. Customer) and save through aggregate root.
     void saveAddress(Connection connection, Address address);
 
-    List<Address> findAddressesByCustomerUuid(Connection connection, String customerUuid) throws SQLException;
     Optional<Address> findAddressByAddressIdAndCustomerId(Connection connection, long customerId, long addressId) throws SQLException;
+
+    Optional<Customer> findCustomerByUuid(Connection connection, String uuid);
 }

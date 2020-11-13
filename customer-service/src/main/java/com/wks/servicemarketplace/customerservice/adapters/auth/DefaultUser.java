@@ -1,9 +1,11 @@
 package com.wks.servicemarketplace.customerservice.adapters.auth;
 
+import com.wks.servicemarketplace.customerservice.core.auth.User;
+
 import javax.security.auth.Subject;
 import java.security.Principal;
 
-public class DefaultUser implements Principal {
+public class DefaultUser implements User {
 
     private final String id;
     private final String firstName;
@@ -21,6 +23,7 @@ public class DefaultUser implements Principal {
         email = builder.email;
     }
 
+    @Override
     public String getId() {
         return id;
     }

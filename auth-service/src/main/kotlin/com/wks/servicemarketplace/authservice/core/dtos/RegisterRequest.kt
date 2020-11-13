@@ -8,7 +8,7 @@ import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
 
-data class RegisterRequest constructor(override val firstName: String,
+data class RegisterRequest internal constructor(override val firstName: String,
                                        override val lastName: String,
                                        override val email: String,
                                        override val password: String,
