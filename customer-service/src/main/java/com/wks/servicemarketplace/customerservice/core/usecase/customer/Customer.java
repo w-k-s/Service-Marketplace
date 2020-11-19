@@ -27,14 +27,7 @@ public class Customer {
     private CustomerUUID uuid;
 
     @NonNull
-    @NotBlank
-    @Size(min = 2, max = 50)
-    private String firstName;
-
-    @NonNull
-    @NotBlank
-    @Size(min = 2, max = 50)
-    private String lastName;
+    private Name name;
 
     @NonNull
     private Collection<AddressId> addresses;
@@ -52,8 +45,7 @@ public class Customer {
     private Customer(Long id,
                      CustomerId externalId,
                      CustomerUUID uuid,
-                     String firstName,
-                     String lastName,
+                     Name name,
                      Collection<AddressId> addresses,
                      OffsetDateTime createdDate,
                      String createdBy,
@@ -63,8 +55,7 @@ public class Customer {
         this.id = id;
         this.externalId = externalId;
         this.uuid = uuid;
-        this.firstName = firstName;
-        this.lastName = lastName;
+        this.name = name;
         this.addresses = addresses;
         this.createdDate = createdDate;
         this.createdBy = createdBy;
@@ -74,15 +65,13 @@ public class Customer {
     }
 
     public static ResultWithEvents<Customer, CustomerCreatedEvent> create(final CustomerId externalId,
-                                                                          final String firstName,
-                                                                          final String lastName,
+                                                                          final Name name,
                                                                           final String createdBy) {
         final Customer customer = new Customer(
                 0L,
                 externalId,
                 CustomerUUID.random(),
-                firstName,
-                lastName,
+                name,
                 Collections.emptyList(),
                 null,
                 createdBy,
@@ -214,7 +203,7 @@ public class Customer {
         }
 
         public Customer build() {
-            return new Customer(id, externalId, uuid, firstName, lastName, addresses, createdDate, createdBy, lastModifiedDate, lastModifiedBy, version);
+            return new Customer(id, externalId, uuid, Name.of(firstName, lastName), addresses, createdDate, createdBy, lastModifiedDate, lastModifiedBy, version);
         }
     }
 }

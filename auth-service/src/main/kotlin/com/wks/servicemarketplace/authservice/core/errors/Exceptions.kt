@@ -27,7 +27,7 @@ class ValidationException(fields: Map<String, List<String>>) : CoreException, Ru
     override val fields: Map<String, List<String>> = Collections.unmodifiableMap(fields)
 }
 
-fun Map<String, List<String>>.toString(value: String = ",",
+internal fun Map<String, List<String>>.toString(value: String = ",",
                                        key: String = "\n"): String {
     return this.map { it.value.joinToString(value) }.joinToString(key)
 }

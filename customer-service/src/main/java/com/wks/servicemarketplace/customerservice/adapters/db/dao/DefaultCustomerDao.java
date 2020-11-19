@@ -53,8 +53,8 @@ public class DefaultCustomerDao extends BaseDAO implements CustomerDao {
         ).values(
                 customer.getExternalId(),
                 customer.getUuid(),
-                customer.getFirstName(),
-                customer.getLastName(),
+                customer.getName().firstName,
+                customer.getName().lastName,
                 customer.getCreatedBy()
         ).execute();
     }

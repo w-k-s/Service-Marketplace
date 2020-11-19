@@ -1,5 +1,8 @@
-CREATE SEQUENCE service_provider_external_id;
+-- TABLES
 
+-- Company
+
+CREATE SEQUENCE company_external_id;
 CREATE TABLE IF NOT EXISTS company(
     id BIGSERIAL PRIMARY KEY NOT NULL,
 	external_id BIGSERIAL NOT NULL UNIQUE,
@@ -13,8 +16,29 @@ CREATE TABLE IF NOT EXISTS company(
 	last_modified_date timestamp without time zone default (now() at time zone 'utc'),
 	last_modified_by VARCHAR(255),
 	version INT NOT NULL DEFAULT 0
-)
+);
 
+-- Company Representative (User that will create company)
+
+CREATE SEQUENCE company_representative_external_id;
+CREATE TABLE IF NOT EXISTS company_representative(
+	id BIGSERIAL PRIMARY KEY NOT NULL,
+	external_id BIGSERIAL NOT NULL UNIQUE,
+	uuid VARCHAR(64) NOT NULL UNIQUE,
+	first_name VARCHAR(50) NOT NULL,
+	last_name VARCHAR(50) NOT NULL,
+	email VARCHAR(320) NOT NULL UNIQUE,
+	phone VARCHAR(18) NOT NULL UNIQUE,
+	created_date timestamp without time zone default (now() at time zone 'utc'),
+	created_by VARCHAR(255) NOT NULL,
+	last_modified_date timestamp without time zone default (now() at time zone 'utc'),
+	last_modified_by VARCHAR(255),
+	version INT NOT NULL DEFAULT 0
+);
+
+-- Employee
+
+CREATE SEQUENCE employee_external_id;
 CREATE TABLE IF NOT EXISTS employee(
 	id BIGSERIAL PRIMARY KEY NOT NULL,
 	external_id BIGSERIAL NOT NULL UNIQUE,
@@ -23,7 +47,6 @@ CREATE TABLE IF NOT EXISTS employee(
 	last_name VARCHAR(50) NOT NULL,
 	email VARCHAR(320) NOT NULL UNIQUE,
 	phone VARCHAR(18) NOT NULL UNIQUE,
-	is_admin BOOLEAN NOT NULL DEFAULT FALSE,
 	company_external_id BIGSERIAL NOT NULL REFERENCES company(external_id) ON UPDATE cascade ON DELETE RESTRICT,
 	created_date timestamp without time zone default (now() at time zone 'utc'),
 	created_by VARCHAR(255) NOT NULL,
@@ -32,8 +55,9 @@ CREATE TABLE IF NOT EXISTS employee(
 	version INT NOT NULL DEFAULT 0
 );
 
-CREATE SEQUENCE address_external_id;
+-- Address
 
+CREATE SEQUENCE address_external_id;
 CREATE TABLE IF NOT EXISTS address(
 	id BIGSERIAL PRIMARY KEY NOT NULL,
 	external_id BIGSERIAL NOT NULL UNIQUE,
@@ -53,15 +77,34 @@ CREATE TABLE IF NOT EXISTS address(
 	version INT NOT NULL DEFAULT 0
 );
 
+-- Category
+
 CREATE TABLE IF NOT EXISTS category(
-    code VARCHAR(6) PRIMARY KEY NOT NULL,
+    code VARCHAR(6) PRIMARY KEY,
     name VARCHAR(60) NOT NULL UNIQUE
-)
+);
+
+--- MAPPINGS
+
+-- Company & Category
 
 CREATE TABLE IF NOT EXISTS company_category(
+    company_uuid VARCHAR(64) NOT NULL REFERENCES company(uuid),
     company_external_id BIGSERIAL NOT NULL REFERENCES company(external_id),
-    category_code NOT NULL VARCHAR(6) REFERENCES category(code)
-)
+    category_code VARCHAR(6) NOT NULL  REFERENCES category(code),
+    CONSTRAINT unique_category_per_company UNIQUE(category_code,company_external_id,company_uuid)
+);
+
+-- Company & Admin
+
+CREATE TABLE IF NOT EXISTS company_admin(
+    company_uuid VARCHAR(64) NOT NULL UNIQUE REFERENCES company(uuid),
+    company_external_id BIGSERIAL NOT NULL UNIQUE REFERENCES company(external_id),
+    employee_id BIGSERIAL NOT NULL UNIQUE REFERENCES employee(external_id),
+    employee_uuid VARCHAR(64) NOT NULL UNIQUE REFERENCES employee(uuid)
+);
+
+-- TRIGGERS
 
 create or replace function audit_record()
 returns trigger as $body$
@@ -69,7 +112,7 @@ returns trigger as $body$
     IF (TG_OP = 'UPDATE') THEN
         new.version = old.version + 1;
         new.last_modified_date = now() at time zone 'utc';
-    ELSIF (TG_OP = 'INSERT') THEN
+    ELSEIF (TG_OP = 'INSERT') THEN
          new.created_date = now() at time zone 'utc';
     END IF;
     return new;

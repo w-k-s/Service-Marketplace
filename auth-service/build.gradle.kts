@@ -56,9 +56,6 @@ dependencies {
 
     // JWT
     implementation("org.bitbucket.b_c:jose4j:0.7.2")
-
-    // Apache HttpClient
-    implementation("org.apache.httpcomponents:httpclient:4.5.12")
 }
 
 tasks {

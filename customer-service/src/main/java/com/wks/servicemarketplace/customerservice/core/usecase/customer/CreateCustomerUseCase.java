@@ -40,8 +40,7 @@ public class CreateCustomerUseCase implements UseCase<CustomerRequest, CustomerR
 
             ResultWithEvents<Customer, CustomerCreatedEvent> customerAndEvents = Customer.create(
                     customerDao.newCustomerExternalId(connection),
-                    customerRequest.getFirstName(),
-                    customerRequest.getLastName(),
+                    Name.of(customerRequest.getFirstName(), customerRequest.getLastName()),
                     customerRequest.getEmail()
             );
             final Customer customer = customerAndEvents.getResult();
@@ -55,8 +54,8 @@ public class CreateCustomerUseCase implements UseCase<CustomerRequest, CustomerR
                     .builder()
                     .uuid(customer.getUuid())
                     .externalId(customer.getExternalId())
-                    .firstName(customer.getFirstName())
-                    .lastName(customer.getLastName())
+                    .firstName(customer.getName().firstName)
+                    .lastName(customer.getName().lastName)
                     .addresses(Collections.emptyList())
                     .version(customer.getVersion())
                     .build();

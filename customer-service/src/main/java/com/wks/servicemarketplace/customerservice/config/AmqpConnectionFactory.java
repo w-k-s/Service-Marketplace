@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.net.ConnectException;
 import java.util.concurrent.TimeoutException;
 
 public class AmqpConnectionFactory implements Factory<Connection> {

@@ -31,8 +31,8 @@ public class CustomerCreatedEvent implements DomainEvent {
         return new CustomerCreatedEvent(
                 customer.getExternalId(),
                 customer.getUuid(),
-                customer.getFirstName(),
-                customer.getLastName(),
+                customer.getName().firstName,
+                customer.getName().lastName,
                 customer.getCreatedBy(),
                 customer.getVersion()
         );
