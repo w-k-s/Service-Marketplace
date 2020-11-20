@@ -23,10 +23,10 @@ class DefaultEmployeeDao @Inject constructor(dataSource: DataSource) : BaseDao(d
                     ),
                     Email.of(it.get("e.email", String::class.java)),
                     PhoneNumber.of(it.get("e.phone", String::class.java)),
-                    it.get("e.created_date", OffsetDateTimeConverter()),
                     it.get("e.created_by", String::class.java),
-                    it.get("e.last_modified_date", OffsetDateTimeConverter()),
+                    it.get("e.created_date", OffsetDateTimeConverter()),
                     it.get("e.last_modified_by", String::class.java),
+                    it.get("e.last_modified_date", OffsetDateTimeConverter()),
                     it.get("e.version", Long::class.java),
             )
         }

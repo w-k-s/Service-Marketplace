@@ -25,10 +25,10 @@ class DefaultAddressDao @Inject constructor(dataSource: DataSource) : BaseDao(da
                     CountryCode(it.get("a.country_code", String::class.java)),
                     it.get("a.latitude", BigDecimal::class.java),
                     it.get("a.longitude", BigDecimal::class.java),
-                    it.get("a.created_date", OffsetDateTimeConverter()),
                     it.get("a.created_by", String::class.java),
-                    it.get("a.last_modified_date", OffsetDateTimeConverter()),
+                    it.get("a.created_date", OffsetDateTimeConverter()),
                     it.get("a.last_modified_by", String::class.java),
+                    it.get("a.last_modified_date", OffsetDateTimeConverter()),
                     it.get("a.version", Long::class.java),
             )
         }
@@ -113,7 +113,7 @@ class DefaultAddressDao @Inject constructor(dataSource: DataSource) : BaseDao(da
                         field("a.version")
                 )
                 .from(table("address").`as`("a"))
-                .where(field("e.company_external_id").eq(id.value))
+                .where(field("a.company_external_id").eq(id.value))
                 .fetch(addressMapper)
     }
 }

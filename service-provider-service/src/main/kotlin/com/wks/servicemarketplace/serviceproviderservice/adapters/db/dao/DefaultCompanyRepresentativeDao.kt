@@ -69,10 +69,10 @@ class DefaultCompanyRepresentativeDao @Inject constructor(dataSource: DataSource
                             ),
                             Email.of(it.get("p.email", String::class.java)),
                             PhoneNumber.of(it.get("p.phone", String::class.java)),
-                            it.get("p.created_date", OffsetDateTimeConverter()),
                             it.get("p.created_by", String::class.java),
-                            it.get("p.last_modified_date", OffsetDateTimeConverter()),
+                            it.get("p.created_date", OffsetDateTimeConverter()),
                             it.get("p.last_modified_by", String::class.java),
+                            it.get("p.last_modified_date", OffsetDateTimeConverter()),
                             it.get("p.version", Long::class.java),
                     )
                 }

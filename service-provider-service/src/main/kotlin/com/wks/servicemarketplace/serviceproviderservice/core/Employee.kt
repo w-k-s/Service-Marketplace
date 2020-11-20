@@ -23,11 +23,11 @@ data class Employee(
         val name: Name,
         val email: Email,
         val phone: PhoneNumber,
-        val createdDate: OffsetDateTime = OffsetDateTime.now(Clock.systemUTC()),
         val createdBy: String,
-        val lastModifiedDate: OffsetDateTime,
-        val lastModifiedBy: String,
-        val version: Long
+        val createdDate: OffsetDateTime = OffsetDateTime.now(Clock.systemUTC()),
+        val lastModifiedBy: String? = null,
+        val lastModifiedDate: OffsetDateTime? = null,
+        val version: Long = 0L
 )
 
 data class Name internal constructor(

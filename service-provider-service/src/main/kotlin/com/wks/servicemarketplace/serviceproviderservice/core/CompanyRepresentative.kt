@@ -24,9 +24,20 @@ data class CompanyRepresentative(
         val name: Name,
         val email: Email,
         val phone: PhoneNumber,
-        val createdDate: OffsetDateTime = OffsetDateTime.now(Clock.systemUTC()),
         val createdBy: String,
-        val lastModifiedDate: OffsetDateTime? = null,
+        val createdDate: OffsetDateTime = OffsetDateTime.now(Clock.systemUTC()),
         val lastModifiedBy: String? = null,
+        val lastModifiedDate: OffsetDateTime? = null,
         val version: Long = 0L
-)
+) {
+    fun toEmployee(companyId: CompanyId, createdBy: String): Employee = Employee(
+            this.id,
+            EmployeeId(this.externalId.value),
+            EmployeeUUID(this.uuid.value),
+            companyId,
+            this.name,
+            this.email,
+            this.phone,
+            createdBy
+    )
+}

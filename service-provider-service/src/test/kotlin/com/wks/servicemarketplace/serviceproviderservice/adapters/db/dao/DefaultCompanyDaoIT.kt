@@ -4,8 +4,7 @@ import com.wks.servicemarketplace.serviceproviderservice.core.*
 import com.wks.servicemarketplace.serviceproviderservice.utils.TestParameters
 import com.wks.servicemarketplace.serviceproviderservice.utils.random
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.*
 import java.util.*
 import kotlin.random.Random.Default.nextLong
 
@@ -15,12 +14,23 @@ internal class DefaultCompanyDaoIT {
     private lateinit var companyDao: CompanyDao
 
     companion object {
+        private const val companyName = "Example Inc."
+        private const val companyLogoUrl = "http://example.com/logo.jpg"
+
         private val companyId = CompanyId(nextLong())
         private val companyUuid = CompanyUUID.random()
-        private val companyName = "Example Inc."
         private val companyPhone = PhoneNumber.random()
         private val companyEmail = Email.random()
-        private val companyLogoUrl = "http://example.com/logo.jpg"
+        private val company = Company(
+                0L,
+                companyId,
+                companyUuid,
+                companyName,
+                companyPhone,
+                companyEmail,
+                companyLogoUrl,
+                createdBy = "admin"
+        )
     }
 
     @BeforeEach
@@ -36,7 +46,19 @@ internal class DefaultCompanyDaoIT {
         )
     }
 
+    @AfterEach
+    fun tearDown(){
+        dataSource.connection().use {
+            it.autoCommit = false
+            it.prepareStatement("DELETE FROM company_admin").execute()
+            it.prepareStatement("DELETE FROM employee").execute()
+            it.prepareStatement("DELETE FROM company").execute()
+            it.commit()
+        }
+    }
+
     @Test
+    @Order(1)
     fun `company external id is generated`() {
         dataSource.connection().use {
             assertThat(companyDao.newCompanyId(it)).isNotNull
@@ -44,40 +66,53 @@ internal class DefaultCompanyDaoIT {
     }
 
     @Test
-    fun `Company can be saved`() {
+    @Order(2)
+    fun `Given a company, When it is saved, Then it can be retrieved`() {
 
         dataSource.connection().use {
-
-            // When
             it.autoCommit = false
-            companyDao.save(it, Company(
-                    0L,
-                    companyId,
-                    companyUuid,
-                    companyName,
-                    companyPhone,
-                    companyEmail,
-                    companyLogoUrl,
-                    createdBy = "admin"
-            ))
+            companyDao.save(it, company)
             it.commit()
+
+            val savedCompany = companyDao.findById(it, companyId)
+            assertThat(savedCompany.externalId).isEqualTo(companyId)
+            assertThat(savedCompany.uuid).isEqualTo(companyUuid)
+            assertThat(savedCompany.name).isEqualTo(companyName)
+            assertThat(savedCompany.phone).isEqualTo(companyPhone)
+            assertThat(savedCompany.email).isEqualTo(companyEmail)
+            assertThat(savedCompany.logoUrl).isEqualTo(companyLogoUrl)
+            assertThat(savedCompany.createdBy).isEqualTo("admin")
+            assertThat(savedCompany.createdDate).isNotNull
+            assertThat(savedCompany.version).isNotNull
         }
     }
 
     @Test
-    fun `Given a company is saved, then it can be retrieved`(){
-        dataSource.connection().use {
+    fun `an employee can be set as an administrator of a company`() {
+        // Given
+        val representative = CompanyRepresentative(
+                0L,
+                CompanyRepresentativeId(nextLong()),
+                CompanyRepresentativeUUID.random(),
+                Name.of("John", "Example"),
+                Email.random(),
+                PhoneNumber.random(),
+                "admin"
+        )
 
-            val company = companyDao.findById(it, companyId)
-            assertThat(company.externalId).isEqualTo(companyId)
-            assertThat(company.uuid).isEqualTo(companyUuid)
-            assertThat(company.name).isEqualTo(companyName)
-            assertThat(company.phone).isEqualTo(companyPhone)
-            assertThat(company.email).isEqualTo(companyEmail)
-            assertThat(company.logoUrl).isEqualTo(companyLogoUrl)
-            assertThat(company.createdBy).isEqualTo("admin")
-            assertThat(company.createdDate).isNotNull
-            assertThat(company.version).isNotNull
+        val employeeDao = DefaultEmployeeDao(dataSource)
+
+        dataSource.connection().use {
+            it.autoCommit = false
+
+            companyDao.save(it, company)
+
+            employeeDao.save(it, representative.toEmployee(companyId, "admin"))
+            val count = companyDao.setAdministrator(it, company, representative)
+
+            it.commit()
+
+            assertThat(count).isEqualTo(1)
         }
     }
 }

@@ -7,8 +7,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.*
 import kotlin.random.Random.Default.nextLong
 
-@TestMethodOrder(MethodOrderer.OrderAnnotation::class)
-class DefaultCompanyRepresentativeDaoTest {
+class DefaultCompanyRepresentativeDaoIT {
 
     private lateinit var dataSource: DataSource
     private lateinit var companyRepresentativeDao: CompanyRepresentativeDao
@@ -19,6 +18,15 @@ class DefaultCompanyRepresentativeDaoTest {
         private val companyRepresentativeName = Name.of("John", "Example")
         private val companyRepresentativeEmail = Email.random()
         private val companyRepresentativePhoneNumber = PhoneNumber.random()
+        private val companyRepresentative = CompanyRepresentative(
+                0L,
+                companyRepresentativeId,
+                companyRepresentativeUuid,
+                companyRepresentativeName,
+                companyRepresentativeEmail,
+                companyRepresentativePhoneNumber,
+                "admin"
+        )
     }
 
     @BeforeEach
@@ -34,33 +42,27 @@ class DefaultCompanyRepresentativeDaoTest {
         )
     }
 
-    @Test
-    @Order(1)
-    fun `can save company representative`() {
+    @AfterEach
+    fun tearDown(){
         dataSource.connection().use {
             it.autoCommit = false
 
-            val count = companyRepresentativeDao.save(it, CompanyRepresentative(
-                    0L,
-                    companyRepresentativeId,
-                    companyRepresentativeUuid,
-                    companyRepresentativeName,
-                    companyRepresentativeEmail,
-                    companyRepresentativePhoneNumber,
-                    createdBy = "admin"
-            ))
+            it.prepareStatement("DELETE FROM company_representative").execute()
 
             it.commit()
-
-            assertThat(count).isEqualTo(1)
         }
     }
 
     @Test
-    @Order(2)
-    fun `saved company representative can be retreived`() {
+    fun `GIVEN a companyrepresentative, WHEN it is saved, THEN it can be retrieved`() {
         dataSource.connection().use {
+            it.autoCommit = false
 
+            val count = companyRepresentativeDao.save(it, companyRepresentative)
+
+            it.commit()
+
+            assertThat(count).isEqualTo(1)
             val rep = companyRepresentativeDao.findById(it, companyRepresentativeId)
             assertThat(rep.externalId).isEqualTo(companyRepresentativeId)
             assertThat(rep.uuid).isEqualTo(companyRepresentativeUuid)
@@ -74,10 +76,11 @@ class DefaultCompanyRepresentativeDaoTest {
     }
 
     @Test
-    @Order(Integer.MAX_VALUE)
-    fun `saved company representative can be deleted`() {
+    fun `GIVEN a companyrepresentative, WHEN it is saved, THEN it can be deleted`() {
         dataSource.connection().use {
             it.autoCommit = false
+            companyRepresentativeDao.save(it, companyRepresentative)
+            it.commit()
 
             assertThat(companyRepresentativeDao.delete(it, companyRepresentativeId)).isEqualTo(1)
 

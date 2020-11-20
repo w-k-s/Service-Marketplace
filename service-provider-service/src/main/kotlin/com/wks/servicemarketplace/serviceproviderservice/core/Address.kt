@@ -25,9 +25,9 @@ data class Address(
         val countryCode: CountryCode,
         val latitude: BigDecimal,
         val longitude: BigDecimal,
-        val createdDate: OffsetDateTime = OffsetDateTime.now(Clock.systemUTC()),
         val createdBy: String,
-        val lastModifiedDate: OffsetDateTime,
-        val lastModifiedBy: String,
-        val version: Long
+        val createdDate: OffsetDateTime = OffsetDateTime.now(Clock.systemUTC()),
+        val lastModifiedBy: String? = null,
+        val lastModifiedDate: OffsetDateTime? = null,
+        val version: Long = 0L
 )
