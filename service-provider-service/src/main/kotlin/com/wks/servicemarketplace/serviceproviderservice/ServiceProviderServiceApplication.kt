@@ -5,8 +5,16 @@ import com.rabbitmq.client.Channel
 import com.rabbitmq.client.Connection
 import com.wks.servicemarketplace.authservice.adapters.web.resources.HealthResource
 import com.wks.servicemarketplace.serviceproviderservice.adapters.auth.TokenValidator
+import com.wks.servicemarketplace.serviceproviderservice.adapters.db.dao.DefaultAddressDao
+import com.wks.servicemarketplace.serviceproviderservice.adapters.db.dao.DefaultCompanyDao
+import com.wks.servicemarketplace.serviceproviderservice.adapters.db.dao.DefaultCompanyRepresentativeDao
+import com.wks.servicemarketplace.serviceproviderservice.adapters.db.dao.DefaultEmployeeDao
 import com.wks.servicemarketplace.serviceproviderservice.adapters.web.resources.GraphQLResource
 import com.wks.servicemarketplace.serviceproviderservice.config.*
+import com.wks.servicemarketplace.serviceproviderservice.core.AddressDao
+import com.wks.servicemarketplace.serviceproviderservice.core.CompanyDao
+import com.wks.servicemarketplace.serviceproviderservice.core.CompanyRepresentativeDao
+import com.wks.servicemarketplace.serviceproviderservice.core.EmployeeDao
 import graphql.GraphQL
 import org.glassfish.hk2.api.Immediate
 import org.glassfish.hk2.utilities.binding.AbstractBinder
@@ -47,6 +55,10 @@ class ServiceProviderServiceApplication : ResourceConfig() {
                 bindFactory(AmqpConnectionFactory::class.java, Immediate::class.java).to(Connection::class.java).`in`(Immediate::class.java)
                 bindFactory(AmqpChannelFactory::class.java, Immediate::class.java).to(Channel::class.java).`in`(Immediate::class.java)
                 bindFactory(TokenValidatorFactory::class.java, Immediate::class.java).to(TokenValidator::class.java).`in`(Immediate::class.java)
+                bind(DefaultCompanyDao::class.java).to(CompanyDao::class.java).`in`(Immediate::class.java)
+                bind(DefaultCompanyRepresentativeDao::class.java).to(CompanyRepresentativeDao::class.java).`in`(Immediate::class.java)
+                bind(DefaultEmployeeDao::class.java).to(EmployeeDao::class.java).`in`(Immediate::class.java)
+                bind(DefaultAddressDao::class.java).to(AddressDao::class.java).`in`(Immediate::class.java)
             }
         })
         register(HealthResource::class.java)

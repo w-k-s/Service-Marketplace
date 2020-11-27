@@ -54,7 +54,7 @@ class DefaultCompanyRepresentativeDaoIT {
     }
 
     @Test
-    fun `GIVEN a companyrepresentative, WHEN it is saved, THEN it can be retrieved`() {
+    fun `GIVEN a company representative, WHEN it is saved, THEN it can be retrieved`() {
         dataSource.connection().use {
             it.autoCommit = false
 
@@ -63,7 +63,7 @@ class DefaultCompanyRepresentativeDaoIT {
             it.commit()
 
             assertThat(count).isEqualTo(1)
-            val rep = companyRepresentativeDao.findById(it, companyRepresentativeId)
+            val rep = companyRepresentativeDao.findByUUID(it, companyRepresentativeUuid)!!
             assertThat(rep.externalId).isEqualTo(companyRepresentativeId)
             assertThat(rep.uuid).isEqualTo(companyRepresentativeUuid)
             assertThat(rep.name).isEqualTo(companyRepresentativeName)
@@ -76,7 +76,7 @@ class DefaultCompanyRepresentativeDaoIT {
     }
 
     @Test
-    fun `GIVEN a companyrepresentative, WHEN it is saved, THEN it can be deleted`() {
+    fun `GIVEN a company representative, WHEN it is saved, THEN it can be deleted`() {
         dataSource.connection().use {
             it.autoCommit = false
             companyRepresentativeDao.save(it, companyRepresentative)

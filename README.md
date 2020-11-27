@@ -4,6 +4,7 @@ A Service Marketplace backend to implement the practices described in 'Microserv
 
 ## Scope
 
+### Included 
 - [x] Login
 - [x] Register
 - [x] Customer posts job
@@ -15,6 +16,11 @@ A Service Marketplace backend to implement the practices described in 'Microserv
 - [ ] Customer opts service provider
 - [ ] (Optional) Customer Mark’s job as completed cancelled or no show.
 - [ ] Service provider can see assigned jobs
+
+### Later
+
+- [ ] It is possible that a transaction is commited to the db but the message does not get added to the queue. Use Transactional-outbox pattern
+- [ ] 
 
 ## Useful Resources
 

@@ -23,6 +23,8 @@ internal class DefaultAddressDaoIT {
         private val companyUuid = CompanyUUID.random()
         private val companyPhone = PhoneNumber.random()
         private val companyEmail = Email.random()
+        private val companyCreatedBy = CompanyRepresentativeUUID.random()
+        private val companyServices = Services(Service.HOUSE_KEEPING)
         private val company = Company(
                 0L,
                 companyId,
@@ -31,7 +33,8 @@ internal class DefaultAddressDaoIT {
                 companyPhone,
                 companyEmail,
                 companyLogoUrl,
-                createdBy = "admin"
+                companyServices,
+                companyCreatedBy
         )
 
         private const val addressName = "Home"
@@ -83,6 +86,8 @@ internal class DefaultAddressDaoIT {
             it.autoCommit = false
 
             it.prepareStatement("DELETE FROM address").execute()
+            it.prepareStatement("DELETE FROM employee").execute()
+            it.prepareStatement("DELETE FROM company_service").execute()
             it.prepareStatement("DELETE FROM company").execute()
 
             it.commit()

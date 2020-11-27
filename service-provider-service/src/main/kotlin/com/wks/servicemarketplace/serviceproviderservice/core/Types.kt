@@ -30,3 +30,8 @@ data class PhoneNumber(
 
     override fun toString() = value
 }
+
+interface DomainEvent
+
+data class ResultWithEvents<R,E: DomainEvent>(val result: R,
+                                 val events: List<E> = emptyList())

@@ -21,6 +21,7 @@ internal class DefaultCompanyDaoIT {
         private val companyUuid = CompanyUUID.random()
         private val companyPhone = PhoneNumber.random()
         private val companyEmail = Email.random()
+        private val createdBy = CompanyRepresentativeUUID.random()
         private val company = Company(
                 0L,
                 companyId,
@@ -29,7 +30,8 @@ internal class DefaultCompanyDaoIT {
                 companyPhone,
                 companyEmail,
                 companyLogoUrl,
-                createdBy = "admin"
+                Services(Service.ELECTRICAL),
+                createdBy
         )
     }
 
@@ -50,6 +52,8 @@ internal class DefaultCompanyDaoIT {
     fun tearDown(){
         dataSource.connection().use {
             it.autoCommit = false
+            it.prepareStatement("DELETE FROM address").execute()
+            it.prepareStatement("DELETE FROM company_service").execute()
             it.prepareStatement("DELETE FROM company_admin").execute()
             it.prepareStatement("DELETE FROM employee").execute()
             it.prepareStatement("DELETE FROM company").execute()
@@ -81,7 +85,8 @@ internal class DefaultCompanyDaoIT {
             assertThat(savedCompany.phone).isEqualTo(companyPhone)
             assertThat(savedCompany.email).isEqualTo(companyEmail)
             assertThat(savedCompany.logoUrl).isEqualTo(companyLogoUrl)
-            assertThat(savedCompany.createdBy).isEqualTo("admin")
+            assertThat(savedCompany.createdBy).isEqualTo(createdBy)
+            assertThat(savedCompany.services).isEqualTo(Services(Service.ELECTRICAL))
             assertThat(savedCompany.createdDate).isNotNull
             assertThat(savedCompany.version).isNotNull
         }

@@ -1,12 +1,18 @@
 package com.wks.servicemarketplace.serviceproviderservice.adapters.db.dao
 
 import com.wks.servicemarketplace.serviceproviderservice.core.*
-import org.jooq.impl.DSL.field
-import org.jooq.impl.DSL.table
+import org.jooq.impl.DSL
+import org.jooq.impl.DSL.*
 import java.sql.Connection
 import javax.inject.Inject
 
 class DefaultCompanyRepresentativeDao @Inject constructor(dataSource: DataSource) : BaseDao(dataSource), CompanyRepresentativeDao {
+
+    override fun newCompanyRepresentativeId(connection: Connection): CompanyRepresentativeId {
+        return CompanyRepresentativeId(
+                create(connection).nextval(sequence(name("company_representative_external_id"), Long::class.java))
+        )
+    }
 
     override fun save(connection: Connection, admin: CompanyRepresentative): Int {
         return create(connection).insertInto(
@@ -39,7 +45,7 @@ class DefaultCompanyRepresentativeDao @Inject constructor(dataSource: DataSource
                 .execute()
     }
 
-    override fun findById(connection: Connection, id: CompanyRepresentativeId): CompanyRepresentative {
+    override fun findByUUID(connection: Connection, id: CompanyRepresentativeUUID): CompanyRepresentative? {
         return create(connection)
                 .select(
                         field("p.id"),
@@ -56,9 +62,9 @@ class DefaultCompanyRepresentativeDao @Inject constructor(dataSource: DataSource
                         field("p.version")
                 )
                 .from(table("company_representative").`as`("p"))
-                .where(field("p.external_id").eq(id.value))
+                .where(field("p.uuid").eq(id.value.toString()))
                 .fetchOne()
-                .let {
+                ?.let {
                     CompanyRepresentative(
                             it.get("p.id", Long::class.java),
                             CompanyRepresentativeId(it.get("p.external_id", Long::class.java)),

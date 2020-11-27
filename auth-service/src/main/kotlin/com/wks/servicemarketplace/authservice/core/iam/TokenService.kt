@@ -1,10 +1,6 @@
 package com.wks.servicemarketplace.authservice.core.iam
 
-import com.wks.servicemarketplace.authservice.config.ApplicationParameters
 import com.wks.servicemarketplace.authservice.core.*
-import com.wks.servicemarketplace.authservice.core.dtos.ClientCredentialsRequest
-import com.wks.servicemarketplace.authservice.core.errors.ErrorType
-import com.wks.servicemarketplace.authservice.core.errors.LoginFailedException
 import com.wks.servicemarketplace.authservice.core.errors.UnauthorizedException
 import com.wks.servicemarketplace.authservice.core.events.AccountCreatedEvent
 import com.wks.servicemarketplace.authservice.core.events.EventPublisher
@@ -22,7 +18,7 @@ class TokenService @Inject constructor(private val iam: IAMAdapter,
         val user = iam.login(credentials)
         return StandardToken(
                 user.username,
-                StandardToken.User(user.id, user.firstName, user.lastName, user.username, user.email, user.role),
+                StandardToken.User(user.id, user.firstName, user.lastName, user.username, user.email, user.role.code),
                 user.permissions,
                 Duration.ofHours(1),
                 privateKey = privateKey
@@ -34,15 +30,15 @@ class TokenService @Inject constructor(private val iam: IAMAdapter,
 
         val userToken = StandardToken(
                 user.username,
-                StandardToken.User(user.id, user.firstName, user.lastName, user.username, user.email, user.role),
+                StandardToken.User(user.id, user.firstName, user.lastName, user.username, user.email, user.role.code),
                 user.permissions,
                 Duration.ofHours(1),
                 privateKey = privateKey
         ).accessToken
 
-        when (user.type) {
-            UserType.CUSTOMER -> eventPublisher.customerAccountCreated(userToken, AccountCreatedEvent(user))
-            UserType.SERVICE_PROVIDER -> eventPublisher.serviceProviderAccountCreated(userToken, AccountCreatedEvent(user))
+        when (user.role) {
+            UserRole.CUSTOMER -> eventPublisher.customerAccountCreated(userToken, AccountCreatedEvent(user))
+            UserRole.COMPANY_REPRESENTATIVE -> eventPublisher.serviceProviderAccountCreated(userToken, AccountCreatedEvent(user))
         }
 
         return user

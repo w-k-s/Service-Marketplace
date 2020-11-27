@@ -6,6 +6,7 @@ import kotlin.jvm.Throws
 
 interface Authentication : Principal {
     val user: User?
+    val token: String
     fun hasRole(role: String): Boolean
     @Throws(UnauthorizedException::class)
     fun checkRole(role: String)

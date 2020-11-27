@@ -31,6 +31,7 @@ class StandardTokenValidator(publicKey: PublicKey) : TokenValidator {
             return consumer.processToClaims(token).let {
                 DefaultAuthentication(
                         it.getClaimValue("user", DefaultUser::class.java),
+                        token,
                         it.subject,
                         it.getStringListClaimValue("permissions")
                 )

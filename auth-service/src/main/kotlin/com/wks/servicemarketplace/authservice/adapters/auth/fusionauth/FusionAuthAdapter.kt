@@ -34,7 +34,7 @@ class FusionAuthAdapter @Inject constructor(
 
     override fun login(credentials: Credentials): User {
         val login = getUser(credentials)
-        val group = groups.first { it.id == login.user.memberships.first().groupId }
+        val role = groups.first { it.id == login.user.memberships.first().groupId }.let { UserRole.of(it.name) }
 
         return FusionAuthUser(
                 login.user.id.toString(),
@@ -42,7 +42,7 @@ class FusionAuthAdapter @Inject constructor(
                 login.user.lastName,
                 login.user.username,
                 login.user.email,
-                group.name,
+                role,
                 UserType.of(login.user.data["userType"].toString()),
                 login.user.registrations.first { it.applicationId == UUID.fromString(config.applicationId) }.roles.toList()
         )
@@ -68,20 +68,20 @@ class FusionAuthAdapter @Inject constructor(
     }
 
     override fun register(registration: Registration): User {
-        val actualRole = when (registration.userType) {
-            UserType.CUSTOMER -> registration.userType.code
-            UserType.SERVICE_PROVIDER -> "ServiceProvider.ProfilePending"
+        val role = when (registration.userType) {
+            UserType.CUSTOMER -> UserRole.CUSTOMER
+            UserType.SERVICE_PROVIDER -> UserRole.COMPANY_REPRESENTATIVE
         }
 
         val user = createUser(registration).user
-        val permisions = assignGroup(actualRole, user.id.toString())
+        val permisions = assignGroup(role, user.id.toString())
         return FusionAuthUser(
                 user.id.toString(),
                 user.username,
                 user.firstName,
                 user.lastName,
                 user.email,
-                actualRole,
+                role,
                 registration.userType,
                 permisions
         )
@@ -129,9 +129,9 @@ class FusionAuthAdapter @Inject constructor(
         return response.successResponse.groups
     }
 
-    private fun assignGroup(role: String, userId: String): List<String> {
+    private fun assignGroup(role: UserRole, userId: String): List<String> {
 
-        val group = groups.firstOrNull { it.name == role } ?: throw RuntimeException("Role not found")
+        val group = groups.firstOrNull { it.name == role.code } ?: throw RuntimeException("Role not found")
         val response = fusionAuthUserClient.createGroupMembers(MemberRequest(group.id, listOf(GroupMember().with {
             it.userId = UUID.fromString(userId)
             it.groupId = group.id

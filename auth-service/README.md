@@ -17,7 +17,7 @@ FusionAuth v1.19.8
 
 ### Roles & Permissions
 
-| Role           | Customer                                                                          | ServiceProvider.ProfilePending                        | ServiceProvider    | Admin              |
+| Role           | Customer                                                                          | CompanyRepresentative                                 | ServiceProvider    | Admin              |
 |----------------|-----------------------------------------------------------------------------------|-------------------------------------------------------|--------------------|--------------------|
 | order.create   | :heavy_check_mark:                                                                |                                                       |                    | :heavy_check_mark: |
 | order.delete   | :heavy_check_mark:                                                                |                                                       |                    | :heavy_check_mark: |
@@ -28,10 +28,12 @@ FusionAuth v1.19.8
 | bid.view       | :heavy_check_mark: <br/> **ABAC: Only bids they've received**                     |                                                       | :heavy_check_mark: | :heavy_check_mark: |
 | bid.edit       |                                                                                   |                                                       | :heavy_check_mark: | :heavy_check_mark: |
 | bid.accept     | :heavy_check_mark: <br/> **ABAC: Only bids they've received**                     |                                                       |                    | :heavy_check_mark: |
-| account.create | :heavy_check_mark:                                                                | :heavy_check_mark:                                    | :heavy_check_mark: | :heavy_check_mark: |
-| account.delete | :heavy_check_mark: <br/>   **ABAC: Only own account**                             | :heavy_check_mark: <br/>  **ABAC: Only own account**  | :heavy_check_mark: | :heavy_check_mark: |
-| account.edit   | :heavy_check_mark: <br/>   **ABAC: Only own account**                             | :heavy_check_mark: <br/>  **ABAC: Only own account**  | :heavy_check_mark: | :heavy_check_mark: |
-| account.view   | :heavy_check_mark: <br/>   **ABAC: Only own account + service providers account** | :heavy_check_mark: <br/>  **ABAC: Only own account**  | :heavy_check_mark: | :heavy_check_mark: |
+| customer.create| :heavy_check_mark:                                                                |                                                       |                    | :heavy_check_mark: |
+| customer.delete| :heavy_check_mark: <br/>   **ABAC: Only own account**                             |                                                       |                    | :heavy_check_mark: |
+| customer.edit  | :heavy_check_mark: <br/>   **ABAC: Only own account**                             |                                                       |                    | :heavy_check_mark: |
+| customer.view  | :heavy_check_mark: <br/>   **ABAC: Only own account + service providers account** | :heavy_check_mark:                                    | :heavy_check_mark: | :heavy_check_mark: |
+| company.create |                                                                                   | :heavy_check_mark:                                    | :heavy_check_mark: | :heavy_check_mark: |
+| comprep.create |                                                                                   | :heavy_check_mark:                                    |                    | :heavy_check_mark: |
 | address.create | :heavy_check_mark:<br/>   **ABAC: Only own address**                              | :heavy_check_mark: <br/>  **ABAC: Only own address**  | :heavy_check_mark: | :heavy_check_mark: |
 | address.delete | :heavy_check_mark:<br/>   **ABAC: Only own address**                              | :heavy_check_mark: <br/>  **ABAC: Only own address**  | :heavy_check_mark: | :heavy_check_mark: |
 | address.edit   | :heavy_check_mark: <br/>   **ABAC: Only own address**                             | :heavy_check_mark: <br/>  **ABAC: Only own address**  | :heavy_check_mark: | :heavy_check_mark: |

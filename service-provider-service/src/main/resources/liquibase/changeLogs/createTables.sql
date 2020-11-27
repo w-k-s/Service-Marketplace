@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS company(
 	name VARCHAR(255) NOT NULL,
 	email VARCHAR(320) NOT NULL UNIQUE,
 	phone VARCHAR(18) NOT NULL UNIQUE,
-	logo_url VARCHAR(2048) NOT NULL,
+	logo_url VARCHAR(2048),
 	created_date timestamp without time zone default (now() at time zone 'utc'),
 	created_by VARCHAR(255) NOT NULL,
 	last_modified_date timestamp without time zone default (now() at time zone 'utc'),
@@ -79,20 +79,26 @@ CREATE TABLE IF NOT EXISTS address(
 
 -- Category
 
-CREATE TABLE IF NOT EXISTS category(
+CREATE TABLE IF NOT EXISTS service(
     code VARCHAR(6) PRIMARY KEY,
     name VARCHAR(60) NOT NULL UNIQUE
 );
+
+INSERT INTO service
+(code,name)
+VALUES
+('CLEAN', 'Cleaning'),
+('ELCTRC','Electrical');
 
 --- MAPPINGS
 
 -- Company & Category
 
-CREATE TABLE IF NOT EXISTS company_category(
+CREATE TABLE IF NOT EXISTS company_service(
     company_uuid VARCHAR(64) NOT NULL REFERENCES company(uuid),
     company_external_id BIGSERIAL NOT NULL REFERENCES company(external_id),
-    category_code VARCHAR(6) NOT NULL  REFERENCES category(code),
-    CONSTRAINT unique_category_per_company UNIQUE(category_code,company_external_id,company_uuid)
+    service_code VARCHAR(6) NOT NULL  REFERENCES service(code),
+    CONSTRAINT unique_service_per_company UNIQUE(service_code,company_external_id,company_uuid)
 );
 
 -- Company & Admin
