@@ -1,5 +1,6 @@
 package com.wks.servicemarketplace.serviceproviderservice.config
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.wks.servicemarketplace.serviceproviderservice.adapters.auth.StandardTokenValidator
 import com.wks.servicemarketplace.serviceproviderservice.adapters.auth.TokenValidator
 import org.glassfish.hk2.api.Factory
@@ -15,7 +16,7 @@ import java.util.*
 import java.util.stream.Collectors
 import javax.inject.Inject
 
-class TokenValidatorFactory @Inject constructor() : Factory<TokenValidator> {
+class TokenValidatorFactory @Inject constructor(objectMapper : ObjectMapper) : Factory<TokenValidator> {
     private val tokenValidator: StandardTokenValidator
     private val publicKey: PublicKey
 
@@ -29,7 +30,7 @@ class TokenValidatorFactory @Inject constructor() : Factory<TokenValidator> {
                     val keyFactory = KeyFactory.getInstance("RSA")
                     val keySpec = X509EncodedKeySpec(Base64.getMimeDecoder().decode(content))
                     publicKey = keyFactory.generatePublic(keySpec)
-                    tokenValidator = StandardTokenValidator(publicKey)
+                    tokenValidator = StandardTokenValidator(publicKey, objectMapper)
                 }
             }
         } catch (e: IOException) {

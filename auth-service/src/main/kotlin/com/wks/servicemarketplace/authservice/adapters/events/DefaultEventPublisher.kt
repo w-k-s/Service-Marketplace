@@ -6,21 +6,27 @@ import com.rabbitmq.client.Channel
 import com.rabbitmq.client.MessageProperties
 import com.wks.servicemarketplace.authservice.core.events.AccountCreatedEvent
 import com.wks.servicemarketplace.authservice.core.events.EventPublisher
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import javax.inject.Inject
 
 data class DefaultEventPublisher @Inject constructor(private val channel: Channel,
                                                      private val objectMapper: ObjectMapper) : EventPublisher {
 
+    companion object{
+        private val LOGGER : Logger = LoggerFactory.getLogger(DefaultEventPublisher::class.java)
+    }
+
     init {
-        channel.exchangeDeclare(Exchange.ACCOUNT, BuiltinExchangeType.TOPIC, true, true, emptyMap())
+        channel.exchangeDeclare(Exchange.ACCOUNT, BuiltinExchangeType.TOPIC, true, true, false, emptyMap())
     }
 
     override fun customerAccountCreated(token: String, event: AccountCreatedEvent) {
-        channel.queueDeclare(Queue.CUSTOMER_CREATED, true, false, true, mutableMapOf<String, Any>())
+        LOGGER.info("Publishing Customer Account Created: '$event")
 
         channel.basicPublish(
                 Exchange.ACCOUNT,
-                RoutingKey.CUSTOMER_CREATED,
+                Outgoing.RoutingKey.CUSTOMER_CREATED,
                 MessageProperties.PERSISTENT_TEXT_PLAIN.builder()
                         .headers(mapOf("Authorization" to "Bearer $token"))
                         .build(),
@@ -29,11 +35,11 @@ data class DefaultEventPublisher @Inject constructor(private val channel: Channe
     }
 
     override fun serviceProviderAccountCreated(token: String, event: AccountCreatedEvent) {
-        channel.queueDeclare(Queue.SERVICE_PROVIDER_CREATED, true, false, true, mutableMapOf<String, Any>())
+        LOGGER.info("Publishing Service Provider Account Created: '$event")
 
         channel.basicPublish(
                 Exchange.ACCOUNT,
-                RoutingKey.SERVICE_PROVIDER_CREATED,
+                Outgoing.RoutingKey.SERVICE_PROVIDER_CREATED,
                 MessageProperties.PERSISTENT_TEXT_PLAIN.builder()
                         .headers(mapOf("Authorization" to "Bearer $token"))
                         .build(),

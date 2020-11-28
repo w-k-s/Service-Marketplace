@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory
 import javax.inject.Inject
 
 class DefaultEventReceiver @Inject constructor(private val tokenValidator: TokenValidator,
-                                               private val createCompanyRepresentativeUseCase: CreateCompanyRepresentativeUseCase,
+                                               createCompanyRepresentativeUseCase: CreateCompanyRepresentativeUseCase,
                                                objectMapper: ObjectMapper,
                                                channel: Channel) {
 
@@ -23,22 +23,27 @@ class DefaultEventReceiver @Inject constructor(private val tokenValidator: Token
     }
 
     init {
-        channel.exchangeDeclare(Exchange.ACCOUNT, BuiltinExchangeType.TOPIC, true, true, emptyMap())
         consumeServiceProviderCreated(createCompanyRepresentativeUseCase, objectMapper, channel)
     }
 
     private fun consumeServiceProviderCreated(createCompanyRepresentativeUseCase: CreateCompanyRepresentativeUseCase, objectMapper: ObjectMapper, channel: Channel) {
+        LOGGER.info("Declaring exchange: ${Exchange.ACCOUNT}")
+        channel.exchangeDeclare(Exchange.ACCOUNT, BuiltinExchangeType.TOPIC, true, true,false, emptyMap())
+
         val queueName = channel.queueDeclare(
-                Queue.SERVICE_PROVIDER_CREATED,
+                Incoming.Queue.SERVICE_PROVIDER_CREATED,
                 true,
-                true,
+                false,
                 true,
                 emptyMap()
         ).queue
-        channel.queueBind(queueName, Exchange.ACCOUNT, RoutingKey.SERVICE_PROVIDER_CREATED)
+        channel.queueBind(queueName, Exchange.ACCOUNT, Incoming.RoutingKey.SERVICE_PROVIDER_CREATED)
+        LOGGER.info("Queue '$queueName' listening to routing key ${Incoming.RoutingKey.SERVICE_PROVIDER_CREATED}")
 
         channel.basicConsume(queueName, false, { consumerTag: String, message: Delivery ->
             try {
+                LOGGER.info("Service Provider Created Event")
+
                 val customerRequest = objectMapper.readValue(message.body, CreateCompanyRepresentativeRequest.Builder::class.java)
                         .authentication(tokenValidator.authenticate(message.authorization()))
                         .build()

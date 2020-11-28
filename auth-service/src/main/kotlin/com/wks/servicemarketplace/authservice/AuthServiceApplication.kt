@@ -5,6 +5,7 @@ import com.rabbitmq.client.Channel
 import com.rabbitmq.client.Connection
 import com.wks.servicemarketplace.authservice.adapters.auth.fusionauth.FusionAuthAdapter
 import com.wks.servicemarketplace.authservice.adapters.events.DefaultEventPublisher
+import com.wks.servicemarketplace.authservice.adapters.events.DefaultEventReceiver
 import com.wks.servicemarketplace.authservice.adapters.web.resources.ApiResource
 import com.wks.servicemarketplace.authservice.adapters.web.resources.DefaultExceptionMapper
 import com.wks.servicemarketplace.authservice.adapters.web.resources.HealthResource
@@ -60,6 +61,7 @@ class AuthServiceApplication : ResourceConfig() {
                 bind(DefaultEventPublisher::class.java).to(EventPublisher::class.java).`in`(Immediate::class.java)
                 bind(FusionAuthAdapter::class.java).to(IAMAdapter::class.java).`in`(Immediate::class.java)
                 bind(TokenService::class.java).to(TokenService::class.java).`in`(Immediate::class.java)
+                bind(DefaultEventReceiver::class.java).to(DefaultEventReceiver::class.java).`in`(Immediate::class.java)
             }
         })
         register(DefaultExceptionMapper::class.java)

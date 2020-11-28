@@ -6,6 +6,7 @@ interface Registration {
     val firstName: String
     val lastName: String
     val email: String
+    val mobileNumber: String
     val enabled: Boolean
     val userType: UserType
 };

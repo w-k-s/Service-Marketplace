@@ -8,7 +8,10 @@ class ApplicationParametersFactory : Factory<ApplicationParameters> {
             amqpHost = System.getenv("amqpHost"),
             amqpPort = System.getenv("amqpPort").toInt(),
             clientId = System.getenv("clientId"),
-            clientSecret = System.getenv("clientSecret")
+            clientSecret = System.getenv("clientSecret"),
+            jdbcUrl = System.getenv("jdbcUrl"),
+            jdbcUsername = System.getenv("jdbcUsername"),
+            jdbcPassword = System.getenv("jdbcPassword")
     )
 
     override fun provide() = applicationParameters

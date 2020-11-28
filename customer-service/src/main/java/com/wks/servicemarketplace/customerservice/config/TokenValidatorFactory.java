@@ -1,5 +1,6 @@
 package com.wks.servicemarketplace.customerservice.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wks.servicemarketplace.customerservice.adapters.auth.StandardTokenValidator;
 import com.wks.servicemarketplace.customerservice.adapters.auth.TokenValidator;
 import org.glassfish.hk2.api.Factory;
@@ -24,8 +25,8 @@ public class TokenValidatorFactory implements Factory<TokenValidator> {
     private final StandardTokenValidator tokenValidator;
 
     @Inject
-    public TokenValidatorFactory() throws Exception {
-        tokenValidator = new StandardTokenValidator(getPublicKey());
+    public TokenValidatorFactory(ObjectMapper objectMapper) throws Exception {
+        tokenValidator = new StandardTokenValidator(getPublicKey(), objectMapper);
     }
 
     private PublicKey getPublicKey() {

@@ -51,6 +51,14 @@ openssl rsa -pubout -in private_key.pem -out public_key.pem
 openssl pkcs8 -topk8 -in private_key.pem -inform pem -out private_key_pkcs8.pem -outform pem -nocrypt
 ```
 
+### ClientIds 
+
+Generate users with the following usernames for the following. Users with usernames and no emails represent clientIds since fusionAuth does not have native support for the client_credentials grant type.
+1. `auth-service`
+1. `customer-service`
+1. `service-provider-service`
+1. `order-service`
+
 ## Environment Variables
 
 | Environmental Variable | Description                                 | Example                                     | required |

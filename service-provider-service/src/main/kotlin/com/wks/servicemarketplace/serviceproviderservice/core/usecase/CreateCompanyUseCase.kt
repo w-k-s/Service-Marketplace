@@ -12,13 +12,14 @@ import com.wks.servicemarketplace.serviceproviderservice.core.utils.ModelValidat
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.time.OffsetDateTime
+import javax.inject.Inject
 import javax.validation.constraints.NotEmpty
 import javax.validation.constraints.NotNull
 
-class CreateCompanyUseCase(private val companyDao: CompanyDao,
-                           private val companyRepresentativeDao: CompanyRepresentativeDao,
-                           private val employeeDao: EmployeeDao,
-                           private val eventsPublisher: EventPublisher) : UseCase<CreateCompanyRequest, CreateCompanyResponse> {
+class CreateCompanyUseCase @Inject constructor(private val companyDao: CompanyDao,
+                                               private val companyRepresentativeDao: CompanyRepresentativeDao,
+                                               private val employeeDao: EmployeeDao,
+                                               private val eventsPublisher: EventPublisher) : UseCase<CreateCompanyRequest, CreateCompanyResponse> {
 
     companion object {
         private val LOGGER: Logger = LoggerFactory.getLogger(CreateCompanyUseCase::class.java)

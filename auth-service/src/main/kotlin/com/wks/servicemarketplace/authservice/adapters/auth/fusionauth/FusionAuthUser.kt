@@ -10,6 +10,7 @@ data class FusionAuthUser(
         override val lastName: String,
         override val username: String,
         override val email: String,
+        override val mobileNumber: String,
         override val role: UserRole,
         override val type: UserType,
         override val permissions: List<String>

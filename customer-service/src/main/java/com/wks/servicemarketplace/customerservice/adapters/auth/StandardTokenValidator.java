@@ -1,5 +1,6 @@
 package com.wks.servicemarketplace.customerservice.adapters.auth;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wks.servicemarketplace.customerservice.core.auth.Authentication;
 import org.jose4j.jwa.AlgorithmConstraints;
@@ -21,8 +22,11 @@ public class StandardTokenValidator implements TokenValidator {
     private static final Logger LOGGER = LoggerFactory.getLogger(StandardTokenValidator.class);
 
     private final JwtConsumer consumer;
+    private final ObjectMapper objectMapper;
 
-    public StandardTokenValidator(PublicKey publicKey) {
+    public StandardTokenValidator(PublicKey publicKey,
+                                  ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
         this.consumer = new JwtConsumerBuilder()
                 .setRequireExpirationTime()
                 .setAllowedClockSkewInSeconds(30)
@@ -38,7 +42,7 @@ public class StandardTokenValidator implements TokenValidator {
             final JwtClaims claims = consumer.processToClaims(token);
 
             return DefaultAuthentication.builder()
-                    .user(claims.getClaimValue("user", DefaultUser.class))
+                    .user(objectMapper.readValue(claims.getStringClaimValue("user"), DefaultUser.class))
                     .name(claims.getSubject())
                     .permissions(claims.getStringListClaimValue("permissions"))
                     .build();
@@ -51,7 +55,7 @@ public class StandardTokenValidator implements TokenValidator {
                     .collect(Collectors.joining(","));
 
             throw new InvalidTokenException(message, e);
-        } catch (MalformedClaimException e) {
+        } catch (MalformedClaimException | JsonProcessingException e) {
             LOGGER.error("Invalid Claim: {}", e.getMessage(), e);
             throw new InvalidTokenException("Token's claims could not be read", e);
         }

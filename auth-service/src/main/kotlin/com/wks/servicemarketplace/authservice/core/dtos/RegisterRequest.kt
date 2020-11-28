@@ -9,10 +9,11 @@ import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
 
 data class RegisterRequest internal constructor(override val firstName: String,
-                                       override val lastName: String,
-                                       override val email: String,
-                                       override val password: String,
-                                       override val userType: UserType) : Registration {
+                                                override val lastName: String,
+                                                override val email: String,
+                                                override val mobileNumber: String,
+                                                override val password: String,
+                                                override val userType: UserType) : Registration {
 
     override val username: String
         get() = email
@@ -27,11 +28,17 @@ data class RegisterRequest internal constructor(override val firstName: String,
 
         @field:Size(min = 2, max = 50)
         var lastName: String? = null
+
         @field:Email
         @field:NotBlank
         var email: String? = null
+
+        @field:NotBlank
+        var mobileNumber: String? = null
+
         @field:Password
         var password: String? = null
+
         @field:NotNull
         var userType: UserType? = null
 
@@ -47,6 +54,11 @@ data class RegisterRequest internal constructor(override val firstName: String,
 
         fun email(email: String?): Builder {
             this.email = email
+            return this
+        }
+
+        fun mobileNumber(mobileNumber: String?): Builder {
+            this.mobileNumber = mobileNumber
             return this
         }
 
@@ -66,6 +78,7 @@ data class RegisterRequest internal constructor(override val firstName: String,
                     firstName!!,
                     lastName!!,
                     email!!,
+                    mobileNumber!!,
                     password!!,
                     userType!!
             )

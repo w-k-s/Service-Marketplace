@@ -42,6 +42,7 @@ class FusionAuthAdapter @Inject constructor(
                 login.user.lastName,
                 login.user.username,
                 login.user.email,
+                login.user.mobilePhone,
                 role,
                 UserType.of(login.user.data["userType"].toString()),
                 login.user.registrations.first { it.applicationId == UUID.fromString(config.applicationId) }.roles.toList()
@@ -74,16 +75,17 @@ class FusionAuthAdapter @Inject constructor(
         }
 
         val user = createUser(registration).user
-        val permisions = assignGroup(role, user.id.toString())
+        val permissions = assignGroup(role, user.id.toString())
         return FusionAuthUser(
                 user.id.toString(),
-                user.username,
                 user.firstName,
                 user.lastName,
+                user.username,
                 user.email,
+                user.mobilePhone,
                 role,
                 registration.userType,
-                permisions
+                permissions
         )
     }
 
@@ -100,6 +102,7 @@ class FusionAuthAdapter @Inject constructor(
                             it.lastName = registration.lastName
                             it.username = registration.username
                             it.password = registration.password
+                            it.mobilePhone = registration.mobileNumber
                             it.data = mapOf("userType" to registration.userType.code)
                         },
                         UserRegistration().with {

@@ -1,5 +1,6 @@
 package com.wks.servicemarketplace.serviceproviderservice.adapters.auth
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.wks.servicemarketplace.serviceproviderservice.core.auth.Authentication
 import org.jose4j.jwa.AlgorithmConstraints
 import org.jose4j.jws.AlgorithmIdentifiers
@@ -10,7 +11,8 @@ import org.jose4j.jwt.consumer.JwtConsumerBuilder
 import org.slf4j.LoggerFactory
 import java.security.PublicKey
 
-class StandardTokenValidator(publicKey: PublicKey) : TokenValidator {
+class StandardTokenValidator(publicKey: PublicKey, private val objectMapper: ObjectMapper) : TokenValidator {
+
     private val LOGGER = LoggerFactory.getLogger(StandardTokenValidator::class.java)
 
     private var consumer = JwtConsumerBuilder()
@@ -30,7 +32,7 @@ class StandardTokenValidator(publicKey: PublicKey) : TokenValidator {
         try {
             return consumer.processToClaims(token).let {
                 DefaultAuthentication(
-                        it.getClaimValue("user", DefaultUser::class.java),
+                        objectMapper.readValue(it.getStringClaimValue("user"), DefaultUser::class.java),
                         token,
                         it.subject,
                         it.getStringListClaimValue("permissions")

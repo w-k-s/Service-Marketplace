@@ -41,6 +41,8 @@ services:
     env_file:
       - docker-infra/auth-service.env
     environment:
+      clientId: auth-service
+      clientSecret: Password@1
       fusionServerUrl: http://fusionauth:9011
       fusionApplicationId: d64656ea-4f62-4127-b312-91afeeca96f9
       fusionTenantId: a84b174a-965c-44fe-807d-623efc3bff9c
@@ -60,6 +62,8 @@ services:
     image: wkas/sm-customer-service
     restart: always
     environment:
+      clientId: customer-service
+      clientSecret: Password@1
       jdbcUrl: jdbc:postgresql://docker.for.mac.host.internal:5432/customer
       jdbcUsername: waqqassheikh
       jdbcPassword: 7713659
@@ -76,6 +80,8 @@ services:
     image: wkas/sm-sp-service
     restart: always
     environment:
+      clientId: service-provider-service
+      clientSecret: Password@1
       jdbcUrl: jdbc:postgresql://docker.for.mac.host.internal:5432/provider
       jdbcUsername: waqqassheikh
       jdbcPassword: 7713659

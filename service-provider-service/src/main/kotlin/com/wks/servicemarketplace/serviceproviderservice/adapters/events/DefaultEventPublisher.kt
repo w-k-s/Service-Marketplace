@@ -16,11 +16,9 @@ data class DefaultEventPublisher @Inject constructor(private val channel: Channe
     }
 
     override fun companyCreated(token: String, event: CompanyCreatedEvent) {
-        channel.queueDeclare(Queue.COMPANY_CREATED, true, false, true, mutableMapOf<String, Any>())
-
         channel.basicPublish(
                 Exchange.SERVICE_PROVIDER,
-                RoutingKey.COMPANY_CREATED,
+                Outgoing.RoutingKey.COMPANY_CREATED,
                 MessageProperties.PERSISTENT_TEXT_PLAIN.builder()
                         .headers(mapOf("Authorization" to "Bearer $token"))
                         .build(),

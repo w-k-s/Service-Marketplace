@@ -1,6 +1,7 @@
 package com.wks.servicemarketplace.authservice.core.iam
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.wks.servicemarketplace.authservice.core.Token
 import com.wks.servicemarketplace.authservice.core.UserType
 import org.jose4j.jwa.AlgorithmConstraints
@@ -47,7 +48,7 @@ class StandardToken(subject: String,
             claims.expirationTime = NumericDate.fromMilliseconds(Instant.now().plusMillis(expiration.toMillis()).toEpochMilli())
             claims.subject = subject
             claims.setStringListClaim("permissions", permissions)
-            user?.let { theUser -> claims.setClaim("user", theUser) }
+            user?.let { theUser -> claims.setStringClaim("user", objectMapper.writeValueAsString(theUser)) }
             otherClaims.forEach { claim -> claims.setClaim(claim.key, claim.value) }
         }.toJson()
         it.key = privateKey
@@ -57,6 +58,7 @@ class StandardToken(subject: String,
     override val refreshToken: String? = null
 
     companion object {
+        val objectMapper = ObjectMapper()
         fun parseClaims(token: String, publicKey: PublicKey): Claims {
             val jwtConsumer = JwtConsumerBuilder()
                     .setRequireExpirationTime()

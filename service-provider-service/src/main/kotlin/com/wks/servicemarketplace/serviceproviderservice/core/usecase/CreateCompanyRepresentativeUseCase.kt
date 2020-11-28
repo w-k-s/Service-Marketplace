@@ -10,9 +10,10 @@ import com.wks.servicemarketplace.serviceproviderservice.core.utils.ModelValidat
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.*
+import javax.inject.Inject
 import javax.validation.constraints.NotNull
 
-class CreateCompanyRepresentativeUseCase(private val companyRepresentativeDao: CompanyRepresentativeDao) : UseCase<CreateCompanyRepresentativeRequest, CreateCompanyRepresentativeResponse> {
+class CreateCompanyRepresentativeUseCase @Inject constructor(private val companyRepresentativeDao: CompanyRepresentativeDao) : UseCase<CreateCompanyRepresentativeRequest, CreateCompanyRepresentativeResponse> {
 
     companion object {
         val LOGGER: Logger = LoggerFactory.getLogger(CreateCompanyRepresentativeUseCase::class.java)
@@ -78,7 +79,7 @@ data class CreateCompanyRepresentativeRequest(
             @NotNull
             var email: String?,
             @NotNull
-            var phoneNumber: String?,
+            var mobileNumber: String?,
             @NotNull
             var authentication: Authentication?
     ) {
@@ -102,8 +103,8 @@ data class CreateCompanyRepresentativeRequest(
             return this
         }
 
-        fun phoneNumber(phoneNumber: String?): Builder {
-            this.phoneNumber = phoneNumber
+        fun mobileNumber(mobileNumber: String?): Builder {
+            this.mobileNumber = mobileNumber
             return this
         }
 
@@ -118,7 +119,7 @@ data class CreateCompanyRepresentativeRequest(
                         UUID.fromString(this.uuid!!),
                         Name.of(this.firstName!!, this.lastName!!),
                         Email.of(this.email!!),
-                        PhoneNumber.of(this.phoneNumber!!),
+                        PhoneNumber.of(this.mobileNumber!!),
                         this.authentication!!
                 )
             }
