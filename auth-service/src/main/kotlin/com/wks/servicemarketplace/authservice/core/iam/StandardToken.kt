@@ -3,14 +3,11 @@ package com.wks.servicemarketplace.authservice.core.iam
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.wks.servicemarketplace.authservice.core.Token
-import com.wks.servicemarketplace.authservice.core.UserType
 import org.jose4j.jwa.AlgorithmConstraints
 import org.jose4j.jws.AlgorithmIdentifiers
 import org.jose4j.jws.JsonWebSignature
 import org.jose4j.jwt.JwtClaims
 import org.jose4j.jwt.NumericDate
-import org.jose4j.jwt.consumer.ErrorCodes
-import org.jose4j.jwt.consumer.InvalidJwtException
 import org.jose4j.jwt.consumer.JwtConsumerBuilder
 import java.security.PrivateKey
 import java.security.PublicKey

@@ -19,7 +19,7 @@ class AuthenticationFilter @Inject constructor(private val tokenValidator: Token
         try {
             requestContext.getHeaderString("Authorization")
                     ?.takeIf { it.isNotBlank() }
-                    ?.substring("Bearer".length)
+                    ?.substring("Bearer ".length)
                     ?.let {
                         tokenValidator.authenticate(it)
                     }?.also {

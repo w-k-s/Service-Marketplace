@@ -1,11 +1,12 @@
 package com.wks.servicemarketplace.serviceproviderservice.core
 
+import com.fasterxml.jackson.annotation.JsonValue
 import java.time.Clock
 import java.time.OffsetDateTime
 import java.util.*
 
-data class CompanyId(override val value: Long) : Id<Long>(value)
-data class CompanyUUID(override val value: UUID) : Id<UUID>(value) {
+data class CompanyId(@JsonValue override val value: Long) : Id<Long>(value)
+data class CompanyUUID(@JsonValue override val value: UUID) : Id<UUID>(value) {
     companion object {
         fun random() = CompanyUUID(UUID.randomUUID())
         fun fromString(uuidString: String) = CompanyUUID(UUID.fromString(uuidString))

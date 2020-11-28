@@ -1,5 +1,6 @@
 package com.wks.servicemarketplace.serviceproviderservice.core
 
+import com.fasterxml.jackson.annotation.JsonValue
 import com.wks.servicemarketplace.serviceproviderservice.core.utils.ModelValidator
 import java.time.Clock
 import java.time.OffsetDateTime
@@ -7,8 +8,8 @@ import java.util.*
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.Size
 
-data class EmployeeId(override val value: Long) : Id<Long>(value)
-data class EmployeeUUID(override val value: UUID) : Id<UUID>(value) {
+data class EmployeeId(@JsonValue override val value: Long) : Id<Long>(value)
+data class EmployeeUUID(@JsonValue override val value: UUID) : Id<UUID>(value) {
     companion object {
         fun random() = EmployeeUUID(UUID.randomUUID())
         fun fromString(uuidString: String) = EmployeeUUID(UUID.fromString(uuidString))
