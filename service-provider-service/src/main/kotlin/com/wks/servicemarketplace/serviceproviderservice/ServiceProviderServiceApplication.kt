@@ -9,13 +9,12 @@ import com.wks.servicemarketplace.serviceproviderservice.adapters.db.dao.Default
 import com.wks.servicemarketplace.serviceproviderservice.adapters.db.dao.DefaultCompanyDao
 import com.wks.servicemarketplace.serviceproviderservice.adapters.db.dao.DefaultCompanyRepresentativeDao
 import com.wks.servicemarketplace.serviceproviderservice.adapters.db.dao.DefaultEmployeeDao
-import com.wks.servicemarketplace.serviceproviderservice.adapters.web.resources.GraphQLResource
+import com.wks.servicemarketplace.serviceproviderservice.adapters.web.resources.ApiResource
 import com.wks.servicemarketplace.serviceproviderservice.config.*
 import com.wks.servicemarketplace.serviceproviderservice.core.AddressDao
 import com.wks.servicemarketplace.serviceproviderservice.core.CompanyDao
 import com.wks.servicemarketplace.serviceproviderservice.core.CompanyRepresentativeDao
 import com.wks.servicemarketplace.serviceproviderservice.core.EmployeeDao
-import graphql.GraphQL
 import org.glassfish.hk2.api.Immediate
 import org.glassfish.hk2.utilities.binding.AbstractBinder
 import org.glassfish.jersey.jetty.JettyHttpContainerFactory
@@ -50,7 +49,6 @@ class ServiceProviderServiceApplication : ResourceConfig() {
         register(object : AbstractBinder() {
             override fun configure() {
                 bindFactory(ApplicationParametersFactory::class.java, Immediate::class.java).to(ApplicationParameters::class.java).`in`(Immediate::class.java)
-                bindFactory(GraphQLFactory::class.java, Immediate::class.java).to(GraphQL::class.java).`in`(Immediate::class.java)
                 bindFactory(ObjectMapperFactory::class.java, Immediate::class.java).to(ObjectMapper::class.java).`in`(Immediate::class.java)
                 bindFactory(AmqpConnectionFactory::class.java, Immediate::class.java).to(Connection::class.java).`in`(Immediate::class.java)
                 bindFactory(AmqpChannelFactory::class.java, Immediate::class.java).to(Channel::class.java).`in`(Immediate::class.java)
@@ -62,7 +60,7 @@ class ServiceProviderServiceApplication : ResourceConfig() {
             }
         })
         register(HealthResource::class.java)
-        register(GraphQLResource::class.java)
+        register(ApiResource::class.java)
     }
 
     fun run() {

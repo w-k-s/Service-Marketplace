@@ -4,6 +4,8 @@ import com.wks.servicemarketplace.authservice.core.*
 import com.wks.servicemarketplace.authservice.core.errors.UnauthorizedException
 import com.wks.servicemarketplace.authservice.core.events.AccountCreatedEvent
 import com.wks.servicemarketplace.authservice.core.events.EventPublisher
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.security.PrivateKey
 import java.security.PublicKey
 import java.time.Duration
@@ -13,6 +15,10 @@ class TokenService @Inject constructor(private val iam: IAMAdapter,
                                        private val privateKey: PrivateKey,
                                        private val publicKey: PublicKey,
                                        private val eventPublisher: EventPublisher) {
+
+    companion object {
+        val LOGGER : Logger = LoggerFactory.getLogger(TokenService::class.java)
+    }
 
     fun login(credentials: Credentials): Token {
         val user = iam.login(credentials)
@@ -39,6 +45,7 @@ class TokenService @Inject constructor(private val iam: IAMAdapter,
         when (user.role) {
             UserRole.CUSTOMER -> eventPublisher.customerAccountCreated(userToken, AccountCreatedEvent(user))
             UserRole.COMPANY_REPRESENTATIVE -> eventPublisher.serviceProviderAccountCreated(userToken, AccountCreatedEvent(user))
+            else -> LOGGER.error("Non-admin employees aren't supported (and won't be cuz i'm lazy)")
         }
 
         return user

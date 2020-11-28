@@ -1,7 +1,7 @@
 package com.wks.servicemarketplace.customerservice.core.usecase.customer;
 
+import com.google.common.base.Preconditions;
 import com.wks.servicemarketplace.customerservice.core.usecase.Id;
-import jdk.internal.jline.internal.Preconditions;
 
 import java.util.UUID;
 

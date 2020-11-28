@@ -5,24 +5,23 @@ import com.rabbitmq.client.Channel
 import com.rabbitmq.client.Connection
 import com.wks.servicemarketplace.authservice.adapters.auth.fusionauth.FusionAuthAdapter
 import com.wks.servicemarketplace.authservice.adapters.events.DefaultEventPublisher
-import com.wks.servicemarketplace.authservice.adapters.graphql.ApiTokenDataFetcher
-import com.wks.servicemarketplace.authservice.adapters.graphql.LoginDataFetcher
-import com.wks.servicemarketplace.authservice.adapters.graphql.RegisterDataFetcher
-import com.wks.servicemarketplace.authservice.adapters.web.resources.GraphQLResource
+import com.wks.servicemarketplace.authservice.adapters.web.resources.ApiResource
+import com.wks.servicemarketplace.authservice.adapters.web.resources.DefaultExceptionMapper
 import com.wks.servicemarketplace.authservice.adapters.web.resources.HealthResource
 import com.wks.servicemarketplace.authservice.config.*
 import com.wks.servicemarketplace.authservice.core.IAMAdapter
 import com.wks.servicemarketplace.authservice.core.events.EventPublisher
 import com.wks.servicemarketplace.authservice.core.iam.TokenService
-import graphql.GraphQL
 import org.glassfish.hk2.api.Immediate
 import org.glassfish.hk2.utilities.binding.AbstractBinder
 import org.glassfish.jersey.jetty.JettyHttpContainerFactory
 import org.glassfish.jersey.server.ResourceConfig
+import org.glassfish.jersey.server.ServerProperties.PROCESSING_RESPONSE_ERRORS_ENABLED
 import org.slf4j.LoggerFactory
 import java.security.PrivateKey
 import java.security.PublicKey
 import javax.ws.rs.core.UriBuilder
+import javax.ws.rs.ext.ExceptionMapper
 
 class AuthServiceApplication : ResourceConfig() {
 
@@ -42,6 +41,7 @@ class AuthServiceApplication : ResourceConfig() {
     }
 
     init {
+        properties = mapOf(PROCESSING_RESPONSE_ERRORS_ENABLED to true)
         registerResources()
     }
 
@@ -51,7 +51,6 @@ class AuthServiceApplication : ResourceConfig() {
             override fun configure() {
                 bindFactory(ApplicationParametersFactory::class.java, Immediate::class.java).to(ApplicationParameters::class.java).`in`(Immediate::class.java)
                 bindFactory(FusionAuthConfigurationFactory::class.java, Immediate::class.java).to(FusionAuthConfiguration::class.java).`in`(Immediate::class.java)
-                bindFactory(GraphQLFactory::class.java, Immediate::class.java).to(GraphQL::class.java).`in`(Immediate::class.java)
                 bindFactory(ObjectMapperFactory::class.java, Immediate::class.java).to(ObjectMapper::class.java).`in`(Immediate::class.java)
                 bindFactory(PrivateKeyFactory::class.java, Immediate::class.java).to(PrivateKey::class.java).`in`(Immediate::class.java)
                 bindFactory(PublicKeyFactory::class.java, Immediate::class.java).to(PublicKey::class.java).`in`(Immediate::class.java)
@@ -60,14 +59,12 @@ class AuthServiceApplication : ResourceConfig() {
 
                 bind(DefaultEventPublisher::class.java).to(EventPublisher::class.java).`in`(Immediate::class.java)
                 bind(FusionAuthAdapter::class.java).to(IAMAdapter::class.java).`in`(Immediate::class.java)
-                bind(LoginDataFetcher::class.java).to(LoginDataFetcher::class.java).`in`(Immediate::class.java)
-                bind(RegisterDataFetcher::class.java).to(RegisterDataFetcher::class.java).`in`(Immediate::class.java)
-                bind(ApiTokenDataFetcher::class.java).to(ApiTokenDataFetcher::class.java).`in`(Immediate::class.java)
                 bind(TokenService::class.java).to(TokenService::class.java).`in`(Immediate::class.java)
             }
         })
+        register(DefaultExceptionMapper::class.java)
         register(ObjectMapperProvider::class.java)
-        register(GraphQLResource::class.java)
+        register(ApiResource::class.java)
         register(HealthResource::class.java)
     }
 

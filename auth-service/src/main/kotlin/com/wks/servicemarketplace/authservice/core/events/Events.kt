@@ -1,6 +1,6 @@
 package com.wks.servicemarketplace.authservice.core.events
 
-import com.wks.servicemarketplace.authservice.core.Identity
+import com.wks.servicemarketplace.authservice.core.User
 
 data class AccountCreatedEvent(
         val id: String,
@@ -9,10 +9,11 @@ data class AccountCreatedEvent(
         val lastName: String,
         val email: String
 ) {
-    constructor(identity: Identity) : this(identity.id,
-            identity.username,
-            identity.firstName,
-            identity.lastName,
-            identity.email
+    constructor(user: User) : this(
+            user.id,
+            user.username,
+            user.firstName,
+            user.lastName,
+            user.email
     )
 }

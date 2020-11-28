@@ -9,7 +9,6 @@ version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
-    jcenter()
 }
 
 tasks.withType<Jar> {
@@ -54,11 +53,6 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.0") // Support for java 8's time API
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.11.1")
     implementation("javax.activation:activation:1.1.1") // Needed by jackson-jaxrs-json-provider
-
-    // GraphQL
-    implementation("com.graphql-java:graphql-java:14.1")
-    implementation("com.graphql-java:graphql-java-tools:5.2.4")
-    implementation("io.gqljf:graphql-java-federation:0.1.16") // jCenter
 
     // RabbitMQ
     implementation("com.rabbitmq:amqp-client:5.9.0")

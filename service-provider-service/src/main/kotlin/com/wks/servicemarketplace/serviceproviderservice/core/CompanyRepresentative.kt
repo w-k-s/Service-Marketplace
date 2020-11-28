@@ -10,6 +10,7 @@ data class CompanyRepresentativeUUID(override val value: UUID) : Id<UUID>(value)
         fun random() = CompanyRepresentativeUUID(UUID.randomUUID())
         fun fromString(uuidString: String) = CompanyRepresentativeUUID(UUID.fromString(uuidString))
     }
+    override fun toString() = value.toString()
 }
 
 /**

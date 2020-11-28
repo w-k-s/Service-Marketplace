@@ -69,6 +69,22 @@ services:
       serverPort: 8081
     entrypoint: ["./wait-for-it.sh", "rabbitmq:5672","-t","0","--strict","--","java","-jar","/app.jar"]
 
+  service-provider-service:
+    build:
+      context: ./service-provider-service
+      dockerfile: Dockerfile
+    image: wkas/sm-sp-service
+    restart: always
+    environment:
+      jdbcUrl: jdbc:postgresql://docker.for.mac.host.internal:5432/provider
+      jdbcUsername: waqqassheikh
+      jdbcPassword: 7713659
+      amqpHost: rabbitmq
+      amqpPort: 5672
+      serverHost: http://0.0.0.0
+      serverPort: 8081
+    entrypoint: ["./wait-for-it.sh", "rabbitmq:5672","-t","0","--strict","--","java","-jar","/app.jar"]
+
   job-service:
     build:
       context: ./job-service

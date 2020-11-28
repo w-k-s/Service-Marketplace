@@ -129,6 +129,10 @@ class FusionAuthAdapter @Inject constructor(
         return response.successResponse.groups
     }
 
+    override fun assignRole(role: UserRole, userId: String) {
+        assignGroup(role, userId)
+    }
+
     private fun assignGroup(role: UserRole, userId: String): List<String> {
 
         val group = groups.firstOrNull { it.name == role.code } ?: throw RuntimeException("Role not found")
