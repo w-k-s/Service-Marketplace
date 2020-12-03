@@ -3,7 +3,7 @@
 # Java is provided explicitly to gradle because I find it confusing the way IntelliJ has 3 separate places to provide the Java version
 # and they don't automatically synchronise with one another.
 
-run-containers: build-auth-service build-customer-service build-job-service build-service-provider-service
+run-containers: build-auth-service build-customer-service build-order-service build-service-provider-service
 	docker-compose up -d --build
 
 stop-containers:
@@ -15,8 +15,8 @@ build-auth-service:
 build-customer-service:
 	cd customer-service; ./gradlew build -Dorg.gradle.java.home=$(JAVA_HOME) -x test
 
-build-job-service:
-	cd job-service; ./gradlew build -Dorg.gradle.java.home=$(JAVA_HOME) -x test
+build-order-service:
+	cd order-service; ./gradlew build -Dorg.gradle.java.home=$(JAVA_HOME) -x test
 
 build-service-provider-service:
 	cd service-provider-service; ./gradlew build -Dorg.gradle.java.home=$(JAVA_HOME) -x test

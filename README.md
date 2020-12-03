@@ -19,7 +19,7 @@ A Service Marketplace backend to implement the practices described in 'Microserv
 
 ### Later
 
-- [ ] It is possible that a transaction is commited to the db but the message does not get added to the queue. Use Transactional-outbox pattern
+- [ ] Use Transactional-outbox pattern
 - [ ] 
 
 ## Useful Resources

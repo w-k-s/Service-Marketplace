@@ -33,11 +33,11 @@ data class CountryCodeNotFoundException(private val code: String,
 
 class ValidationException(fields: Map<String, List<String>>) : CoreRuntimeException(
         ErrorType.VALIDATION,
-        fields.toString(key = " "),
+        fields.toFormattedString(key = " "),
         Collections.unmodifiableMap(fields)
 )
 
-internal fun Map<String, List<String>>.toString(value: String = ",",
-                                                key: String = "\n"): String {
+internal fun Map<String, List<String>>.toFormattedString(value: String = ",",
+                                                         key: String = "\n"): String {
     return this.map { it.value.joinToString(value) }.joinToString(key)
 }

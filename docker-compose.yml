@@ -91,11 +91,11 @@ services:
       serverPort: 8081
     entrypoint: ["./wait-for-it.sh", "rabbitmq:5672","-t","0","--strict","--","java","-jar","/app.jar"]
 
-  job-service:
+  order-service:
     build:
-      context: ./job-service
+      context: ./order-service
       dockerfile: Dockerfile
-    image: wkas/sm-job-service
+    image: wkas/sm-order-service
     restart: always
     ports:
       - 8080:8080
