@@ -1,6 +1,7 @@
 package com.wks.servicesmarketplace.orderservice.adapters.web
 
 import com.wks.servicesmarketplace.orderservice.core.auth.Authentication
+import com.wks.servicesmarketplace.orderservice.core.models.serviceorder.entities.OrderUUID
 import com.wks.servicesmarketplace.orderservice.core.models.serviceorder.queries.GetServiceOrderByIdQuery
 import com.wks.servicesmarketplace.orderservice.core.usecases.serviceorder.*
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -21,10 +22,10 @@ class ServiceOrdersController(val createServiceOrderUseCase: CreateServiceOrderU
             )
 
     @PostMapping("/{orderId}/verify")
-    fun verify(@PathVariable("orderId", required = true) orderId: String) = verifyServiceOrderUseCase.execute(orderId)
+    fun verify(@PathVariable("orderId", required = true) orderId: String) = verifyServiceOrderUseCase.execute(OrderUUID.fromString(orderId))
 
     @PostMapping("/{orderId}/reject")
-    fun reject(@PathVariable("orderId", required = true) orderId: String, @RequestBody(required = true) rejectRequest: RejectServiceOrderRequest) = rejectServiceOrderUseCase.execute(RejectServiceOrderRequest(orderId, rejectRequest.rejectReason))
+    fun reject(@PathVariable("orderId", required = true) orderId: String, @RequestBody(required = true) rejectRequest: RejectServiceOrderRequest) = rejectServiceOrderUseCase.execute(RejectServiceOrderRequest(OrderUUID.fromString(orderId), rejectRequest.rejectReason))
 
     @GetMapping("/{orderId}")
     fun getServiceOrderById(@PathVariable("orderId", required = true) orderId: String): ServiceOrderResponse = getServiceOrderByIdUseCase.execute(GetServiceOrderByIdQuery(orderId))

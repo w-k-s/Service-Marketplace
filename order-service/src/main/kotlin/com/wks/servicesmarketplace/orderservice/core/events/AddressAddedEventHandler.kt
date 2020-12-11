@@ -1,7 +1,7 @@
 package com.wks.servicesmarketplace.orderservice.core.events
 
 import com.wks.servicesmarketplace.orderservice.core.models.serviceorder.entities.Address
-import com.wks.servicesmarketplace.orderservice.core.models.serviceorder.events.AddressAddedEvent
+import com.wks.servicesmarketplace.orderservice.core.models.serviceorder.entities.AddressAddedEvent
 import com.wks.servicesmarketplace.orderservice.core.repositories.CustomerAddressQueryRepository
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component

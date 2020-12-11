@@ -5,14 +5,13 @@ import com.wks.servicesmarketplace.orderservice.core.models.serviceorder.Service
 import com.wks.servicesmarketplace.orderservice.core.models.serviceorder.commands.CreateServiceOrderCommand
 import com.wks.servicesmarketplace.orderservice.core.models.serviceorder.commands.RejectServiceOrderCommand
 import com.wks.servicesmarketplace.orderservice.core.models.serviceorder.commands.VerifyServiceOrderCommand
-import com.wks.servicesmarketplace.orderservice.core.models.serviceorder.entities.Money
-import com.wks.servicesmarketplace.orderservice.core.models.serviceorder.events.CreateServiceOrderEvent
-import com.wks.servicesmarketplace.orderservice.core.models.serviceorder.events.RejectServiceOrderEvent
-import com.wks.servicesmarketplace.orderservice.core.models.serviceorder.events.VerifyServiceOrderEvent
+import com.wks.servicesmarketplace.orderservice.core.models.serviceorder.entities.*
 import org.axonframework.commandhandling.CommandHandler
 import org.axonframework.eventsourcing.EventSourcingHandler
 import org.axonframework.modelling.command.*
 import org.axonframework.spring.stereotype.Aggregate
+import java.math.BigDecimal
+import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 
@@ -20,33 +19,33 @@ import java.time.ZonedDateTime
 class ServiceOrder() {
 
     @field:AggregateIdentifier
-    lateinit var orderId: String
+    lateinit var orderId: OrderUUID
 
-    var customerId: Long = 0
+    lateinit var customerId: CustomerId
 
-    var serviceCategoryId: Long = 0
+    lateinit var serviceCode: String
 
     lateinit var title: String
 
     lateinit var description: String
 
-    lateinit var orderDateTime: ZonedDateTime
+    lateinit var orderDateTime: OffsetDateTime
 
     lateinit var address: Address
 
     var status: ServiceOrderStatus = ServiceOrderStatus.INVALID
 
-    var scheduledServiceProviderId: Long? = null
+    var scheduledCompanyId: CompanyId? = null
 
     var price: Money? = null
 
     var rejectReason: String? = null
 
-    var createdDate: ZonedDateTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC)
+    var createdDate: OffsetDateTime = OffsetDateTime.now(ZoneOffset.UTC)
 
     lateinit var createdBy: String
 
-    var lastModifiedDate: ZonedDateTime? = null
+    var lastModifiedDate: OffsetDateTime? = null
 
     var lastModifiedBy: String? = null
 
@@ -54,31 +53,31 @@ class ServiceOrder() {
     var version: Long = 0
 
     @CommandHandler
-    constructor(command: CreateServiceOrderCommand) : this(){
+    constructor(command: CreateServiceOrderCommand) : this() {
         AggregateLifecycle.apply(
-            CreateServiceOrderEvent(
-                    command.orderId!!,
-                    command.customerId,
-                    command.serviceCategoryId,
-                    command.title!!,
-                    command.description!!,
-                    command.address.let {
-                        CreateServiceOrderEvent.Address(
-                                it!!.externalId!!,
-                                it.name!!,
-                                it.line1!!,
-                                it.line2,
-                                it.city,
-                                it.country,
-                                it.latitude,
-                                it.longitude,
-                                it.version
-                        )
-                    },
-                    command.orderDateTime!!.withZoneSameInstant(ZoneOffset.UTC),
-                    ServiceOrderStatus.VERIFYING,
-                    command.createdBy!!
-            )
+                CreateServiceOrderEvent(
+                        command.orderId!!,
+                        command.customerId!!,
+                        command.serviceCode!!,
+                        command.title!!,
+                        command.description!!,
+                        command.address.let {
+                            CreateServiceOrderEvent.Address(
+                                    it!!.externalId!!,
+                                    it.name!!,
+                                    it.line1!!,
+                                    it.line2,
+                                    it.city,
+                                    it.country,
+                                    it.latitude,
+                                    it.longitude,
+                                    it.version
+                            )
+                        },
+                        command.orderDateTime!!,
+                        ServiceOrderStatus.VERIFYING,
+                        command.createdBy!!
+                )
         )
     }
 
@@ -87,7 +86,7 @@ class ServiceOrder() {
         event.let {
             this.orderId = it.orderId
             this.customerId = it.customerId
-            this.serviceCategoryId = it.serviceCategoryId
+            this.serviceCode = it.serviceCode
             this.title = it.title
             this.description = it.description
             this.address = it.address.let {
@@ -110,34 +109,34 @@ class ServiceOrder() {
     }
 
     @CommandHandler
-    fun verify(command: VerifyServiceOrderCommand){
-        when(status){
+    fun verify(command: VerifyServiceOrderCommand) {
+        when (status) {
             ServiceOrderStatus.VERIFYING -> AggregateLifecycle.apply(VerifyServiceOrderEvent(command.orderId!!, command.modifiedBy!!))
             else -> throw InvalidStateTransitionException(ServiceOrder::class, this.status.name, ServiceOrderStatus.PUBLISHED.name)
         }
     }
 
     @EventSourcingHandler
-    fun on(event: VerifyServiceOrderEvent){
+    fun on(event: VerifyServiceOrderEvent) {
         this.status = ServiceOrderStatus.PUBLISHED
         this.lastModifiedBy = event.modifiedBy
-        this.lastModifiedDate = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC)
+        this.lastModifiedDate = OffsetDateTime.now(ZoneOffset.UTC)
     }
 
     @CommandHandler
-    fun reject(command: RejectServiceOrderCommand){
-        when(status){
+    fun reject(command: RejectServiceOrderCommand) {
+        when (status) {
             ServiceOrderStatus.VERIFYING -> AggregateLifecycle.apply(RejectServiceOrderEvent(command.orderId!!, command.rejectReason!!, command.modifiedBy!!))
             else -> throw throw InvalidStateTransitionException(ServiceOrder::class, this.status.name, ServiceOrderStatus.REJECTED.name)
         }
     }
 
     @EventSourcingHandler
-    fun on(event: RejectServiceOrderEvent){
+    fun on(event: RejectServiceOrderEvent) {
         this.status = ServiceOrderStatus.REJECTED
         this.rejectReason = event.rejectReason
         this.lastModifiedBy = event.modifiedBy
-        this.lastModifiedDate = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC)
+        this.lastModifiedDate = OffsetDateTime.now(ZoneOffset.UTC)
     }
 
     // schedule - change scheduledServiceProviderId,  final bid (embedded), state, lastModifiedBy, lastModifiedDate, version
@@ -146,3 +145,36 @@ class ServiceOrder() {
     // noshow - change state, lastModifiedBy, lastModifiedDate, version
     // complete - change state, lastModifiedBy, lastModifiedDate, version
 }
+
+data class CreateServiceOrderEvent(val orderId: OrderUUID,
+                                   val customerId: CustomerId,
+                                   val serviceCode: String,
+                                   val title: String,
+                                   val description: String,
+                                   val address: Address,
+                                   val orderDateTime: OffsetDateTime,
+                                   val status: ServiceOrderStatus,
+                                   val createdBy: String) {
+    data class Address(
+            val externalId: AddressId,
+            val name: String,
+            val line1: String,
+            val line2: String?,
+            val city: String,
+            val country: String,
+            val latitude: BigDecimal,
+            val longitude: BigDecimal,
+            val version: Long
+    )
+}
+
+data class RejectServiceOrderEvent(
+        val orderId: OrderUUID,
+        val rejectReason: String,
+        val modifiedBy: String
+)
+
+data class VerifyServiceOrderEvent(
+        val orderId: OrderUUID,
+        val modifiedBy: String
+)

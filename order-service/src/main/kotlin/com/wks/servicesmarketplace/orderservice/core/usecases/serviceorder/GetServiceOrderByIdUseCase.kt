@@ -25,7 +25,7 @@ class GetServiceOrderByIdUseCase(private val queryGateway: QueryGateway,
             ServiceOrderResponse(
                     it.orderId,
                     it.customerId,
-                    it.serviceCategoryId,
+                    it.serviceCode,
                     it.title,
                     it.description,
                     it.status,

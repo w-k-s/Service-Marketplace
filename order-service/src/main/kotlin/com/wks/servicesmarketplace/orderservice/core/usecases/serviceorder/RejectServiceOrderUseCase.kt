@@ -1,7 +1,7 @@
 package com.wks.servicesmarketplace.orderservice.core.usecases.serviceorder
 
+import com.wks.servicesmarketplace.orderservice.core.models.serviceorder.aggregates.RejectServiceOrderEvent
 import com.wks.servicesmarketplace.orderservice.core.models.serviceorder.commands.RejectServiceOrderCommand
-import com.wks.servicesmarketplace.orderservice.core.models.serviceorder.events.RejectServiceOrderEvent
 import com.wks.servicesmarketplace.orderservice.core.repositories.ServiceOrderQueryRepository
 import com.wks.servicesmarketplace.orderservice.core.usecases.UseCase
 import org.axonframework.commandhandling.gateway.CommandGateway

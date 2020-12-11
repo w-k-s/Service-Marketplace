@@ -1,3 +1,5 @@
 package com.wks.servicesmarketplace.orderservice.core.usecases.serviceorder
 
-data class OrderIdResponse(val orderId: String)
+import com.wks.servicesmarketplace.orderservice.core.models.serviceorder.entities.OrderUUID
+
+data class OrderIdResponse(val orderId: OrderUUID)

@@ -1,10 +1,11 @@
 package com.wks.servicesmarketplace.orderservice.core.usecases.serviceorder
 
-import com.wks.servicesmarketplace.orderservice.core.exceptions.ErrorType
 import com.wks.servicesmarketplace.orderservice.core.exceptions.CoreException
+import com.wks.servicesmarketplace.orderservice.core.exceptions.ErrorType
+import com.wks.servicesmarketplace.orderservice.core.models.serviceorder.aggregates.CreateServiceOrderEvent
 import com.wks.servicesmarketplace.orderservice.core.models.serviceorder.commands.CreateServiceOrderCommand
+import com.wks.servicesmarketplace.orderservice.core.models.serviceorder.entities.OrderUUID
 import com.wks.servicesmarketplace.orderservice.core.models.serviceorder.entities.ServiceOrder
-import com.wks.servicesmarketplace.orderservice.core.models.serviceorder.events.CreateServiceOrderEvent
 import com.wks.servicesmarketplace.orderservice.core.repositories.CustomerAddressQueryRepository
 import com.wks.servicesmarketplace.orderservice.core.repositories.ServiceOrderQueryRepository
 import com.wks.servicesmarketplace.orderservice.core.usecases.UseCase
@@ -12,8 +13,6 @@ import org.axonframework.commandhandling.callbacks.LoggingCallback
 import org.axonframework.commandhandling.gateway.CommandGateway
 import org.axonframework.eventhandling.EventHandler
 import org.springframework.stereotype.Service
-import java.time.ZonedDateTime
-import java.util.*
 import javax.annotation.security.RolesAllowed
 
 @Service
@@ -25,15 +24,15 @@ class CreateServiceOrderUseCase(private val commandGateway: CommandGateway,
     override fun execute(request: ServiceOrderRequest): OrderIdResponse {
 
         val address = customerAddressQueryRepository.findByExternalIdAndCustomerExternalId(
-                request.addressExternalId!!,
-                request.customerExternalId!!
+                request.addressExternalId,
+                request.customerExternalId
         ) ?: throw CoreException(ErrorType.ADDRESS_NOT_FOUND, "Address not found")
 
-        val orderId = UUID.randomUUID().toString()
+        val orderId = OrderUUID.random()
         commandGateway.send(CreateServiceOrderCommand(
                 orderId,
                 request.customerExternalId,
-                request.serviceCategoryId!!,
+                request.serviceCode,
                 request.title,
                 request.description,
                 CreateServiceOrderCommand.Address(
@@ -47,7 +46,7 @@ class CreateServiceOrderUseCase(private val commandGateway: CommandGateway,
                         address.longitude,
                         address.version
                 ),
-                ZonedDateTime.parse(request.orderDateTime),
+                request.orderDateTime,
                 request.authentication.user!!.id
         ), LoggingCallback.INSTANCE)
 
@@ -60,7 +59,7 @@ class CreateServiceOrderUseCase(private val commandGateway: CommandGateway,
             ServiceOrder.create(
                     it.orderId,
                     it.customerId,
-                    it.serviceCategoryId,
+                    it.serviceCode,
                     it.title,
                     it.description,
                     it.address.externalId,

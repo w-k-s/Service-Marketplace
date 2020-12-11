@@ -8,7 +8,7 @@ import com.wks.servicesmarketplace.orderservice.core.events.AddressAddedEventHan
 import com.wks.servicesmarketplace.orderservice.core.events.AddressVerificationFailedEvent
 import com.wks.servicesmarketplace.orderservice.core.events.AddressVerifiedEvent
 import com.wks.servicesmarketplace.orderservice.core.events.VerifyAddressEventHandler
-import com.wks.servicesmarketplace.orderservice.core.models.serviceorder.events.AddressAddedEvent
+import com.wks.servicesmarketplace.orderservice.core.models.serviceorder.entities.AddressAddedEvent
 import org.slf4j.LoggerFactory
 import org.springframework.amqp.rabbit.annotation.RabbitListener
 import org.springframework.stereotype.Component

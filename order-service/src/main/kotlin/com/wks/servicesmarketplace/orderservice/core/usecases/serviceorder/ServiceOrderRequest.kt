@@ -1,17 +1,21 @@
 package com.wks.servicesmarketplace.orderservice.core.usecases.serviceorder
 
 import com.wks.servicesmarketplace.orderservice.core.auth.Authentication
+import com.wks.servicesmarketplace.orderservice.core.models.serviceorder.commands.constraints.datetime.ServiceOrderDateTime
+import com.wks.servicesmarketplace.orderservice.core.models.serviceorder.entities.AddressId
+import com.wks.servicesmarketplace.orderservice.core.models.serviceorder.entities.CustomerId
 import com.wks.servicesmarketplace.orderservice.core.utils.ModelValidator
+import java.time.OffsetDateTime
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
 
 data class ServiceOrderRequest constructor(
-        val customerExternalId: Long,
-        val addressExternalId: Long,
-        val serviceCategoryId: Long,
+        val customerExternalId: CustomerId,
+        val addressExternalId: AddressId,
+        val serviceCode: String,
         val title: String,
         val description: String,
-        val orderDateTime: String,
+        val orderDateTime: OffsetDateTime,
         val authentication: Authentication
 ) {
     class Builder {
@@ -21,8 +25,8 @@ data class ServiceOrderRequest constructor(
         @field:NotNull
         var addressExternalId: Long? = null
 
-        @field:NotNull
-        var serviceCategoryId: Long? = null
+        @field:NotBlank
+        var serviceCode: String? = null
 
         @field:NotBlank
         var title: String? = null
@@ -30,8 +34,9 @@ data class ServiceOrderRequest constructor(
         @field:NotBlank
         var description: String? = null
 
-        @field:NotBlank
-        var orderDateTime: String? = null
+        @field:NotNull
+        @field:ServiceOrderDateTime
+        var orderDateTime: OffsetDateTime? = null
 
         @field:NotNull
         var authentication: Authentication? = null
@@ -46,8 +51,8 @@ data class ServiceOrderRequest constructor(
             return this
         }
 
-        fun serviceCategoryId(serviceCategoryId: Long?): Builder {
-            this.serviceCategoryId = serviceCategoryId
+        fun serviceCode(serviceCode: String?): Builder {
+            this.serviceCode = serviceCode
             return this
         }
 
@@ -61,7 +66,7 @@ data class ServiceOrderRequest constructor(
             return this
         }
 
-        fun orderDateTime(orderDateTime: String?): Builder {
+        fun orderDateTime(orderDateTime: OffsetDateTime?): Builder {
             this.orderDateTime = orderDateTime
             return this
         }
@@ -74,9 +79,9 @@ data class ServiceOrderRequest constructor(
         fun build(): ServiceOrderRequest {
             ModelValidator.validate(this)
             return ServiceOrderRequest(
-                    customerExternalId!!,
-                    addressExternalId!!,
-                    serviceCategoryId!!,
+                    CustomerId.of(customerExternalId!!),
+                    AddressId.of(addressExternalId!!),
+                    serviceCode!!,
                     title!!,
                     description!!,
                     orderDateTime!!,
