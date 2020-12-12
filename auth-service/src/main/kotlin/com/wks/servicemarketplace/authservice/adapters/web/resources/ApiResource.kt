@@ -10,7 +10,7 @@ import javax.ws.rs.Path
 import javax.ws.rs.Produces
 import javax.ws.rs.core.MediaType
 
-@Path("/api/v1")
+@Path("/api/v1/auth")
 class ApiResource @Inject constructor(private val tokenService: TokenService) {
 
     @POST

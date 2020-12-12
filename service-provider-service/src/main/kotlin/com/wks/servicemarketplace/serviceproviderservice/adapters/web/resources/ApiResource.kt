@@ -13,7 +13,7 @@ import javax.ws.rs.core.Context
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.SecurityContext
 
-@Path("/api/v1")
+@Path("/api/v1/serviceproviders")
 class ApiResource @Inject constructor(private val createCompanyUseCase: CreateCompanyUseCase) {
 
     @POST

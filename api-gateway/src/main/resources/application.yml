@@ -1,0 +1,28 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: customer-service
+          uri: ${APPLICATION_HOSTS_CUSTOMER_SERVICE:http://localhost:8081}
+          predicates:
+              - Path=/api/v1/customers/**
+
+        - id: auth-service
+          uri: ${APPLICATION_HOSTS_AUTH_SERVICE:http://localhost:8082}
+          predicates:
+            - Path=/api/v1/auth/**
+
+        - id: order-service
+          uri: ${APPLICATION_HOSTS_ORDER_SERVICE:http://localhost:8083}
+          predicates:
+            - Path=/api/v1/orders/**
+
+        - id: service-provider-service
+          uri: ${APPLICATION_HOSTS_SERVICE_PROVIDER_SERVICE:http://localhost:8084}
+          predicates:
+            - Path=/api/v1/serviceproviders/**
+

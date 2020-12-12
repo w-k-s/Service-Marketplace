@@ -12,6 +12,6 @@
 | clientId               | Username of service-provider-service user on FusionAuth | service-provider-service        | true     |
 | clientSecret           | Password of service-provider-service user on FusionAuth | password                        | true     |
 | serverHost             | Listen Address                              | http://localhost                            | true     |
-| serverPort             | Listen Port                                 | 8085                                        | true     |
+| serverPort             | Listen Port                                 | 8084                                        | true     |
 
 **TODO**: Public key should not come from environment variables. Try Hashicorp Vault.
