@@ -34,12 +34,15 @@ dependencies {
 	implementation("org.hibernate.validator:hibernate-validator:6.0.16.Final")
 
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310") // adds support for ZonedDateTime on Jacksom
+	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310") // adds support for java.time on Jacksom
 
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
-	implementation("org.axonframework:axon-spring-boot-starter:4.3.4")
+	implementation("org.javamoney:moneta:1.1")
+
+	// Country Codes
+	implementation("com.neovisionaries:nv-i18n:1.27")
 
 	// JWK
 	implementation("org.bitbucket.b_c:jose4j:0.7.2")

@@ -1,9 +1,8 @@
 package com.wks.servicesmarketplace.orderservice.adapters.web
 
 import com.wks.servicesmarketplace.orderservice.core.auth.Authentication
-import com.wks.servicesmarketplace.orderservice.core.models.serviceorder.entities.OrderUUID
-import com.wks.servicesmarketplace.orderservice.core.models.serviceorder.queries.GetServiceOrderByIdQuery
-import com.wks.servicesmarketplace.orderservice.core.usecases.serviceorder.*
+import com.wks.servicesmarketplace.orderservice.core.OrderUUID
+import com.wks.servicesmarketplace.orderservice.core.usecases.*
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 import java.security.Principal
@@ -11,8 +10,6 @@ import java.security.Principal
 @RestController
 @RequestMapping("/api/v1/orders")
 class ServiceOrdersController(val createServiceOrderUseCase: CreateServiceOrderUseCase,
-                              val verifyServiceOrderUseCase: VerifyServiceOrderUseCase,
-                              val rejectServiceOrderUseCase: RejectServiceOrderUseCase,
                               val getServiceOrderByIdUseCase: GetServiceOrderByIdUseCase) {
 
     @PostMapping("/")
@@ -21,12 +18,6 @@ class ServiceOrdersController(val createServiceOrderUseCase: CreateServiceOrderU
                     serviceOrder.authentication(principal as Authentication).build()
             )
 
-    @PostMapping("/{orderId}/verify")
-    fun verify(@PathVariable("orderId", required = true) orderId: String) = verifyServiceOrderUseCase.execute(OrderUUID.fromString(orderId))
-
-    @PostMapping("/{orderId}/reject")
-    fun reject(@PathVariable("orderId", required = true) orderId: String, @RequestBody(required = true) rejectRequest: RejectServiceOrderRequest) = rejectServiceOrderUseCase.execute(RejectServiceOrderRequest(OrderUUID.fromString(orderId), rejectRequest.rejectReason))
-
     @GetMapping("/{orderId}")
-    fun getServiceOrderById(@PathVariable("orderId", required = true) orderId: String): ServiceOrderResponse = getServiceOrderByIdUseCase.execute(GetServiceOrderByIdQuery(orderId))
+    fun getServiceOrderById(@AuthenticationPrincipal principal: Principal, @PathVariable("orderId", required = true) orderId: String) = getServiceOrderByIdUseCase.execute(FindServiceOrderByUUIDRequest(OrderUUID.fromString(orderId), principal as Authentication))
 }

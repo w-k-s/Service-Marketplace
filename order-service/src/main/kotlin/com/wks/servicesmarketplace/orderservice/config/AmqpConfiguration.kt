@@ -25,17 +25,4 @@ class AmqpConfiguration {
     @Bean
     fun topicExchange() = TopicExchange(EXCHANGE_NAME, true, true)
 
-    @Bean
-    fun addressAddedQueue() = Queue(QueueName.CUSTOMER_ADDRESS_ADDED, true, false, true)
-
-    @Bean
-    fun addressVerifiedQueue() = Queue(QueueName.ADDRESS_VERIFIED, true, false, true)
-
-    @Bean
-    fun addressVerificationFailedQueue() = Queue(QueueName.ADDRESS_VERIFICATION_FAILED, true, false, true)
-
-    @Bean
-    fun addressAddedBinding(topicExchange: TopicExchange, addressAddedQueue: Queue): Binding = BindingBuilder.bind(addressAddedQueue)
-            .to(topicExchange)
-            .with(RoutingKey.CUSTOMER_ADDRESS_ADDED)
 }

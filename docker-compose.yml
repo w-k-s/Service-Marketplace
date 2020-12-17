@@ -20,18 +20,6 @@ services:
     ports:
       - 9011:9011
 
-  axonserver:
-    image: axoniq/axonserver
-    hostname: axonserver
-    volumes:
-      - ./docker-infra/axonserver/data:/data
-      - ./docker-infra/axonserver/events:/eventdata
-      - ./docker-infra/axonserver/config:/config:ro
-    ports:
-      - '8024:8024'
-      - '8124:8124'
-      - '8224:8224'
-
   auth-service:
     build:
       context: ./auth-service
@@ -105,12 +93,11 @@ services:
       - 8083:8083
     environment:
       SERVER_PORT: 8083
-      SPRING_DATASOURCE_URL: jdbc:postgresql://docker.for.mac.host.internal:5432/service_order_query
+      SPRING_DATASOURCE_URL: jdbc:postgresql://docker.for.mac.host.internal:5432/service_order
       SPRING_DATASOURCE_USERNAME: waqqassheikh
       SPRING_DATASOURCE_PASSWORD: 7713659
       SPRING_RABBITMQ_HOST: rabbitmq
       SPRING_RABBITMQ_PORT: 5672
-      AXON_AXONSERVER_SERVERS: axonserver:8124
     entrypoint: ["./wait-for-it.sh", "keycloak:8080","-t","0","--strict","--","java","-jar","/app.jar"]
 
   api-gateway:

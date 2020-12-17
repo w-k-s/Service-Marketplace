@@ -53,9 +53,11 @@ class DefaultResponseEntityExceptionHandler : ResponseEntityExceptionHandler() {
 
 fun ErrorType.httpCode(): HttpStatus {
     return when (this) {
-        ErrorType.VALIDATION -> HttpStatus.BAD_REQUEST
+        ErrorType.UNAUTHENTICATED, ErrorType.USER_ID_MISSING -> HttpStatus.UNAUTHORIZED
+        ErrorType.INSUFFICIENT_PRIVILEGES -> HttpStatus.FORBIDDEN
+        ErrorType.VALIDATION, ErrorType.INVALID_COUNTRY -> HttpStatus.BAD_REQUEST
         ErrorType.ADDRESS_NOT_FOUND, ErrorType.NOT_FOUND, ErrorType.SERVICE_ORDER_NOT_FOUND -> HttpStatus.NOT_FOUND
         ErrorType.INVALID_STATE -> HttpStatus.CONFLICT
-        else -> HttpStatus.INTERNAL_SERVER_ERROR
+        ErrorType.UNKNOWN -> HttpStatus.INTERNAL_SERVER_ERROR
     }
 }
