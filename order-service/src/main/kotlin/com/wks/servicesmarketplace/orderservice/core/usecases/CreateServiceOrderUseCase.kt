@@ -33,7 +33,7 @@ class CreateServiceOrderUseCase(private val serviceOrderRepository: ServiceOrder
                     ),
                     it.orderDateTime,
                     ServiceOrderStatus.VERIFYING,
-                    request.authentication.name
+                    request.authentication
             )
         })
 

@@ -1,10 +1,13 @@
 package com.wks.servicesmarketplace.orderservice.core
 
 import com.wks.servicesmarketplace.orderservice.core.repositories.MonetaryAmountConverter
+import com.wks.servicesmarketplace.orderservice.core.repositories.PrincipalConverter
 import com.wks.servicesmarketplace.orderservice.core.utils.ModelValidator
 import com.wks.servicesmarketplace.orderservice.core.utils.ServiceOrderDateTime
+import org.springframework.data.annotation.CreatedDate
+import org.springframework.data.annotation.LastModifiedDate
+import java.security.Principal
 import java.time.OffsetDateTime
-import java.time.ZoneOffset
 import javax.money.MonetaryAmount
 import javax.persistence.*
 import javax.validation.constraints.NotBlank
@@ -34,10 +37,14 @@ data class ServiceOrder internal constructor(
         @Convert(converter = MonetaryAmountConverter::class)
         val price: MonetaryAmount? = null,
         val rejectReason: String? = null,
-        val createdDate: OffsetDateTime = OffsetDateTime.now(ZoneOffset.UTC),
-        val createdBy: String,
+        @CreatedDate
+        val createdDate: OffsetDateTime = OffsetDateTime.now(),
+        @Convert(converter = PrincipalConverter::class)
+        val createdBy: Principal,
+        @LastModifiedDate
         val lastModifiedDate: OffsetDateTime? = null,
-        val lastModifiedBy: String? = null,
+        @Convert(converter = PrincipalConverter::class)
+        val lastModifiedBy: Principal? = null,
         val version: Long = 0) {
 
 
@@ -50,7 +57,7 @@ data class ServiceOrder internal constructor(
                    address: Address,
                    orderDateTime: OffsetDateTime,
                    status: ServiceOrderStatus,
-                   createdBy: String) =
+                   createdBy: Principal) =
 
                 ModelValidator.validate(ServiceOrder(
                         orderId,
@@ -65,19 +72,17 @@ data class ServiceOrder internal constructor(
                 ))
     }
 
-    fun verify(verifiedBy: String): ServiceOrder {
+    fun verify(verifiedBy: Principal): ServiceOrder {
         return this.copy(
                 status = ServiceOrderStatus.PUBLISHED,
-                lastModifiedBy = verifiedBy,
-                lastModifiedDate = OffsetDateTime.now(ZoneOffset.UTC)
+                lastModifiedBy = verifiedBy
         )
     }
 
-    fun reject(rejectReason: String, rejectedBy: String): ServiceOrder {
+    fun reject(rejectReason: String, rejectedBy: Principal): ServiceOrder {
         return this.copy(
                 status = ServiceOrderStatus.REJECTED,
-                lastModifiedBy = rejectedBy,
-                lastModifiedDate = OffsetDateTime.now(ZoneOffset.UTC)
+                lastModifiedBy = rejectedBy
         )
     }
 }

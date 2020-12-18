@@ -3,7 +3,7 @@ CREATE TABLE service_order (
     customer_uuid VARCHAR(255) NOT NULL,
     title VARCHAR(255),
     description VARCHAR(255),
-    order_date_time timestamp without time zone,
+    order_date_time timestamp with time zone,
     service_code VARCHAR(255) NOT NULL,
     status VARCHAR(255),
     price VARCHAR(255),
@@ -16,8 +16,8 @@ CREATE TABLE service_order (
     address_latitude numeric(9,5),
     address_longitude numeric(9,5),
     created_by VARCHAR(255),
-    created_date timestamp without time zone,
+    created_date timestamp with time zone,
     last_modified_by VARCHAR(255),
-    last_modified_date timestamp without time zone,
+    last_modified_date timestamp with time zone,
     version BIGINT NOT NULL
 );
