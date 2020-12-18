@@ -1,10 +1,13 @@
 package com.wks.servicesmarketplace.orderservice.core
 
 import com.wks.servicesmarketplace.orderservice.core.repositories.MonetaryAmountConverter
+import com.wks.servicesmarketplace.orderservice.core.utils.ModelValidator
+import com.wks.servicesmarketplace.orderservice.core.utils.ServiceOrderDateTime
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import javax.money.MonetaryAmount
 import javax.persistence.*
+import javax.validation.constraints.NotBlank
 
 @Entity
 @Table(name = "service_order")
@@ -12,18 +15,23 @@ data class ServiceOrder internal constructor(
         @EmbeddedId
         @AttributeOverride(name = "value", column = Column(name = "order_uuid"))
         val orderUUID: OrderUUID,
+        @Embedded
         @AttributeOverride(name = "value", column = Column(name = "customer_uuid"))
         val customerUUID: CustomerUUID,
+        @field:NotBlank
         val serviceCode: String,
+        @field:NotBlank
         val title: String,
+        @field:NotBlank
         val description: String,
+        @field:ServiceOrderDateTime
         val orderDateTime: OffsetDateTime,
-        @PrimaryKeyJoinColumn
-        @OneToOne
+        @Embedded
         val address: Address,
         val status: ServiceOrderStatus = ServiceOrderStatus.INVALID,
+        @AttributeOverride(name = "value", column = Column(name = "scheduled_service_provider_id"))
         val scheduledCompanyId: CompanyId? = null,
-        @field:Convert(converter = MonetaryAmountConverter::class)
+        @Convert(converter = MonetaryAmountConverter::class)
         val price: MonetaryAmount? = null,
         val rejectReason: String? = null,
         val createdDate: OffsetDateTime = OffsetDateTime.now(ZoneOffset.UTC),
@@ -44,7 +52,7 @@ data class ServiceOrder internal constructor(
                    status: ServiceOrderStatus,
                    createdBy: String) =
 
-                ServiceOrder(
+                ModelValidator.validate(ServiceOrder(
                         orderId,
                         customerId,
                         serviceCategoryId,
@@ -54,7 +62,7 @@ data class ServiceOrder internal constructor(
                         address,
                         status,
                         createdBy = createdBy
-                )
+                ))
     }
 
     fun verify(verifiedBy: String): ServiceOrder {

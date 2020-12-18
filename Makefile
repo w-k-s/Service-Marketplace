@@ -4,7 +4,7 @@
 # and they don't automatically synchronise with one another.
 
 run-containers: build-auth-service build-customer-service build-order-service build-service-provider-service build-api-gateway
-	docker-compose up -d --build
+	docker-compose up -d --build --remove-orphans
 
 stop-containers:
 	docker-compose down

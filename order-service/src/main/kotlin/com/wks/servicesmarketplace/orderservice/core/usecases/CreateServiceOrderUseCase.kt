@@ -4,9 +4,11 @@ import com.wks.servicesmarketplace.orderservice.core.*
 import com.wks.servicesmarketplace.orderservice.core.exceptions.UserIdMissingException
 import com.wks.servicesmarketplace.orderservice.core.repositories.ServiceOrderRepository
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import javax.annotation.security.RolesAllowed
 
 @Service
+@Transactional
 class CreateServiceOrderUseCase(private val serviceOrderRepository: ServiceOrderRepository) : UseCase<ServiceOrderRequest, OrderIdResponse> {
 
     @RolesAllowed("ROLE_order.create")
@@ -21,8 +23,7 @@ class CreateServiceOrderUseCase(private val serviceOrderRepository: ServiceOrder
                     it.serviceCode,
                     it.title,
                     it.description,
-                    Address(
-                            orderId,
+                    Address.create(
                             it.address.line1,
                             it.address.line2,
                             it.address.city,

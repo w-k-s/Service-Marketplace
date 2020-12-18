@@ -2,12 +2,17 @@ package com.wks.servicesmarketplace.orderservice.core
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonValue
+import com.wks.servicesmarketplace.orderservice.core.repositories.UUIDConverter
 import java.io.Serializable
 import java.util.*
+import javax.persistence.Convert
 import javax.persistence.Embeddable
 
 @Embeddable
-data class OrderUUID internal constructor(@JsonValue var value: UUID) : Serializable {
+data class OrderUUID internal constructor(@Convert(converter = UUIDConverter::class)
+                                          @JsonValue
+                                          var value: UUID
+) : Serializable {
     companion object {
         fun of(uuid: UUID) = OrderUUID(uuid)
 
@@ -21,7 +26,8 @@ data class OrderUUID internal constructor(@JsonValue var value: UUID) : Serializ
 }
 
 @Embeddable
-data class CustomerUUID internal constructor(@JsonValue var value: UUID) : Serializable {
+data class CustomerUUID internal constructor(@Convert(converter = UUIDConverter::class)
+                                             @JsonValue var value: UUID) : Serializable {
     companion object {
         fun of(uuid: UUID) = OrderUUID(uuid)
 

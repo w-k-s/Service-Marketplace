@@ -1,15 +1,13 @@
 package com.wks.servicesmarketplace.orderservice.core.usecases
 
-import com.wks.servicesmarketplace.orderservice.core.CustomerUUID
 import com.wks.servicesmarketplace.orderservice.core.auth.Authentication
-import com.wks.servicesmarketplace.orderservice.core.utils.ServiceOrderDateTime
 import com.wks.servicesmarketplace.orderservice.core.utils.ModelValidator
+import com.wks.servicesmarketplace.orderservice.core.utils.ServiceOrderDateTime
 import java.math.BigDecimal
 import java.time.OffsetDateTime
 import javax.validation.constraints.*
 
 data class ServiceOrderRequest constructor(
-        val customerUUID: CustomerUUID,
         val address: Address,
         val serviceCode: String,
         val title: String,
@@ -26,37 +24,27 @@ data class ServiceOrderRequest constructor(
             val longitude: BigDecimal
     ) {
         class Builder {
-            @field:NotNull
-            @field:NotBlank
-            @field:Size(min = 2, max = 100)
+            @NotBlank
             val line1: String? = null
 
-            @field:Size(min = 2, max = 100)
             val line2: String? = null
 
-            @field:Size(min = 2, max = 60)
+            @NotBlank
             val city: String? = null
 
-            @field:NotBlank
-            @field:NotNull
-            @field:Size(min = 2, max = 2)
+            @NotBlank
             val country: String? = null
 
-            @field:NotNull
-            @field:DecimalMin("-90")
-            @field:DecimalMax("90")
+            @NotNull
             val latitude: BigDecimal? = null
 
-            @field:NotNull
-            @field:DecimalMin("-180")
-            @field:DecimalMax("180")
+            @NotNull
             val longitude: BigDecimal? = null
         }
     }
 
     class Builder {
-        @field:NotNull
-        var customerUUID: String? = null
+
 
         @field:NotNull
         var address: Address.Builder? = null
@@ -71,7 +59,6 @@ data class ServiceOrderRequest constructor(
         var description: String? = null
 
         @field:NotNull
-        @field:ServiceOrderDateTime
         var orderDateTime: OffsetDateTime? = null
 
         @field:NotNull
@@ -85,7 +72,6 @@ data class ServiceOrderRequest constructor(
         fun build(): ServiceOrderRequest {
             ModelValidator.validate(this)
             return ServiceOrderRequest(
-                    CustomerUUID.fromString(customerUUID!!),
                     address!!.let {
                         Address(
                                 it.line1!!,
