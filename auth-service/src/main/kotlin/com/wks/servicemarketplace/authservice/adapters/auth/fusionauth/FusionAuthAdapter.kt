@@ -4,9 +4,7 @@ import com.inversoft.error.Errors
 import com.wks.servicemarketplace.authservice.config.FusionAuthConfiguration
 import com.wks.servicemarketplace.authservice.core.*
 import com.wks.servicemarketplace.authservice.core.dtos.SignInRequest
-import com.wks.servicemarketplace.authservice.core.errors.ErrorType
-import com.wks.servicemarketplace.authservice.core.errors.RegistrationFailedException
-import com.wks.servicemarketplace.authservice.core.errors.LoginFailedException
+import com.wks.servicemarketplace.authservice.core.errors.*
 import io.fusionauth.client.FusionAuthClient
 import io.fusionauth.domain.Group
 import io.fusionauth.domain.GroupMember
@@ -22,7 +20,8 @@ import java.util.*
 import javax.inject.Inject
 
 class FusionAuthAdapter @Inject constructor(
-        private val config: FusionAuthConfiguration
+        private val config: FusionAuthConfiguration,
+        private val assignGroupRetrier: AssignGroupRetrier
 ) : IAMAdapter {
 
     companion object {
@@ -30,23 +29,39 @@ class FusionAuthAdapter @Inject constructor(
     }
 
     private val fusionAuthUserClient = FusionAuthClient(config.apiKey, config.serverUrl, config.tenantId)
-    private val groups by lazy { loadGroups() }
+    private val groups = loadGroups()
 
     override fun login(credentials: Credentials): User {
         val login = getUser(credentials)
-        val role = groups.first { it.id == login.user.memberships.first().groupId }.let { UserRole.of(it.name) }
+        val role = groups.firstOrNull { it.id == login.user.memberships.firstOrNull()?.groupId }
+                ?.let { UserRole.of(it.name) }
 
-        return FusionAuthUser(
-                login.user.id.toString(),
-                login.user.firstName,
-                login.user.lastName,
-                login.user.username,
-                login.user.email,
-                login.user.mobilePhone,
-                role,
-                UserType.of(login.user.data["userType"].toString()),
-                login.user.registrations.first { it.applicationId == UUID.fromString(config.applicationId) }.roles.toList()
-        )
+        if (role == null) {
+            val userType = UserType.of(login.user.data["userType"].toString())
+            val group = groupForRole(registrationRoleFor(userType))
+
+            assignGroupRetrier.retry(group.id, login.user.id.toString())
+            throw RegistrationInProgressException(message = "Registration is in progress. Try to login later")
+        }
+
+        val permissions = login.user.registrations
+                .first { it.applicationId == UUID.fromString(config.applicationId) }
+                .roles
+                .toList()
+
+        return login.user.let {
+            FusionAuthUser(
+                    it.id.toString(),
+                    it.firstName,
+                    it.lastName,
+                    it.username,
+                    it.email,
+                    it.mobilePhone,
+                    role,
+                    UserType.of(it.data["userType"].toString()),
+                    permissions
+            )
+        }
     }
 
     private fun getUser(credentials: Credentials): LoginResponse {
@@ -56,26 +71,41 @@ class FusionAuthAdapter @Inject constructor(
                         credentials.username,
                         credentials.password
                 )
-        ).also {
-            LOGGER.info("Login: Username: {}. Status: {}. Error: {}. Exception: {}", it.status, credentials.username, it.errorResponse, it.exception)
-        }
+        )
+
+        LOGGER.info(
+                "Login: Username: {}. Status: {}. Error: {}. Exception: {}",
+                response.status, credentials.username,
+                response.errorResponse,
+                response.exception
+        )
+
         when {
             response.wasSuccessful() -> return response.successResponse
-            response.status == 404 -> throw LoginFailedException(message = "User does not exist or password incorrect", errorType = ErrorType.NOT_FOUND)
-            response.errorResponse != null -> throw LoginFailedException(fields = response.errorResponse.allErrors(), errorType = response.errorResponse.errorType())
-            response.exception != null -> throw LoginFailedException(message = response.exception.message, errorType = ErrorType.UNKNOWN)
-            else -> throw LoginFailedException(message = "Login Failed", errorType = ErrorType.UNKNOWN)
+            response.status == 404 -> throw UserNotFoundException()
+            response.errorResponse != null -> throw response.errorResponse.toCoreException()
+            response.exception != null -> throw CoreException(ErrorType.LOGIN_FAILED, cause = response.exception)
+            else -> throw LoginFailedException(message = "Login Failed")
+        }
+    }
+
+    private fun registrationRoleFor(userType: UserType): UserRole {
+        return when (userType) {
+            UserType.CUSTOMER -> UserRole.CUSTOMER
+            UserType.SERVICE_PROVIDER -> UserRole.COMPANY_REPRESENTATIVE
         }
     }
 
     override fun register(registration: Registration): User {
-        val role = when (registration.userType) {
-            UserType.CUSTOMER -> UserRole.CUSTOMER
-            UserType.SERVICE_PROVIDER -> UserRole.COMPANY_REPRESENTATIVE
-        }
+        val role = registrationRoleFor(registration.userType)
 
         val user = createUser(registration).user
-        val permissions = assignGroup(role, user.id.toString())
+        val permissions = try {
+            assignGroup(role, user.id.toString())
+        } catch (e: Exception) {
+            emptyList<String>()
+        }
+
         return FusionAuthUser(
                 user.id.toString(),
                 user.firstName,
@@ -110,48 +140,75 @@ class FusionAuthAdapter @Inject constructor(
                             it.username = registration.username
                         }
                 )
-        ).also {
-            LOGGER.info("Register: Username: {}. Error: {}. Exception: {}", registration.username, it.errorResponse, it.exception)
-        }
+        )
+
+        LOGGER.info("Register: Username: {}. Error: {}. Exception: {}",
+                registration.username,
+                response.errorResponse,
+                response.exception
+        )
 
         when {
             response.wasSuccessful() -> return response.successResponse
-            response.errorResponse != null -> throw RegistrationFailedException(response.errorResponse.allErrors(), errorType = response.errorResponse.errorType())
-            response.exception != null -> throw RegistrationFailedException(message = response.exception.message, errorType = ErrorType.UNKNOWN)
-            else -> throw RegistrationFailedException(message = "Registration Failed", errorType = ErrorType.UNKNOWN)
+            response.errorResponse != null -> throw response.errorResponse.toCoreException()
+            response.exception != null -> throw CoreException(ErrorType.REGISTRATION_FAILED, cause = response.exception)
+            else -> throw RegistrationFailedException("Registration Failed")
         }
     }
 
     private fun loadGroups(): List<Group> {
         val response = fusionAuthUserClient.retrieveGroups()
-                .also { LOGGER.info("Retrieve groups. Status: {}. Error: {}. Exception: {}", it.status, it.errorResponse, it.exception) }
+
+        LOGGER.info(
+                "Retrieve groups. Status: {}. Error: {}. Exception: {}",
+                response.status,
+                response.errorResponse,
+                response.exception
+        )
 
         if (!response.wasSuccessful()) {
-            throw RuntimeException("Failed to retrieve groups")
+            throw CoreException(ErrorType.UNKNOWN, message = "Failed to retrieve groups")
         }
         return response.successResponse.groups
     }
 
+    @Throws(RegistrationFailedException::class)
     override fun assignRole(role: UserRole, userId: String) {
         assignGroup(role, userId)
     }
 
+    @Throws(RegistrationFailedException::class)
     private fun assignGroup(role: UserRole, userId: String): List<String> {
+        val group = groupForRole(role)
 
-        val group = groups.firstOrNull { it.name == role.code } ?: throw RuntimeException("Role not found")
-        val response = fusionAuthUserClient.createGroupMembers(MemberRequest(group.id, listOf(GroupMember().with {
-            it.userId = UUID.fromString(userId)
-            it.groupId = group.id
-        }))).also {
-            LOGGER.info("Add user $userId to group. Status: {}. Error: {}. Exception: {}", it.status, it.errorResponse, it.exception)
+        try {
+            val response = fusionAuthUserClient.createGroupMembers(MemberRequest(group.id, listOf(GroupMember().with {
+                it.userId = UUID.fromString(userId)
+                it.groupId = group.id
+            })))
+
+            LOGGER.info(
+                    "Add user $userId to group. Status: {}. Error: {}. Exception: {}",
+                    response.status,
+                    response.errorResponse,
+                    response.exception
+            )
+
+            when {
+                response.wasSuccessful() -> return group.roles.values.flatten().map { it.name }.toList()
+                response.errorResponse != null -> throw response.errorResponse.toCoreException()
+                response.exception != null -> throw CoreException(ErrorType.REGISTRATION_FAILED, cause = response.exception)
+                else -> throw RegistrationFailedException("Failed to assign group")
+            }
+        } catch (e: Exception) {
+            LOGGER.error("Failed to assign group: {}", e.message, e)
+            assignGroupRetrier.retry(group.id, userId)
+            throw e
         }
-
-        if (!response.wasSuccessful()) {
-            throw RuntimeException("Failed to add user $userId to group")
-        }
-
-        return group.roles.values.flatten().map { it.name }.toList()
     }
+
+    private fun groupForRole(role: UserRole) = groups.firstOrNull { it.name == role.code }
+            ?: throw RuntimeException("No group corresponds to role '$role'")
 
     /**
      * FusionAuth does not support client credentials.
@@ -165,24 +222,24 @@ class FusionAuthAdapter @Inject constructor(
     }
 }
 
-fun Errors.isDuplicateUsername() = allCodes().let { it.contains("[duplicate]user.email") || it.contains("[duplicate]user.username") }
-
-fun Errors.errorType(): ErrorType {
-    if (isDuplicateUsername()) return ErrorType.DUPLICATE_USERNAME
-    if (fieldErrors.isNotEmpty()) {
-        return ErrorType.VALIDATION
-    }
-    return ErrorType.UNKNOWN
-}
-
-fun Errors.allErrors(): Map<String, List<String>> {
+fun Errors.toCoreException(): CoreException {
+    val codes = fieldErrors.values.flatten().map { it.code }
 
     val validations = fieldErrors.map { it.key to it.value.map { it.message } }.toMap()
     val others = mapOf("general" to this.generalErrors.map { it.message }).toMap()
+    val fields = validations.plus(others)
 
-    return validations.plus(others)
-}
+    val errorType = if (codes.contains("[duplicate]user.email") || codes.contains("[duplicate]user.username")) {
+        ErrorType.DUPLICATE_USERNAME
+    } else if (fieldErrors.isNotEmpty()) {
+        ErrorType.VALIDATION
+    } else {
+        ErrorType.UNKNOWN
+    }
 
-fun Errors.allCodes(): List<String> {
-    return fieldErrors.values.flatten().map { it.code }
+    val messages = mutableListOf<String>()
+    messages.addAll(fieldErrors.map { "${it.key}: ${it.value.map { it.message }.joinToString { "," }}" })
+    messages.addAll(generalErrors.map { it.message })
+
+    return CoreException(errorType, messages.joinToString { "," }, fields)
 }

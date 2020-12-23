@@ -1,31 +1,27 @@
 package com.wks.servicemarketplace.authservice.core.errors
 
-import java.util.*
+open class CoreException(val errorType: ErrorType,
+                         override val message: String? = null,
+                         val fields: Map<String, List<String>> = emptyMap(),
+                         override val cause: Throwable? = null
+) : Exception(message, cause)
 
-interface CoreException {
-    val errorType: ErrorType
-    val fields: Map<String, List<String>>
-    val message: String?
-}
+data class UnauthorizedException(override val message: String) : CoreException(ErrorType.AUTHORIZATION, message)
 
-data class UnauthorizedException(override val message: String) : CoreException, RuntimeException(message) {
-    override val errorType = ErrorType.AUTHORIZATION
-    override val fields: Map<String, List<String>> = emptyMap()
-}
+class UserNotFoundException
+    : CoreException(ErrorType.USER_NOT_FOUND, "User not found")
 
-data class LoginFailedException(
-        override val fields: Map<String, List<String>> = emptyMap(),
-        override val message: String? = fields.toFormattedString(),
-        override val errorType: ErrorType) : CoreException, RuntimeException(message)
+class LoginFailedException(message: String)
+    : CoreException(ErrorType.LOGIN_FAILED, message)
 
-data class RegistrationFailedException(override val fields: Map<String, List<String>> = emptyMap(),
-                                       override val message: String? = fields.toFormattedString(),
-                                       override val errorType: ErrorType) : CoreException, RuntimeException(message)
+class RegistrationFailedException(message: String)
+    : CoreException(ErrorType.REGISTRATION_FAILED, message)
 
-class ValidationException(fields: Map<String, List<String>>) : CoreException, RuntimeException(fields.toFormattedString()) {
-    override val errorType = ErrorType.VALIDATION
-    override val fields: Map<String, List<String>> = Collections.unmodifiableMap(fields)
-}
+class RegistrationInProgressException(message: String)
+    : CoreException(ErrorType.REGISTRATION_IN_PROGRESS, message)
+
+class ValidationException(fields: Map<String, List<String>>)
+    : CoreException(ErrorType.VALIDATION, fields.toFormattedString(), fields)
 
 internal fun Map<String, List<String>>.toFormattedString(valueSeparator: String = ",",
                                                          keySeparator: String = " "): String {

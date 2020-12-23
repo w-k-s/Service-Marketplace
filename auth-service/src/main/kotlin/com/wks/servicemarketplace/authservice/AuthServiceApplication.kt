@@ -3,6 +3,7 @@ package com.wks.servicemarketplace.authservice
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.rabbitmq.client.Channel
 import com.rabbitmq.client.Connection
+import com.wks.servicemarketplace.authservice.adapters.auth.fusionauth.AssignGroupRetrier
 import com.wks.servicemarketplace.authservice.adapters.auth.fusionauth.FusionAuthAdapter
 import com.wks.servicemarketplace.authservice.adapters.events.DefaultEventPublisher
 import com.wks.servicemarketplace.authservice.adapters.events.DefaultEventReceiver
@@ -62,6 +63,7 @@ class AuthServiceApplication : ResourceConfig() {
                 bind(FusionAuthAdapter::class.java).to(IAMAdapter::class.java).`in`(Immediate::class.java)
                 bind(TokenService::class.java).to(TokenService::class.java).`in`(Immediate::class.java)
                 bind(DefaultEventReceiver::class.java).to(DefaultEventReceiver::class.java).`in`(Immediate::class.java)
+                bind(AssignGroupRetrier::class.java).to(AssignGroupRetrier::class.java).`in`(Immediate::class.java)
             }
         })
         register(DefaultExceptionMapper::class.java)

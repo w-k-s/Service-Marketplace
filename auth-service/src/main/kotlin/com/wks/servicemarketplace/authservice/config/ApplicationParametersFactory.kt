@@ -13,8 +13,10 @@ class ApplicationParametersFactory : Factory<ApplicationParameters> {
             ),
             amqpHost = System.getenv("amqpHost"),
             amqpPort = System.getenv("amqpPort").toInt(),
+            amqpPrefetchCount = System.getenv("amqpPrefetchCount").toIntOrNull(),
             clientId = System.getenv("clientId"),
-            clientSecret = System.getenv("clientSecret")
+            clientSecret = System.getenv("clientSecret"),
+            retryAssignGroupIntervalMinutes = System.getenv("retryAssignGroupIntervalMinutes").toLongOrNull()
     )
 
     override fun provide() = applicationParameters

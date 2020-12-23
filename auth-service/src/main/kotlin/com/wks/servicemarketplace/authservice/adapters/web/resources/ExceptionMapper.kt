@@ -18,12 +18,16 @@ class DefaultExceptionMapper : ExceptionMapper<Throwable>, ResponseErrorMapper {
     }
 }
 
-internal fun ErrorType.httpStatusCode(): Response.Status {
+internal fun ErrorType.httpStatusCode(): Int {
     return when (this) {
-        ErrorType.INVALID_STATE, ErrorType.UNKNOWN -> Response.Status.INTERNAL_SERVER_ERROR
-        ErrorType.VALIDATION, ErrorType.DUPLICATE_USERNAME -> Response.Status.BAD_REQUEST
-        ErrorType.NOT_FOUND -> Response.Status.NOT_FOUND
-        ErrorType.AUTHENTICATION, ErrorType.AUTHORIZATION -> Response.Status.UNAUTHORIZED
+        ErrorType.AUTHORIZATION -> Response.Status.FORBIDDEN.statusCode
+        ErrorType.VALIDATION,
+        ErrorType.DUPLICATE_USERNAME -> Response.Status.BAD_REQUEST.statusCode
+        ErrorType.USER_NOT_FOUND -> Response.Status.NOT_FOUND.statusCode
+        ErrorType.REGISTRATION_IN_PROGRESS -> 422 // Unprocessible entity
+        ErrorType.UNKNOWN,
+        ErrorType.LOGIN_FAILED,
+        ErrorType.REGISTRATION_FAILED -> Response.Status.INTERNAL_SERVER_ERROR.statusCode
     }
 }
 
@@ -54,5 +58,5 @@ internal fun Throwable.toResponse(): Response {
 internal data class CoreErrorResponse(
         val errorType: ErrorType,
         val message: String?,
-        val fields: Map<String, List<String>>
+        val fields: Map<String, List<String>>? = emptyMap()
 )
