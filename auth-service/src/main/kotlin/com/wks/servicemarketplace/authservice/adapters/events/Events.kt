@@ -6,7 +6,7 @@ typealias RoutingKeyName = String
 
 class Exchange {
     companion object {
-        const val ACCOUNT: ExchangeName = "com.wks.servicemarketplace.account.exchange"
+        const val CUSTOMER: ExchangeName = "com.wks.servicemarketplace.customer.exchange"
         const val SERVICE_PROVIDER: ExchangeName = "com.wks.servicemarketplace.serviceProvider.exchange"
     }
 }
@@ -14,7 +14,7 @@ class Exchange {
 class Incoming {
     class Queue {
         companion object {
-            const val COMPANY_CREATED: QueueName = "com.wks.servicemarketplace.company.created"
+            const val COMPANY_CREATED: QueueName = "com.wks.servicemarketplace.serviceProvider.company.created"
         }
     }
     class RoutingKey {
@@ -28,8 +28,8 @@ class Incoming {
 class Outgoing{
     class RoutingKey {
         companion object {
-            const val SERVICE_PROVIDER_CREATED: RoutingKeyName = "com.wks.servicemarketplace.account.serviceProvider.created"
-            const val CUSTOMER_CREATED: RoutingKeyName = "com.wks.servicemarketplace.account.customer.created"
+            const val SERVICE_PROVIDER_CREATED: RoutingKeyName = "com.wks.servicemarketplace.auth.serviceProvider.created"
+            const val CUSTOMER_CREATED: RoutingKeyName = "com.wks.servicemarketplace.auth.customer.created"
         }
     }
 }

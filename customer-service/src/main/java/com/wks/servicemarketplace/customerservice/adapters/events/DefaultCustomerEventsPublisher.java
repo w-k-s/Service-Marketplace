@@ -8,8 +8,6 @@ import com.rabbitmq.client.MessageProperties;
 import com.wks.servicemarketplace.customerservice.core.events.CustomerEventsPublisher;
 import com.wks.servicemarketplace.customerservice.core.usecase.address.AddressAddedEvent;
 import com.wks.servicemarketplace.customerservice.core.usecase.customer.CustomerCreatedEvent;
-import com.wks.servicemarketplace.customerservice.core.usecase.address.verifyaddress.AddressVerificationFailedEvent;
-import com.wks.servicemarketplace.customerservice.core.usecase.address.verifyaddress.AddressVerifiedEvent;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.Context;
@@ -37,7 +35,7 @@ public class DefaultCustomerEventsPublisher implements CustomerEventsPublisher {
         for (CustomerCreatedEvent event : events) {
             channel.basicPublish(
                     Exchange.CUSTOMER_EXCHANGE,
-                    RoutingKey.CUSTOMER_PROFILE_CREATED,
+                    RoutingKey.Outgoing.CUSTOMER_PROFILE_CREATED,
                     MessageProperties.PERSISTENT_TEXT_PLAIN,
                     objectMapper.writeValueAsBytes(event)
             );
@@ -51,34 +49,10 @@ public class DefaultCustomerEventsPublisher implements CustomerEventsPublisher {
         for (AddressAddedEvent event : events) {
             channel.basicPublish(
                     Exchange.CUSTOMER_EXCHANGE,
-                    RoutingKey.ADDRESS_ADDED,
+                    RoutingKey.Outgoing.ADDRESS_ADDED,
                     MessageProperties.PERSISTENT_TEXT_PLAIN,
                     objectMapper.writeValueAsBytes(event)
             );
         }
-    }
-
-    @Override
-    public void addressVerified(AddressVerifiedEvent event) throws IOException {
-        channel.queueDeclare(QueueName.ADDRESS_VERIFIED, true, false, true, Collections.emptyMap());
-
-        channel.basicPublish(
-                "",
-                QueueName.ADDRESS_VERIFIED,
-                MessageProperties.PERSISTENT_TEXT_PLAIN,
-                objectMapper.writeValueAsBytes(event)
-        );
-    }
-
-    @Override
-    public void addressVerificationFailed(AddressVerificationFailedEvent event) throws IOException {
-        channel.queueDeclare(QueueName.ADDRESS_VERIFICATION_FAILED, true, false, true, Collections.emptyMap());
-
-        channel.basicPublish(
-                "",
-                QueueName.ADDRESS_VERIFICATION_FAILED,
-                MessageProperties.PERSISTENT_TEXT_PLAIN,
-                objectMapper.writeValueAsBytes(event)
-        );
     }
 }

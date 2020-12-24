@@ -8,8 +8,8 @@ import javax.inject.Inject
 class AmqpChannelFactory @Inject constructor(connection: Connection,
                                              parameters: ApplicationParameters) : Factory<Channel> {
 
-    private val channel = connection.createChannel().also { channel ->
-        parameters.amqpPrefetchCount?.let { count -> channel.basicQos(count) }
+    private val channel = connection.createChannel().also {
+        it.basicQos(parameters.amqpPrefetchCount)
     }
 
     override fun provide(): Channel = channel

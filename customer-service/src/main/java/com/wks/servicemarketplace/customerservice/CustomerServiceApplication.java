@@ -19,7 +19,6 @@ import com.wks.servicemarketplace.customerservice.core.daos.CustomerDao;
 import com.wks.servicemarketplace.customerservice.core.events.CustomerEventsPublisher;
 import com.wks.servicemarketplace.customerservice.core.usecase.address.AddAddressUseCase;
 import com.wks.servicemarketplace.customerservice.core.usecase.address.FindAddressByCustomerUuidUseCase;
-import com.wks.servicemarketplace.customerservice.core.usecase.address.verifyaddress.VerifyAddressUseCase;
 import com.wks.servicemarketplace.customerservice.core.usecase.customer.CreateCustomerUseCase;
 import graphql.GraphQL;
 import org.eclipse.jetty.server.Server;
@@ -64,7 +63,6 @@ public class CustomerServiceApplication extends ResourceConfig {
                 bind(CreateCustomerUseCase.class).to(CreateCustomerUseCase.class);
                 bind(AddAddressUseCase.class).to(AddAddressUseCase.class);
                 bind(FindAddressByCustomerUuidUseCase.class).to(FindAddressByCustomerUuidUseCase.class);
-                bind(VerifyAddressUseCase.class).to(VerifyAddressUseCase.class);
                 bind(AddressDataFetcher.class).to(AddressDataFetcher.class);
                 bind(CreateAddressDataFetcher.class).to(CreateAddressDataFetcher.class);
             }

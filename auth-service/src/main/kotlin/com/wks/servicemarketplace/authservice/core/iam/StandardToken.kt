@@ -45,7 +45,7 @@ class StandardToken(subject: String,
             claims.expirationTime = NumericDate.fromMilliseconds(Instant.now().plusMillis(expiration.toMillis()).toEpochMilli())
             claims.subject = subject
             claims.setStringListClaim("permissions", permissions)
-            user?.let { theUser -> claims.setStringClaim("user", objectMapper.writeValueAsString(theUser)) }
+            user?.let { theUser -> claims.setClaim("user", objectMapper.convertValue(theUser, Map::class.java)) }
             otherClaims.forEach { claim -> claims.setClaim(claim.key, claim.value) }
         }.toJson()
         it.key = privateKey
@@ -70,7 +70,7 @@ class StandardToken(subject: String,
             return jwtClaims.let {
                 Claims(
                         it.subject,
-                        it.getClaimValue("user", User::class.java),
+                        objectMapper.convertValue(it.getClaimValue("user", Map::class.java), User::class.java),
                         it.getStringListClaimValue("permissions")
                 )
             }

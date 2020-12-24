@@ -13,19 +13,20 @@ import javax.inject.Inject
 data class DefaultEventPublisher @Inject constructor(private val channel: Channel,
                                                      private val objectMapper: ObjectMapper) : EventPublisher {
 
-    companion object{
-        private val LOGGER : Logger = LoggerFactory.getLogger(DefaultEventPublisher::class.java)
+    companion object {
+        private val LOGGER: Logger = LoggerFactory.getLogger(DefaultEventPublisher::class.java)
     }
 
     init {
-        channel.exchangeDeclare(Exchange.ACCOUNT, BuiltinExchangeType.TOPIC, true, true, false, emptyMap())
+        channel.exchangeDeclare(Exchange.CUSTOMER, BuiltinExchangeType.TOPIC, Durable.TRUE, AutoDelete.FALSE, Internal.FALSE, emptyMap())
+        channel.exchangeDeclare(Exchange.SERVICE_PROVIDER, BuiltinExchangeType.TOPIC, Durable.TRUE, AutoDelete.FALSE, Internal.FALSE, emptyMap())
     }
 
     override fun customerAccountCreated(token: String, event: AccountCreatedEvent) {
         LOGGER.info("Publishing Customer Account Created: '$event")
 
         channel.basicPublish(
-                Exchange.ACCOUNT,
+                Exchange.CUSTOMER,
                 Outgoing.RoutingKey.CUSTOMER_CREATED,
                 MessageProperties.PERSISTENT_TEXT_PLAIN.builder()
                         .headers(mapOf("Authorization" to "Bearer $token"))
@@ -38,7 +39,7 @@ data class DefaultEventPublisher @Inject constructor(private val channel: Channe
         LOGGER.info("Publishing Service Provider Account Created: '$event")
 
         channel.basicPublish(
-                Exchange.ACCOUNT,
+                Exchange.SERVICE_PROVIDER,
                 Outgoing.RoutingKey.SERVICE_PROVIDER_CREATED,
                 MessageProperties.PERSISTENT_TEXT_PLAIN.builder()
                         .headers(mapOf("Authorization" to "Bearer $token"))

@@ -2,6 +2,9 @@ package com.wks.servicemarketplace.authservice.adapters.auth.fusionauth
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.rabbitmq.client.*
+import com.wks.servicemarketplace.authservice.adapters.events.AutoDelete
+import com.wks.servicemarketplace.authservice.adapters.events.Durable
+import com.wks.servicemarketplace.authservice.adapters.events.Exclusive
 import com.wks.servicemarketplace.authservice.config.ApplicationParameters
 import com.wks.servicemarketplace.authservice.core.errors.RegistrationFailedException
 import io.fusionauth.client.FusionAuthClient
@@ -18,7 +21,7 @@ internal data class RetryAssignGroupEvent(val groupId: UUID, val userId: String)
 
 // TODO: This works but I definitely want to be able to integration test this
 class AssignGroupRetrier @Inject constructor(private val channel: Channel,
-                                             config: ApplicationParameters,
+                                             private val config: ApplicationParameters,
                                              private val objectMapper: ObjectMapper) {
 
     companion object {
@@ -41,10 +44,7 @@ class AssignGroupRetrier @Inject constructor(private val channel: Channel,
         channel.basicPublish(
                 EXCHANGE_RETRY_ASSIGN_GROUP,
                 ROUTING_KEY_RETRY_ASSIGN_GROUP,
-                MessageProperties.PERSISTENT_TEXT_PLAIN.builder()
-                        .deliveryMode(2)
-                        .messageId(userId)
-                        .build(),
+                MessageProperties.PERSISTENT_TEXT_PLAIN,
                 objectMapper.writeValueAsBytes(RetryAssignGroupEvent(groupId, userId))
         )
         LOGGER.info("Published retry event for group: '$groupId', userId: '$userId'")
@@ -80,32 +80,32 @@ class AssignGroupRetrier @Inject constructor(private val channel: Channel,
         channel.exchangeDeclare(
                 EXCHANGE_RETRY_ASSIGN_GROUP,
                 BuiltinExchangeType.DIRECT,
-                /*durable*/ true,
-                /*autoDelete*/ false,
+                Durable.TRUE,
+                AutoDelete.FALSE,
                 emptyMap()
         )
 
         channel.exchangeDeclare(
                 DX_EXCHANGE_RETRY_ASSIGN_GROUP,
                 BuiltinExchangeType.DIRECT,
-                /*durable*/ true,
-                /*autoDelete*/ false,
+                Durable.TRUE,
+                AutoDelete.FALSE,
                 emptyMap()
         )
 
         channel.queueDeclare(
                 QUEUE_RETRY_ASSIGN_GROUP,
-                /*durable*/ true,
-                /*exclusive*/ false,
-                /*autoDelete*/ false,
+                Durable.TRUE,
+                Exclusive.FALSE,
+                AutoDelete.FALSE,
                 emptyMap()
         )
 
         channel.queueDeclare(
                 DX_QUEUE_RETRY_ASSIGN_GROUP,
-                /*durable*/ true,
-                /*exclusive*/ false,
-                /*autoDelete*/ false,
+                Durable.TRUE,
+                Exclusive.FALSE,
+                AutoDelete.FALSE,
                 emptyMap()
         )
 
@@ -123,7 +123,7 @@ class AssignGroupRetrier @Inject constructor(private val channel: Channel,
                 ROUTING_KEY_RETRY_ASSIGN_GROUP,
                 mapOf(
                         "x-dead-letter-exchange" to EXCHANGE_RETRY_ASSIGN_GROUP,
-                        "x-message-ttl" to Duration.of(1, ChronoUnit.MINUTES).toMillis()
+                        "x-message-ttl" to Duration.of(config.retryAssignGroupIntervalMinutes, ChronoUnit.MINUTES).toMillis()
                 )
         )
     }

@@ -32,7 +32,7 @@ class FusionAuthAdapter @Inject constructor(
     private val groups = loadGroups()
 
     override fun login(credentials: Credentials): User {
-        val login = getUser(credentials)
+        val login = getUser(credentials.username.value, credentials.password.value)
         val role = groups.firstOrNull { it.id == login.user.memberships.firstOrNull()?.groupId }
                 ?.let { UserRole.of(it.name) }
 
@@ -64,18 +64,19 @@ class FusionAuthAdapter @Inject constructor(
         }
     }
 
-    private fun getUser(credentials: Credentials): LoginResponse {
+    private fun getUser(username: String, password: String): LoginResponse {
         val response = fusionAuthUserClient.login(
                 LoginRequest(
                         UUID.fromString(config.applicationId),
-                        credentials.username,
-                        credentials.password
+                        username,
+                        password
                 )
         )
 
         LOGGER.info(
                 "Login: Username: {}. Status: {}. Error: {}. Exception: {}",
-                response.status, credentials.username,
+                response.status,
+                username,
                 response.errorResponse,
                 response.exception
         )
@@ -126,13 +127,13 @@ class FusionAuthAdapter @Inject constructor(
                 id,
                 RegistrationRequest(
                         io.fusionauth.domain.User().with {
-                            it.email = registration.email
-                            it.email = registration.email
-                            it.firstName = registration.firstName
-                            it.lastName = registration.lastName
+                            it.email = registration.email.value
+                            it.email = registration.email.value
+                            it.firstName = registration.name.firstName
+                            it.lastName = registration.name.lastName
                             it.username = registration.username
-                            it.password = registration.password
-                            it.mobilePhone = registration.mobileNumber
+                            it.password = registration.password.value
+                            it.mobilePhone = registration.mobileNumber.value
                             it.data = mapOf("userType" to registration.userType.code)
                         },
                         UserRegistration().with {
@@ -216,7 +217,7 @@ class FusionAuthAdapter @Inject constructor(
      *
      */
     override fun apiToken(clientCredentials: ClientCredentials): Client {
-        return getUser(SignInRequest(clientCredentials.clientId, clientCredentials.clientSecret))
+        return getUser(clientCredentials.clientId, clientCredentials.clientSecret)
                 .let { it.user }
                 .let { FusionAuthM2MClient(it.username, it.getRoleNamesForApplication(UUID.fromString(config.applicationId)).toList()) }
     }

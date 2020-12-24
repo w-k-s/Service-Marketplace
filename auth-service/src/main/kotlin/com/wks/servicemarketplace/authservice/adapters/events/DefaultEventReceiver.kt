@@ -25,12 +25,12 @@ class DefaultEventReceiver @Inject constructor(iamAdapter: IAMAdapter,
     }
 
     private fun companyCreated(iamAdapter: IAMAdapter, objectMapper: ObjectMapper, channel: Channel) {
-        channel.exchangeDeclare(Exchange.SERVICE_PROVIDER, BuiltinExchangeType.TOPIC, true, true, false, emptyMap())
+        channel.exchangeDeclare(Exchange.SERVICE_PROVIDER, BuiltinExchangeType.TOPIC, Durable.TRUE, AutoDelete.FALSE, Internal.FALSE, emptyMap())
         val queueName = channel.queueDeclare(
                 Incoming.Queue.COMPANY_CREATED,
-                true,
-                true,
-                true,
+                Durable.TRUE,
+                Exclusive.FALSE,
+                AutoDelete.FALSE,
                 emptyMap()
         ).queue
         channel.queueBind(queueName, Exchange.SERVICE_PROVIDER, Incoming.RoutingKey.COMPANY_CREATED)

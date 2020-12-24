@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory
 import java.security.PrivateKey
 import java.security.PublicKey
 import java.time.Duration
+import java.util.concurrent.Executors
 import javax.inject.Inject
 
 class TokenService @Inject constructor(private val iam: IAMAdapter,
@@ -34,18 +35,20 @@ class TokenService @Inject constructor(private val iam: IAMAdapter,
     fun register(registration: Registration): User {
         val user = iam.register(registration)
 
-        val userToken = StandardToken(
-                user.username,
-                StandardToken.User(user.id, user.firstName, user.lastName, user.username, user.email, user.role.code),
-                user.permissions,
-                Duration.ofHours(1),
-                privateKey = privateKey
-        ).accessToken
+        Executors.newCachedThreadPool().submit{
+            val userToken = StandardToken(
+                    user.username,
+                    StandardToken.User(user.id, user.firstName, user.lastName, user.username, user.email, user.role.code),
+                    user.permissions,
+                    Duration.ofHours(1),
+                    privateKey = privateKey
+            ).accessToken
 
-        when (user.role) {
-            UserRole.CUSTOMER -> eventPublisher.customerAccountCreated(userToken, AccountCreatedEvent(user))
-            UserRole.COMPANY_REPRESENTATIVE -> eventPublisher.serviceProviderAccountCreated(userToken, AccountCreatedEvent(user))
-            else -> LOGGER.error("Non-admin employees aren't supported (and won't be cuz i'm lazy)")
+            when (user.role) {
+                UserRole.CUSTOMER -> eventPublisher.customerAccountCreated(userToken, AccountCreatedEvent(user))
+                UserRole.COMPANY_REPRESENTATIVE -> eventPublisher.serviceProviderAccountCreated(userToken, AccountCreatedEvent(user))
+                else -> LOGGER.error("Non-admin employees aren't supported (and won't be cuz i'm lazy)")
+            }
         }
 
         return user

@@ -11,6 +11,4 @@ import java.util.List;
 public interface CustomerEventsPublisher {
     void customerCreated(List<CustomerCreatedEvent> events) throws IOException;
     void addressAdded(List<AddressAddedEvent> events) throws IOException;
-    void addressVerified(AddressVerifiedEvent event) throws IOException;
-    void addressVerificationFailed(AddressVerificationFailedEvent event) throws IOException;
 }
