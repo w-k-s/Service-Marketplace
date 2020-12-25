@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm") version "1.3.72"
+    id("org.liquibase.gradle") version "2.0.3"
 }
 
 group = "com.wks.servicemarketplace.authservice"
@@ -7,7 +8,6 @@ version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
-    jcenter()
 }
 
 tasks.withType<Jar> {
@@ -43,11 +43,6 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.11.1")
     implementation("javax.activation:activation:1.1.1") // Needed by jackson-jaxrs-json-provider
 
-    // GraphQL
-    implementation("com.graphql-java:graphql-java:14.1")
-    implementation("com.graphql-java:graphql-java-tools:5.2.4")
-    implementation("io.gqljf:graphql-java-federation:0.1.16") // jCenter
-
     // RabbitMQ
     implementation("com.rabbitmq:amqp-client:5.9.0")
 
@@ -56,6 +51,26 @@ dependencies {
 
     // JWT
     implementation("org.bitbucket.b_c:jose4j:0.7.2")
+
+    // Quartz
+    implementation("org.quartz-scheduler:quartz:2.3.0")
+
+    // PostgreSQL
+    runtimeOnly("org.postgresql:postgresql:42.2.12")
+
+    // Hikari
+    implementation("com.zaxxer:HikariCP:3.4.5")
+
+    // JOOQ
+    implementation("org.jooq:jooq:3.12.3")
+    implementation("org.jooq:jooq-meta:3.12.3")
+
+    // Liquibase
+    liquibaseRuntime("org.liquibase:liquibase-core:3.8.1")
+    liquibaseRuntime("javax.xml.bind:jaxb-api:2.3.1")
+    liquibaseRuntime("org.postgresql:postgresql:42.2.12")
+    liquibaseRuntime("ch.qos.logback:logback-core:1.2.3")
+    liquibaseRuntime("ch.qos.logback:logback-classic:1.2.3")
 }
 
 tasks {
@@ -65,4 +80,17 @@ tasks {
     compileTestKotlin {
         kotlinOptions.jvmTarget = "13"
     }
+}
+
+liquibase {
+    activities.register("main") {
+        this.arguments = mapOf(
+                "logLevel" to "info",
+                "changeLogFile" to "src/main/resources/liquibase/authService.changelog.xml",
+                "url" to project.extra.properties["mainUrl"],
+                "username" to project.extra.properties["username"],
+                "password" to project.extra.properties["password"]
+        )
+    }
+    runList = "main"
 }

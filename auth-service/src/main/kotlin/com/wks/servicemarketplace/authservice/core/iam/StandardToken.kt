@@ -2,7 +2,9 @@ package com.wks.servicemarketplace.authservice.core.iam
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.wks.servicemarketplace.authservice.core.Email
 import com.wks.servicemarketplace.authservice.core.Token
+import com.wks.servicemarketplace.authservice.core.UserId
 import org.jose4j.jwa.AlgorithmConstraints
 import org.jose4j.jws.AlgorithmIdentifiers
 import org.jose4j.jws.JsonWebSignature
@@ -30,11 +32,11 @@ class StandardToken(subject: String,
     )
 
     data class User(
-            val id: String,
+            val id: UserId,
             val firstName: String,
             val lastName: String,
-            val username: String,
-            val email: String,
+            val username: Email,
+            val email: Email,
             val role: String
     )
 

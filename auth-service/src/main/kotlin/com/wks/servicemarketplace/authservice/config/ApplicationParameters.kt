@@ -2,6 +2,9 @@ package com.wks.servicemarketplace.authservice.config
 
 data class ApplicationParameters(
         val fusionAuthConfiguration: FusionAuthConfiguration,
+        val jdbcUrl: String,
+        val jdbcUsername: String,
+        val jdbcPassword: String,
         val amqpHost: String,
         val amqpPort: Int,
         val amqpPrefetchCount: Int,
@@ -18,6 +21,9 @@ data class ApplicationParameters(
 
     class Builder {
         lateinit var fusionAuthConfiguration: FusionAuthConfiguration
+        lateinit var jdbcUrl: String
+        lateinit var jdbcUsername: String
+        lateinit var jdbcPassword: String
         lateinit var amqpHost: String
         var amqpPort: Int? = null
         var amqpPrefetchCount: Int? = null
@@ -27,6 +33,9 @@ data class ApplicationParameters(
 
         fun build() = ApplicationParameters(
                 this.fusionAuthConfiguration,
+                this.jdbcUrl,
+                this.jdbcUsername,
+                this.jdbcPassword,
                 this.amqpHost,
                 this.amqpPort!!,
                 this.amqpPrefetchCount ?: DEFAULT_AMQP_PREFETCH_COUNT,

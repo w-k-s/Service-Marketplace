@@ -24,8 +24,8 @@ class TokenService @Inject constructor(private val iam: IAMAdapter,
     fun login(credentials: Credentials): Token {
         val user = iam.login(credentials)
         return StandardToken(
-                user.username,
-                StandardToken.User(user.id, user.firstName, user.lastName, user.username, user.email, user.role.code),
+                user.username.value,
+                StandardToken.User(user.id, user.name.firstName, user.name.lastName, user.username, user.email, user.role.code),
                 user.permissions,
                 Duration.ofHours(1),
                 privateKey = privateKey
@@ -37,8 +37,8 @@ class TokenService @Inject constructor(private val iam: IAMAdapter,
 
         Executors.newCachedThreadPool().submit{
             val userToken = StandardToken(
-                    user.username,
-                    StandardToken.User(user.id, user.firstName, user.lastName, user.username, user.email, user.role.code),
+                    user.username.value,
+                    StandardToken.User(user.id, user.name.firstName, user.name.lastName, user.username, user.email, user.role.code),
                     user.permissions,
                     Duration.ofHours(1),
                     privateKey = privateKey

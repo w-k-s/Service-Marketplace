@@ -51,12 +51,11 @@ class FusionAuthAdapter @Inject constructor(
 
         return login.user.let {
             FusionAuthUser(
-                    it.id.toString(),
-                    it.firstName,
-                    it.lastName,
-                    it.username,
-                    it.email,
-                    it.mobilePhone,
+                    UserId.of(it.id),
+                    Name.of(it.firstName, it.lastName),
+                    Email.of(it.username),
+                    Email.of(it.email),
+                    PhoneNumber.of(it.mobilePhone),
                     role,
                     UserType.of(it.data["userType"].toString()),
                     permissions
@@ -108,12 +107,11 @@ class FusionAuthAdapter @Inject constructor(
         }
 
         return FusionAuthUser(
-                user.id.toString(),
-                user.firstName,
-                user.lastName,
-                user.username,
-                user.email,
-                user.mobilePhone,
+                UserId.of(user.id),
+                Name.of(user.firstName, user.lastName),
+                Email.of(user.username),
+                Email.of(user.email),
+                PhoneNumber.of(user.mobilePhone),
                 role,
                 registration.userType,
                 permissions

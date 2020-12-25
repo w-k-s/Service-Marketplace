@@ -1,17 +1,32 @@
 package com.wks.servicemarketplace.authservice.core
 
-import java.lang.IllegalArgumentException
+import com.fasterxml.jackson.annotation.JsonValue
+import com.wks.servicemarketplace.authservice.core.utils.ModelValidator
+import java.util.*
+import javax.validation.constraints.NotNull
 
 interface User {
-    val id: String
-    val firstName: String
-    val lastName: String
-    val username: String
-    val email: String
-    val mobileNumber: String
+    val id: UserId
+    val name: Name
+    val username: Email
+    val email: Email
+    val mobileNumber: PhoneNumber
     val role: UserRole
     val type: UserType
     val permissions: List<String>
+}
+
+data class UserId private constructor(@NotNull @JsonValue val value: UUID) {
+    companion object {
+        @JvmStatic
+        fun of(uuid: UUID) = ModelValidator.validate(UserId(uuid))
+        @JvmStatic
+        fun fromString(uuidString: String) = UserId(UUID.fromString(uuidString))
+        @JvmStatic
+        fun random() = UserId(UUID.randomUUID())
+    }
+
+    override fun toString() = value.toString()
 }
 
 enum class UserRole(val code: String) {

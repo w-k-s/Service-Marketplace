@@ -11,6 +11,9 @@ class ApplicationParametersFactory : Factory<ApplicationParameters> {
                 tenantId = System.getenv("fusionTenantId"),
                 apiKey = System.getenv("fusionApiKey")
         )
+        it.jdbcUrl = System.getenv("jdbcUrl")
+        it.jdbcUsername = System.getenv("jdbcUsername")
+        it.jdbcPassword = System.getenv("jdbcPassword")
         it.amqpHost = System.getenv("amqpHost")
         it.amqpPort = System.getenv("amqpPort").toInt()
         it.amqpPrefetchCount = System.getenv("amqpPrefetchCount")?.toIntOrNull()
