@@ -1,6 +1,7 @@
 package com.wks.servicemarketplace.authservice.core
 
 import com.wks.servicemarketplace.authservice.core.events.EventEnvelope
+import com.wks.servicemarketplace.authservice.core.events.EventId
 import com.wks.servicemarketplace.authservice.core.utils.ModelValidator
 import java.sql.Connection
 import java.sql.SQLException
@@ -14,14 +15,15 @@ interface Dao {
 }
 
 interface EventDao : Dao {
-    fun insertEvent(connection: Connection, event: EventEnvelope, idempotencyUUOD: IdempotencyUUID, publishAfter: Duration = Duration.ZERO): Boolean
+    fun saveEventForPublishing(connection: Connection, event: EventEnvelope, idempotencyUUID: IdempotencyUUID? = null, publishAfter: Duration = Duration.ZERO): Boolean
     fun fetchUnpublishedEvents(connection: Connection): List<EventEnvelope>
+    fun setPublished(connection: Connection, eventId: EventId): Boolean
 }
 
-data class IdempotencyUUID private constructor(@NotNull private val value: UUID) {
+data class IdempotencyUUID private constructor(private val value: UUID) {
     companion object {
         @JvmStatic
-        fun of(uuid: UUID) = ModelValidator.validate(IdempotencyUUID(uuid))
+        fun of(uuid: UUID) = IdempotencyUUID(uuid)
 
         @JvmStatic
         fun of(uuidString: String) = IdempotencyUUID(UUID.fromString(uuidString))

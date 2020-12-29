@@ -18,10 +18,13 @@ import com.wks.servicemarketplace.serviceproviderservice.core.events.EventPublis
 import com.wks.servicemarketplace.serviceproviderservice.core.usecase.CreateCompanyRepresentativeUseCase
 import com.wks.servicemarketplace.serviceproviderservice.core.usecase.CreateCompanyUseCase
 import org.glassfish.hk2.api.Immediate
+import org.glassfish.hk2.api.TypeLiteral
 import org.glassfish.hk2.utilities.binding.AbstractBinder
 import org.glassfish.jersey.jetty.JettyHttpContainerFactory
 import org.glassfish.jersey.server.ResourceConfig
 import org.slf4j.LoggerFactory
+import java.util.concurrent.CompletableFuture
+import java.util.function.Supplier
 import javax.ws.rs.core.UriBuilder
 
 class ServiceProviderServiceApplication : ResourceConfig() {
@@ -66,6 +69,7 @@ class ServiceProviderServiceApplication : ResourceConfig() {
                 bind(DefaultEventReceiver::class.java).to(DefaultEventReceiver::class.java).`in`(Immediate::class.java)
                 bind(CreateCompanyRepresentativeUseCase::class.java).to(CreateCompanyRepresentativeUseCase::class.java)
                 bind(CreateCompanyUseCase::class.java).to(CreateCompanyUseCase::class.java)
+
             }
         })
         register(HealthResource::class.java)

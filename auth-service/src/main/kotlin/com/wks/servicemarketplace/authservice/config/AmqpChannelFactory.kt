@@ -1,7 +1,12 @@
 package com.wks.servicemarketplace.authservice.config
 
+import com.rabbitmq.client.BuiltinExchangeType
 import com.rabbitmq.client.Channel
 import com.rabbitmq.client.Connection
+import com.wks.servicemarketplace.authservice.adapters.events.AutoDelete
+import com.wks.servicemarketplace.authservice.adapters.events.Durable
+import com.wks.servicemarketplace.authservice.adapters.events.Exchange
+import com.wks.servicemarketplace.authservice.adapters.events.Internal
 import org.glassfish.hk2.api.Factory
 import javax.inject.Inject
 

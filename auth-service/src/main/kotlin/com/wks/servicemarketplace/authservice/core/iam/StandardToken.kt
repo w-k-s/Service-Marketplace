@@ -1,6 +1,5 @@
 package com.wks.servicemarketplace.authservice.core.iam
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.wks.servicemarketplace.authservice.core.Email
 import com.wks.servicemarketplace.authservice.core.Token
@@ -13,8 +12,7 @@ import org.jose4j.jwt.NumericDate
 import org.jose4j.jwt.consumer.JwtConsumerBuilder
 import java.security.PrivateKey
 import java.security.PublicKey
-import java.time.Duration
-import java.time.Instant
+import java.time.*
 
 
 class StandardToken(subject: String,
@@ -40,19 +38,26 @@ class StandardToken(subject: String,
             val role: String
     )
 
-    @JsonProperty("accessToken")
-    override val accessToken: String = JsonWebSignature().also {
-        it.payload = JwtClaims().also { claims ->
-            claims.setIssuedAtToNow()
-            claims.expirationTime = NumericDate.fromMilliseconds(Instant.now().plusMillis(expiration.toMillis()).toEpochMilli())
-            claims.subject = subject
-            claims.setStringListClaim("permissions", permissions)
-            user?.let { theUser -> claims.setClaim("user", objectMapper.convertValue(theUser, Map::class.java)) }
-            otherClaims.forEach { claim -> claims.setClaim(claim.key, claim.value) }
-        }.toJson()
-        it.key = privateKey
-        it.algorithmHeaderValue = AlgorithmIdentifiers.RSA_USING_SHA256
-    }.compactSerialization
+    override val expirationTimeUTC: OffsetDateTime
+    override val accessToken: String
+
+    init {
+        val expiryMillis = Instant.now().plus(expiration)
+        this.expirationTimeUTC = OffsetDateTime.ofInstant(expiryMillis, ZoneId.systemDefault())
+                .withOffsetSameInstant(ZoneOffset.UTC)
+        this.accessToken = JsonWebSignature().also {
+            it.payload = JwtClaims().also { claims ->
+                claims.setIssuedAtToNow()
+                claims.expirationTime = NumericDate.fromMilliseconds(expiryMillis.toEpochMilli())
+                claims.subject = subject
+                claims.setStringListClaim("permissions", permissions)
+                user?.let { theUser -> claims.setClaim("user", objectMapper.convertValue(theUser, Map::class.java)) }
+                otherClaims.forEach { claim -> claims.setClaim(claim.key, claim.value) }
+            }.toJson()
+            it.key = privateKey
+            it.algorithmHeaderValue = AlgorithmIdentifiers.RSA_USING_SHA256
+        }.compactSerialization
+    }
 
     override val refreshToken: String? = null
 

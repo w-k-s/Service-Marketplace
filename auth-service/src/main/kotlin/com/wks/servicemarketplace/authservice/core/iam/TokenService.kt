@@ -1,9 +1,12 @@
 package com.wks.servicemarketplace.authservice.core.iam
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.wks.servicemarketplace.authservice.core.*
 import com.wks.servicemarketplace.authservice.core.errors.UnauthorizedException
 import com.wks.servicemarketplace.authservice.core.events.AccountCreatedEvent
-import com.wks.servicemarketplace.authservice.core.events.EventPublisher
+import com.wks.servicemarketplace.authservice.core.events.EventEnvelope
+import com.wks.servicemarketplace.authservice.core.events.EventId
+import com.wks.servicemarketplace.authservice.core.events.EventType
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.security.PrivateKey
@@ -15,10 +18,11 @@ import javax.inject.Inject
 class TokenService @Inject constructor(private val iam: IAMAdapter,
                                        private val privateKey: PrivateKey,
                                        private val publicKey: PublicKey,
-                                       private val eventPublisher: EventPublisher) {
+                                       private val eventDao: EventDao,
+                                       private val objectMapper: ObjectMapper) {
 
     companion object {
-        val LOGGER : Logger = LoggerFactory.getLogger(TokenService::class.java)
+        val LOGGER: Logger = LoggerFactory.getLogger(TokenService::class.java)
     }
 
     fun login(credentials: Credentials): Token {
@@ -35,19 +39,18 @@ class TokenService @Inject constructor(private val iam: IAMAdapter,
     fun register(registration: Registration): User {
         val user = iam.register(registration)
 
-        Executors.newCachedThreadPool().submit{
-            val userToken = StandardToken(
-                    user.username.value,
-                    StandardToken.User(user.id, user.name.firstName, user.name.lastName, user.username, user.email, user.role.code),
-                    user.permissions,
-                    Duration.ofHours(1),
-                    privateKey = privateKey
-            ).accessToken
-
-            when (user.role) {
-                UserRole.CUSTOMER -> eventPublisher.customerAccountCreated(userToken, AccountCreatedEvent(user))
-                UserRole.COMPANY_REPRESENTATIVE -> eventPublisher.serviceProviderAccountCreated(userToken, AccountCreatedEvent(user))
-                else -> LOGGER.error("Non-admin employees aren't supported (and won't be cuz i'm lazy)")
+        Executors.newCachedThreadPool().submit {
+            eventDao.connection().use {
+                eventDao.saveEventForPublishing(it, EventEnvelope(
+                        EventId.random(),
+                        when (user.type) {
+                            UserType.CUSTOMER -> EventType.CUSTOMER_ACCOUNT_CREATED
+                            UserType.SERVICE_PROVIDER -> EventType.SERVICE_PROVIDER_ACCOUNT_CREATED
+                        },
+                        objectMapper.writeValueAsString(AccountCreatedEvent(user)),
+                        user.id.toString(),
+                        User::class.simpleName!!
+                ), IdempotencyUUID.of(user.id.value))
             }
         }
 

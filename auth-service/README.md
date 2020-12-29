@@ -81,18 +81,43 @@ Generate users with the following usernames for the following. Users with userna
 
 **TODO**: Private key should not come from environment variables. Try Hashicorp Vault.
 
-## CURL Commands
+---
+## Why is Transactional Outbox used to create user profiles?
 
-**Login**
-```shell script
-curl -X POST -H 'Content-Type: application/json' --data-raw '{"query": "mutation { signIn(data: {username: \"example@mail.com\", password: \"ThisIsMy1P@ssword\"}) { accessToken } }"}' http://localhost:8082/graphql
+```text
+Registering a user without:
+    - Create Account (by making API call to FusionAuth)
+    - Assign Group (by making API call to FusionAuth)
+    - Create Token 
+    - Publish Events using Token
 ```
 
-**Register**
-```shell script
-curl --location --request POST 'http://localhost:8082/graphql' \
---header 'Content-Type: application/json' \
---data-raw '{
-	"query": "mutation { signUp(data: {firstName: \"Jack\",lastName: \"Torrence\",email: \"jack.torrence+2@theoverlook.com\", password: \"ThisIsMy1P@ssword\",userType: CUSTOMER}) { id } }"
-}'
+Benefits:
+- Faster
+- Simpler
+
+Drawbacks:
+- No auditing
+- No confirmation that message is pushed to queue
+
+```text
+Registering a user with transactional outbox:
+    - Create Account (by sending request to Fusion Auth)
+    - Assign Group (by making API call to FusionAuth)
+    - Save Event to DB
+
+Scheduler (every minute):
+    - Load event from db
+    - For each event:
+        - Create Token (by making API call to FusionAuth)
+        - Publish event
 ```
+
+Benefits:
+- Events logged, auditing
+- We can guarantee that this 
+
+Drawbacks:
+- Slower (can be fixed if we avoid calling fusionauth to get token)
+- Might not scale very well if we have many events
+- 

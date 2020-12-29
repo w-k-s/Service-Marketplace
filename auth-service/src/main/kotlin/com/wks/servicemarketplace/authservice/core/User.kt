@@ -20,8 +20,10 @@ data class UserId private constructor(@NotNull @JsonValue val value: UUID) {
     companion object {
         @JvmStatic
         fun of(uuid: UUID) = ModelValidator.validate(UserId(uuid))
+
         @JvmStatic
         fun fromString(uuidString: String) = UserId(UUID.fromString(uuidString))
+
         @JvmStatic
         fun random() = UserId(UUID.randomUUID())
     }

@@ -9,15 +9,18 @@ import com.wks.servicemarketplace.authservice.adapters.db.dao.DataSource
 import com.wks.servicemarketplace.authservice.adapters.db.dao.DefaultEventDao
 import com.wks.servicemarketplace.authservice.adapters.events.DefaultEventPublisher
 import com.wks.servicemarketplace.authservice.adapters.events.DefaultEventReceiver
+import com.wks.servicemarketplace.authservice.adapters.events.TransactionalOutboxJobFactory
 import com.wks.servicemarketplace.authservice.adapters.web.resources.ApiResource
 import com.wks.servicemarketplace.authservice.adapters.web.resources.DefaultExceptionMapper
 import com.wks.servicemarketplace.authservice.adapters.web.resources.HealthResource
 import com.wks.servicemarketplace.authservice.config.*
 import com.wks.servicemarketplace.authservice.core.EventDao
 import com.wks.servicemarketplace.authservice.core.IAMAdapter
+import com.wks.servicemarketplace.authservice.core.Token
 import com.wks.servicemarketplace.authservice.core.events.EventPublisher
 import com.wks.servicemarketplace.authservice.core.iam.TokenService
 import org.glassfish.hk2.api.Immediate
+import org.glassfish.hk2.api.TypeLiteral
 import org.glassfish.hk2.utilities.binding.AbstractBinder
 import org.glassfish.jersey.jetty.JettyHttpContainerFactory
 import org.glassfish.jersey.server.ResourceConfig
@@ -26,8 +29,9 @@ import org.quartz.Scheduler
 import org.slf4j.LoggerFactory
 import java.security.PrivateKey
 import java.security.PublicKey
+import java.util.concurrent.CompletableFuture
+import java.util.function.Supplier
 import javax.ws.rs.core.UriBuilder
-import javax.ws.rs.ext.ExceptionMapper
 
 class AuthServiceApplication : ResourceConfig() {
 
@@ -62,9 +66,11 @@ class AuthServiceApplication : ResourceConfig() {
                 bindFactory(PublicKeyFactory::class.java, Immediate::class.java).to(PublicKey::class.java).`in`(Immediate::class.java)
                 bindFactory(AmqpConnectionFactory::class.java, Immediate::class.java).to(Connection::class.java).`in`(Immediate::class.java)
                 bindFactory(AmqpChannelFactory::class.java, Immediate::class.java).to(Channel::class.java).`in`(Immediate::class.java)
-                bindFactory(SchedulerFactory::class.java).to(Scheduler::class.java)
+                bindFactory(TransactionalOutboxSchedulerFactory::class.java).to(Scheduler::class.java)
                 bindFactory(DataSourceFactory::class.java, Immediate::class.java).to(DataSource::class.java).`in`(Immediate::class.java)
+                bindFactory(ClientCredentialsTokenSupplierFactory::class.java, Immediate::class.java).to(ClientCredentialsTokenSupplier::class.java).`in`(Immediate::class.java)
 
+                bind(TransactionalOutboxJobFactory::class.java).to(TransactionalOutboxJobFactory::class.java).`in`(Immediate::class.java)
                 bind(DefaultEventDao::class.java).to(EventDao::class.java).`in`(Immediate::class.java)
                 bind(DefaultEventPublisher::class.java).to(EventPublisher::class.java).`in`(Immediate::class.java)
                 bind(FusionAuthAdapter::class.java).to(IAMAdapter::class.java).`in`(Immediate::class.java)
@@ -78,6 +84,7 @@ class AuthServiceApplication : ResourceConfig() {
         register(DefaultApplicationEventListener::class.java)
         register(ApiResource::class.java)
         register(HealthResource::class.java)
+
     }
 
     fun run() {

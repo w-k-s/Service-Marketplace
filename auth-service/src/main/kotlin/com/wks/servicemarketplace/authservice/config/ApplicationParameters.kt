@@ -10,13 +10,15 @@ data class ApplicationParameters(
         val amqpPrefetchCount: Int,
         val clientId: String,
         val clientSecret: String,
-        val retryAssignGroupIntervalMinutes: Long
+        val retryAssignGroupIntervalMinutes: Long,
+        val outboxIntervalMillis: Long
 ) {
 
     companion object {
         const val DEFAULT_AMQP_PREFETCH_COUNT = 10
         const val DEFAULT_RETRY_ASSIGN_GROUP_INTERVAL_MINUTES = 5L
         const val MINIMUM_RETRY_ASSIGN_GROUP_INTERVAL_MINUTES = 5L
+        const val DEFAULT_OUTBOX_INTERVAL_MILLIS = 300L
     }
 
     class Builder {
@@ -30,6 +32,7 @@ data class ApplicationParameters(
         lateinit var clientId: String
         lateinit var clientSecret: String
         var retryAssignGroupIntervalMinutes: Long? = null
+        var outboxIntervalMillis: Long? = null
 
         fun build() = ApplicationParameters(
                 this.fusionAuthConfiguration,
@@ -43,7 +46,10 @@ data class ApplicationParameters(
                 this.clientSecret,
                 this.retryAssignGroupIntervalMinutes
                         ?.takeIf { it >= MINIMUM_RETRY_ASSIGN_GROUP_INTERVAL_MINUTES }
-                        ?: DEFAULT_RETRY_ASSIGN_GROUP_INTERVAL_MINUTES
+                        ?: DEFAULT_RETRY_ASSIGN_GROUP_INTERVAL_MINUTES,
+                this.outboxIntervalMillis
+                        ?.takeIf { it > DEFAULT_OUTBOX_INTERVAL_MILLIS }
+                        ?: DEFAULT_OUTBOX_INTERVAL_MILLIS
         )
     }
 }
