@@ -7,6 +7,10 @@ import com.wks.servicemarketplace.authservice.core.events.AccountCreatedEvent
 import com.wks.servicemarketplace.authservice.core.events.EventEnvelope
 import com.wks.servicemarketplace.authservice.core.events.EventId
 import com.wks.servicemarketplace.authservice.core.events.EventType
+import com.wks.servicemarketplace.common.auth.StandardToken
+import com.wks.servicemarketplace.common.auth.Token
+import com.wks.servicemarketplace.common.auth.User
+import com.wks.servicemarketplace.common.auth.UserType
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.security.PrivateKey

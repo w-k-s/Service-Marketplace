@@ -1,6 +1,12 @@
 package com.wks.servicemarketplace.authservice.core.events
 
 import com.wks.servicemarketplace.authservice.core.*
+import com.wks.servicemarketplace.common.Email
+import com.wks.servicemarketplace.common.Name
+import com.wks.servicemarketplace.common.PhoneNumber
+import com.wks.servicemarketplace.common.UserId
+import com.wks.servicemarketplace.common.auth.User
+import com.wks.servicemarketplace.common.auth.UserType
 import java.util.*
 
 data class EventEnvelope(

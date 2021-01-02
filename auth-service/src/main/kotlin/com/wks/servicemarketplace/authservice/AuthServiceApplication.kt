@@ -16,7 +16,6 @@ import com.wks.servicemarketplace.authservice.adapters.web.resources.HealthResou
 import com.wks.servicemarketplace.authservice.config.*
 import com.wks.servicemarketplace.authservice.core.EventDao
 import com.wks.servicemarketplace.authservice.core.IAMAdapter
-import com.wks.servicemarketplace.authservice.core.Token
 import com.wks.servicemarketplace.authservice.core.events.EventPublisher
 import com.wks.servicemarketplace.authservice.core.iam.TokenService
 import org.glassfish.hk2.api.Immediate

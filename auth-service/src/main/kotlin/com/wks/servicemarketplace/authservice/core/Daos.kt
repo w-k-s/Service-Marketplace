@@ -2,7 +2,6 @@ package com.wks.servicemarketplace.authservice.core
 
 import com.wks.servicemarketplace.authservice.core.events.EventEnvelope
 import com.wks.servicemarketplace.authservice.core.events.EventId
-import com.wks.servicemarketplace.authservice.core.utils.ModelValidator
 import java.sql.Connection
 import java.sql.SQLException
 import java.time.Duration

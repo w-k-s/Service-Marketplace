@@ -1,16 +1,31 @@
-package com.wks.servicemarketplace.authservice.core
+package com.wks.servicemarketplace.common
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonValue
-import com.wks.servicemarketplace.authservice.core.utils.ModelValidator
+import java.util.*
 import javax.validation.Constraint
 import javax.validation.ConstraintValidator
 import javax.validation.ConstraintValidatorContext
 import javax.validation.Payload
 import javax.validation.constraints.NotBlank
+import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
 import kotlin.reflect.KClass
 
+data class UserId private constructor(@NotNull @JsonValue val value: UUID) {
+    companion object {
+        @JvmStatic
+        fun of(uuid: UUID) = ModelValidator.validate(UserId(uuid))
+
+        @JvmStatic
+        fun fromString(uuidString: String) = UserId(UUID.fromString(uuidString))
+
+        @JvmStatic
+        fun random() = UserId(UUID.randomUUID())
+    }
+
+    override fun toString() = value.toString()
+}
 
 @Target(AnnotationTarget.FIELD)
 @MustBeDocumented

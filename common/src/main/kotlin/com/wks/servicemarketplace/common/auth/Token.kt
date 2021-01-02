@@ -1,4 +1,4 @@
-package com.wks.servicemarketplace.authservice.core
+package com.wks.servicemarketplace.common.auth
 
 import java.time.Clock
 import java.time.OffsetDateTime

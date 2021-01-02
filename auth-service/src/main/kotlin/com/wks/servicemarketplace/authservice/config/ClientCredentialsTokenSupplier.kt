@@ -1,9 +1,9 @@
 package com.wks.servicemarketplace.authservice.config
 
-import com.wks.servicemarketplace.authservice.core.Token
 import com.wks.servicemarketplace.authservice.core.dtos.ClientCredentialsRequest
 import com.wks.servicemarketplace.authservice.core.iam.TokenService
-import com.wks.servicemarketplace.authservice.core.isExpired
+import com.wks.servicemarketplace.common.auth.Token
+import com.wks.servicemarketplace.common.auth.isExpired
 import org.glassfish.hk2.api.Factory
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.atomic.AtomicReference

@@ -1,9 +1,9 @@
 package com.wks.servicemarketplace.authservice.core.dtos
 
-import com.wks.servicemarketplace.authservice.core.utils.ModelValidator
 import com.wks.servicemarketplace.authservice.core.Credentials
-import com.wks.servicemarketplace.authservice.core.Email
-import com.wks.servicemarketplace.authservice.core.Password
+import com.wks.servicemarketplace.common.Email
+import com.wks.servicemarketplace.common.ModelValidator
+import com.wks.servicemarketplace.common.Password
 import javax.validation.constraints.NotNull
 
 data class SignInRequest internal constructor(override val username: Email,

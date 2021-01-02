@@ -18,7 +18,7 @@ data class ApplicationParameters(
         const val DEFAULT_AMQP_PREFETCH_COUNT = 10
         const val DEFAULT_RETRY_ASSIGN_GROUP_INTERVAL_MINUTES = 5L
         const val MINIMUM_RETRY_ASSIGN_GROUP_INTERVAL_MINUTES = 5L
-        const val DEFAULT_OUTBOX_INTERVAL_MILLIS = 300L
+        const val DEFAULT_OUTBOX_INTERVAL_MILLIS = 500L
     }
 
     class Builder {

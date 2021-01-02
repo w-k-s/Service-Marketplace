@@ -1,7 +1,8 @@
 package com.wks.servicemarketplace.authservice.core.dtos
 
 import com.wks.servicemarketplace.authservice.core.*
-import com.wks.servicemarketplace.authservice.core.utils.ModelValidator
+import com.wks.servicemarketplace.common.*
+import com.wks.servicemarketplace.common.auth.UserType
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size

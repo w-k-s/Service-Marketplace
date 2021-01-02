@@ -3,9 +3,7 @@ package com.wks.servicemarketplace.authservice.core.dtos
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder
 import com.wks.servicemarketplace.authservice.core.ClientCredentials
-import com.wks.servicemarketplace.authservice.core.utils.ModelValidator
-import com.wks.servicemarketplace.authservice.core.Credentials
-import javax.validation.constraints.Email
+import com.wks.servicemarketplace.common.ModelValidator
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotEmpty
 import javax.validation.constraints.NotNull

@@ -1,7 +1,10 @@
 package com.wks.servicemarketplace.authservice.adapters.web.resources
 
-import com.wks.servicemarketplace.authservice.core.errors.CoreException
-import com.wks.servicemarketplace.authservice.core.errors.ErrorType
+import com.wks.servicemarketplace.common.errors.CoreException
+import com.wks.servicemarketplace.common.errors.ErrorType
+import com.wks.servicemarketplace.common.errors.HasErrorDetails
+import com.wks.servicemarketplace.common.http.ErrorResponse
+import com.wks.servicemarketplace.common.http.httpStatusCode
 import org.glassfish.jersey.server.spi.ResponseErrorMapper
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
@@ -18,26 +21,16 @@ class DefaultExceptionMapper : ExceptionMapper<Throwable>, ResponseErrorMapper {
     }
 }
 
-internal fun ErrorType.httpStatusCode(): Int {
-    return when (this) {
-        ErrorType.AUTHORIZATION -> Response.Status.FORBIDDEN.statusCode
-        ErrorType.VALIDATION,
-        ErrorType.DUPLICATE_USERNAME -> Response.Status.BAD_REQUEST.statusCode
-        ErrorType.USER_NOT_FOUND -> Response.Status.NOT_FOUND.statusCode
-        ErrorType.REGISTRATION_IN_PROGRESS -> 422 // Unprocessible entity
-        ErrorType.UNKNOWN,
-        ErrorType.LOGIN_FAILED,
-        ErrorType.REGISTRATION_FAILED -> Response.Status.INTERNAL_SERVER_ERROR.statusCode
-    }
-}
-
 internal fun CoreException.toResponse(): Response {
     return Response
             .status(errorType.httpStatusCode())
-            .entity(CoreErrorResponse(
+            .entity(ErrorResponse(
                     this.errorType,
                     this.message,
-                    this.fields
+                    when (this) {
+                        is HasErrorDetails -> this.errorDetails
+                        else -> null
+                    }
             ))
             .type(MediaType.APPLICATION_JSON_TYPE)
             .build()
@@ -46,7 +39,7 @@ internal fun CoreException.toResponse(): Response {
 internal fun Throwable.toResponse(): Response {
     return Response
             .status(Response.Status.INTERNAL_SERVER_ERROR)
-            .entity(CoreErrorResponse(
+            .entity(ErrorResponse(
                     ErrorType.UNKNOWN,
                     this.message,
                     emptyMap()
@@ -54,9 +47,3 @@ internal fun Throwable.toResponse(): Response {
             .type(MediaType.APPLICATION_JSON_TYPE)
             .build()
 }
-
-internal data class CoreErrorResponse(
-        val errorType: ErrorType,
-        val message: String?,
-        val fields: Map<String, List<String>>? = emptyMap()
-)

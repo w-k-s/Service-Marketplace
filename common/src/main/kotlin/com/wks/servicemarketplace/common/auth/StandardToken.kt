@@ -1,9 +1,8 @@
-package com.wks.servicemarketplace.authservice.core.iam
+package com.wks.servicemarketplace.common.auth
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.wks.servicemarketplace.authservice.core.Email
-import com.wks.servicemarketplace.authservice.core.Token
-import com.wks.servicemarketplace.authservice.core.UserId
+import com.wks.servicemarketplace.common.Email
+import com.wks.servicemarketplace.common.UserId
 import org.jose4j.jwa.AlgorithmConstraints
 import org.jose4j.jws.AlgorithmIdentifiers
 import org.jose4j.jws.JsonWebSignature

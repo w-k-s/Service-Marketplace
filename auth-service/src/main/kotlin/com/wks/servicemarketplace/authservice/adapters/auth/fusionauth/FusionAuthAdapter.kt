@@ -3,8 +3,14 @@ package com.wks.servicemarketplace.authservice.adapters.auth.fusionauth
 import com.inversoft.error.Errors
 import com.wks.servicemarketplace.authservice.config.FusionAuthConfiguration
 import com.wks.servicemarketplace.authservice.core.*
-import com.wks.servicemarketplace.authservice.core.dtos.SignInRequest
 import com.wks.servicemarketplace.authservice.core.errors.*
+import com.wks.servicemarketplace.common.*
+import com.wks.servicemarketplace.common.auth.User
+import com.wks.servicemarketplace.common.auth.UserRole
+import com.wks.servicemarketplace.common.auth.UserType
+import com.wks.servicemarketplace.common.errors.CoreException
+import com.wks.servicemarketplace.common.errors.ErrorType
+import com.wks.servicemarketplace.common.errors.ValidationException
 import io.fusionauth.client.FusionAuthClient
 import io.fusionauth.domain.Group
 import io.fusionauth.domain.GroupMember
@@ -240,5 +246,8 @@ fun Errors.toCoreException(): CoreException {
     messages.addAll(fieldErrors.map { "${it.key}: ${it.value.map { it.message }.joinToString { "," }}" })
     messages.addAll(generalErrors.map { it.message })
 
-    return CoreException(errorType, messages.joinToString { "," }, fields)
+    return when(errorType){
+        ErrorType.VALIDATION -> ValidationException(fields)
+        else -> CoreException(errorType, messages.joinToString { "," })
+    }
 }

@@ -2,8 +2,6 @@ package com.wks.servicemarketplace.authservice.adapters.events
 
 import com.wks.servicemarketplace.authservice.config.ClientCredentialsTokenSupplier
 import com.wks.servicemarketplace.authservice.core.EventDao
-import com.wks.servicemarketplace.authservice.core.Token
-import com.wks.servicemarketplace.authservice.core.events.EventEnvelope
 import com.wks.servicemarketplace.authservice.core.events.EventPublisher
 import org.quartz.Job
 import org.quartz.JobExecutionContext
@@ -12,12 +10,8 @@ import org.quartz.simpl.SimpleJobFactory
 import org.quartz.spi.TriggerFiredBundle
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.sql.Connection
-import java.time.Clock
-import java.time.OffsetDateTime
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executors
-import java.util.function.BiFunction
 import javax.inject.Inject
 
 class TransactionalOutboxJob : Job {

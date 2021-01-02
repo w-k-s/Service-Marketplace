@@ -5,7 +5,7 @@ import com.rabbitmq.client.BuiltinExchangeType
 import com.rabbitmq.client.Channel
 import com.rabbitmq.client.Delivery
 import com.wks.servicemarketplace.authservice.core.IAMAdapter
-import com.wks.servicemarketplace.authservice.core.UserRole
+import com.wks.servicemarketplace.common.auth.UserRole
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import javax.inject.Inject
