@@ -1,6 +1,6 @@
 package com.wks.servicemarketplace.authservice.config
 
-import com.wks.servicemarketplace.authservice.core.dtos.ClientCredentialsRequest
+import com.wks.servicemarketplace.authservice.api.ClientCredentialsRequest
 import com.wks.servicemarketplace.authservice.core.iam.TokenService
 import com.wks.servicemarketplace.common.auth.Token
 import com.wks.servicemarketplace.common.auth.isExpired

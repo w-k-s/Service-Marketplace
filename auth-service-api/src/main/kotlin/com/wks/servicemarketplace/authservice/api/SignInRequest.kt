@@ -1,6 +1,5 @@
-package com.wks.servicemarketplace.authservice.core.dtos
+package com.wks.servicemarketplace.authservice.api
 
-import com.wks.servicemarketplace.authservice.core.Credentials
 import com.wks.servicemarketplace.common.Email
 import com.wks.servicemarketplace.common.ModelValidator
 import com.wks.servicemarketplace.common.Password

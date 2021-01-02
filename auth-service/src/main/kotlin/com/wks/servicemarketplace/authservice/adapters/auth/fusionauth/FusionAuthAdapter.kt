@@ -1,6 +1,9 @@
 package com.wks.servicemarketplace.authservice.adapters.auth.fusionauth
 
 import com.inversoft.error.Errors
+import com.wks.servicemarketplace.authservice.api.ClientCredentials
+import com.wks.servicemarketplace.authservice.api.Credentials
+import com.wks.servicemarketplace.authservice.api.Registration
 import com.wks.servicemarketplace.authservice.config.FusionAuthConfiguration
 import com.wks.servicemarketplace.authservice.core.*
 import com.wks.servicemarketplace.authservice.core.errors.*

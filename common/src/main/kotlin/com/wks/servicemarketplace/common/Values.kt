@@ -2,6 +2,7 @@ package com.wks.servicemarketplace.common
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonValue
+import com.wks.servicemarketplace.common.errors.InvalidCountryException
 import java.util.*
 import javax.validation.Constraint
 import javax.validation.ConstraintValidator
@@ -90,4 +91,14 @@ data class Name internal constructor(
     }
 
     override fun toString() = "$firstName $lastName"
+}
+
+data class CountryCode private constructor(@JsonValue private val code: String) {
+
+    companion object {
+        fun of(code: String) = CountryCode(com.neovisionaries.i18n.CountryCode.getByAlpha2Code(code)?.alpha2
+                ?: throw InvalidCountryException(code, "ISO 3166-1 alpha-2"))
+    }
+
+    override fun toString() = code
 }

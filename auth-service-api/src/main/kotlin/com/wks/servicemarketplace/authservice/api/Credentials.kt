@@ -1,4 +1,4 @@
-package com.wks.servicemarketplace.authservice.core
+package com.wks.servicemarketplace.authservice.api
 
 import com.wks.servicemarketplace.common.Email
 import com.wks.servicemarketplace.common.Password

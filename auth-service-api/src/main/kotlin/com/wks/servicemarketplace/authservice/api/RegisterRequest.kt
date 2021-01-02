@@ -1,6 +1,5 @@
-package com.wks.servicemarketplace.authservice.core.dtos
+package com.wks.servicemarketplace.authservice.api
 
-import com.wks.servicemarketplace.authservice.core.*
 import com.wks.servicemarketplace.common.*
 import com.wks.servicemarketplace.common.auth.UserType
 import javax.validation.constraints.NotBlank
