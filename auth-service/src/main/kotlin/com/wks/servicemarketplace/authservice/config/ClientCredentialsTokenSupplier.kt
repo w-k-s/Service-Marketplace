@@ -6,26 +6,39 @@ import com.wks.servicemarketplace.authservice.core.iam.TokenService
 import com.wks.servicemarketplace.authservice.core.isExpired
 import org.glassfish.hk2.api.Factory
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.atomic.AtomicReference
 import java.util.function.Supplier
 import javax.inject.Inject
 
 class ClientCredentialsTokenSupplier @Inject constructor(private val applicationParameters: ApplicationParameters,
                                                          private val tokenService: TokenService) : Supplier<CompletableFuture<Token>> {
 
-    private var token: Token? = null
+    companion object {
+        val TOKEN: AtomicReference<Token?> = AtomicReference()
+    }
 
     override fun get(): CompletableFuture<Token> {
-        if (token?.isExpired() == true) return getRequestTokenFuture()
-        return CompletableFuture.completedFuture(token)
+        TOKEN.get()?.let {
+            if (!it.isExpired()) {
+                return CompletableFuture.completedFuture(it)
+            }
+        }
+        return getRequestTokenFuture()
     }
 
     private fun getRequestTokenFuture(): CompletableFuture<Token> {
         return CompletableFuture.supplyAsync {
-            tokenService.apiToken(ClientCredentialsRequest(
-                    applicationParameters.clientId,
-                    applicationParameters.clientSecret
-            ))
-        }.thenApply { this.token = it; it }
+            synchronized(TOKEN) {
+                if (TOKEN.get() != null) {
+                    val token = tokenService.apiToken(ClientCredentialsRequest(
+                            applicationParameters.clientId,
+                            applicationParameters.clientSecret
+                    ))
+                    TOKEN.compareAndSet(null, token)
+                }
+                TOKEN.get()
+            }
+        }
     }
 }
 
