@@ -34,27 +34,21 @@ class TransactionalOutboxJob : Job {
         Executors.newCachedThreadPool().submit {
             eventDao.connection().use { conn ->
 
-                val batchTime = OffsetDateTime.now(Clock.systemUTC())
                 val (token, events) = clientCredentialsTokenSupplier.get()
                         .thenCombine(CompletableFuture.supplyAsync { eventDao.fetchUnpublishedEvents(conn) }) { token, events -> Pair(token, events) }
                         .get()
 
-                var (success, failed) = Pair(0, 0)
-                LOGGER.info("${events.size} event(s) pending publication. Batch time: $batchTime")
                 events.forEach { event ->
                     try {
                         conn.autoCommit = false
                         eventPublisher.publish(token.accessToken, event)
                         eventDao.setPublished(conn, event.eventId)
                         conn.commit()
-                        success++
                     } catch (e: Exception) {
-                        failed++
                         LOGGER.error("Failed to publish event '{}'. ", event, e)
                         conn.rollback()
                     }
                 }
-                LOGGER.info("Completed publishing events that were fetched at $batchTime. Success: $success, Failed: $failed")
             }
         }
     }
