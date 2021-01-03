@@ -1,8 +1,7 @@
 package com.wks.servicemarketplace.authservice.adapters.events
 
 import com.wks.servicemarketplace.authservice.config.ClientCredentialsTokenSupplier
-import com.wks.servicemarketplace.authservice.core.EventDao
-import com.wks.servicemarketplace.authservice.core.events.EventPublisher
+import com.wks.servicemarketplace.authservice.core.OutboxDao
 import org.quartz.Job
 import org.quartz.JobExecutionContext
 import org.quartz.Scheduler
@@ -20,26 +19,26 @@ class TransactionalOutboxJob : Job {
         private val LOGGER: Logger = LoggerFactory.getLogger(TransactionalOutboxJob::class.java)
     }
 
-    lateinit var eventDao: EventDao
-    lateinit var eventPublisher: EventPublisher
+    lateinit var outboxDao: OutboxDao
+    lateinit var eventPublisher: DefaultEventPublisher
     lateinit var clientCredentialsTokenSupplier: ClientCredentialsTokenSupplier
 
     override fun execute(context: JobExecutionContext?) {
         Executors.newCachedThreadPool().submit {
-            eventDao.connection().use { conn ->
+            outboxDao.connection().use { conn ->
 
-                val (token, events) = clientCredentialsTokenSupplier.get()
-                        .thenCombine(CompletableFuture.supplyAsync { eventDao.fetchUnpublishedEvents(conn) }) { token, events -> Pair(token, events) }
+                val (token, messages) = clientCredentialsTokenSupplier.get()
+                        .thenCombine(CompletableFuture.supplyAsync { outboxDao.fetchUnpublishedMessages(conn) }) { token, events -> Pair(token, events) }
                         .get()
 
-                events.forEach { event ->
+                messages.forEach { message ->
                     try {
                         conn.autoCommit = false
-                        eventPublisher.publish(token.accessToken, event)
-                        eventDao.setPublished(conn, event.eventId)
+                        eventPublisher.publish(token.accessToken, message)
+                        outboxDao.setMessagePublished(conn, message.id)
                         conn.commit()
                     } catch (e: Exception) {
-                        LOGGER.error("Failed to publish event '{}'. ", event, e)
+                        LOGGER.error("Failed to publish message '{}'. ", message, e)
                         conn.rollback()
                     }
                 }
@@ -48,13 +47,13 @@ class TransactionalOutboxJob : Job {
     }
 }
 
-class TransactionalOutboxJobFactory @Inject constructor(private val eventDao: EventDao,
-                                                        private val eventPublisher: EventPublisher,
+class TransactionalOutboxJobFactory @Inject constructor(private val outboxDao: OutboxDao,
+                                                        private val eventPublisher: DefaultEventPublisher,
                                                         private val clientCredentialsTokenSupplier: ClientCredentialsTokenSupplier) : SimpleJobFactory() {
 
     override fun newJob(bundle: TriggerFiredBundle?, scheduler: Scheduler?): Job {
         return (super.newJob(bundle, scheduler) as TransactionalOutboxJob).also {
-            it.eventDao = eventDao
+            it.outboxDao = outboxDao
             it.eventPublisher = eventPublisher
             it.clientCredentialsTokenSupplier = clientCredentialsTokenSupplier
         }

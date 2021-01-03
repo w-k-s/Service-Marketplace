@@ -4,7 +4,7 @@ import com.wks.servicemarketplace.authservice.api.AuthService
 import com.wks.servicemarketplace.authservice.api.ClientCredentialsRequest
 import com.wks.servicemarketplace.authservice.api.RegisterRequest
 import com.wks.servicemarketplace.authservice.api.SignInRequest
-import com.wks.servicemarketplace.authservice.core.iam.TokenService
+import com.wks.servicemarketplace.authservice.core.TokenService
 import javax.inject.Inject
 import javax.ws.rs.POST
 import javax.ws.rs.Path

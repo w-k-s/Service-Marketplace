@@ -7,6 +7,7 @@ import com.wks.servicemarketplace.authservice.adapters.auth.fusionauth.AssignGro
 import com.wks.servicemarketplace.authservice.adapters.auth.fusionauth.FusionAuthAdapter
 import com.wks.servicemarketplace.authservice.adapters.db.dao.DataSource
 import com.wks.servicemarketplace.authservice.adapters.db.dao.DefaultEventDao
+import com.wks.servicemarketplace.authservice.adapters.db.dao.DefaultOutboxDao
 import com.wks.servicemarketplace.authservice.adapters.events.DefaultEventPublisher
 import com.wks.servicemarketplace.authservice.adapters.events.DefaultEventReceiver
 import com.wks.servicemarketplace.authservice.adapters.events.TransactionalOutboxJobFactory
@@ -16,10 +17,11 @@ import com.wks.servicemarketplace.authservice.adapters.web.resources.HealthResou
 import com.wks.servicemarketplace.authservice.config.*
 import com.wks.servicemarketplace.authservice.core.EventDao
 import com.wks.servicemarketplace.authservice.core.IAMAdapter
-import com.wks.servicemarketplace.authservice.core.events.EventPublisher
-import com.wks.servicemarketplace.authservice.core.iam.TokenService
+import com.wks.servicemarketplace.authservice.core.OutboxDao
+import com.wks.servicemarketplace.authservice.core.TokenService
+import com.wks.servicemarketplace.authservice.core.sagas.CreateCustomerSaga
+import com.wks.servicemarketplace.authservice.core.sagas.CreateServiceProviderSaga
 import org.glassfish.hk2.api.Immediate
-import org.glassfish.hk2.api.TypeLiteral
 import org.glassfish.hk2.utilities.binding.AbstractBinder
 import org.glassfish.jersey.jetty.JettyHttpContainerFactory
 import org.glassfish.jersey.server.ResourceConfig
@@ -28,8 +30,6 @@ import org.quartz.Scheduler
 import org.slf4j.LoggerFactory
 import java.security.PrivateKey
 import java.security.PublicKey
-import java.util.concurrent.CompletableFuture
-import java.util.function.Supplier
 import javax.ws.rs.core.UriBuilder
 
 class AuthServiceApplication : ResourceConfig() {
@@ -71,10 +71,13 @@ class AuthServiceApplication : ResourceConfig() {
 
                 bind(TransactionalOutboxJobFactory::class.java).to(TransactionalOutboxJobFactory::class.java).`in`(Immediate::class.java)
                 bind(DefaultEventDao::class.java).to(EventDao::class.java).`in`(Immediate::class.java)
-                bind(DefaultEventPublisher::class.java).to(EventPublisher::class.java).`in`(Immediate::class.java)
+                bind(DefaultOutboxDao::class.java).to(OutboxDao::class.java).`in`(Immediate::class.java)
                 bind(FusionAuthAdapter::class.java).to(IAMAdapter::class.java).`in`(Immediate::class.java)
                 bind(TokenService::class.java).to(TokenService::class.java).`in`(Immediate::class.java)
                 bind(DefaultEventReceiver::class.java).to(DefaultEventReceiver::class.java).`in`(Immediate::class.java)
+                bind(DefaultEventPublisher::class.java).to(DefaultEventPublisher::class.java).`in`(Immediate::class.java)
+                bind(CreateCustomerSaga::class.java).to(CreateCustomerSaga::class.java).`in`(Immediate::class.java)
+                bind(CreateServiceProviderSaga::class.java).to(CreateServiceProviderSaga::class.java).`in`(Immediate::class.java)
                 bind(AssignGroupRetrier::class.java).to(AssignGroupRetrier::class.java).`in`(Immediate::class.java)
             }
         })
@@ -83,7 +86,6 @@ class AuthServiceApplication : ResourceConfig() {
         register(DefaultApplicationEventListener::class.java)
         register(ApiResource::class.java)
         register(HealthResource::class.java)
-
     }
 
     fun run() {

@@ -1,15 +1,12 @@
-package com.wks.servicemarketplace.authservice.core.iam
+package com.wks.servicemarketplace.authservice.core
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.wks.servicemarketplace.authservice.api.ClientCredentials
 import com.wks.servicemarketplace.authservice.api.Credentials
 import com.wks.servicemarketplace.authservice.api.Registration
-import com.wks.servicemarketplace.authservice.core.*
 import com.wks.servicemarketplace.authservice.core.errors.UnauthorizedException
-import com.wks.servicemarketplace.authservice.core.events.AccountCreatedEvent
-import com.wks.servicemarketplace.authservice.core.events.EventEnvelope
-import com.wks.servicemarketplace.authservice.core.events.EventId
-import com.wks.servicemarketplace.authservice.core.events.EventType
+import com.wks.servicemarketplace.authservice.core.sagas.CreateCustomerSaga
+import com.wks.servicemarketplace.authservice.core.sagas.CreateServiceProviderSaga
+import com.wks.servicemarketplace.authservice.messaging.AccountCreatedEvent
 import com.wks.servicemarketplace.common.auth.StandardToken
 import com.wks.servicemarketplace.common.auth.Token
 import com.wks.servicemarketplace.common.auth.User
@@ -25,8 +22,8 @@ import javax.inject.Inject
 class TokenService @Inject constructor(private val iam: IAMAdapter,
                                        private val privateKey: PrivateKey,
                                        private val publicKey: PublicKey,
-                                       private val eventDao: EventDao,
-                                       private val objectMapper: ObjectMapper) {
+                                       private val createCustomerSaga: CreateCustomerSaga,
+                                       private val createServiceProviderSaga: CreateServiceProviderSaga) {
 
     companion object {
         val LOGGER: Logger = LoggerFactory.getLogger(TokenService::class.java)
@@ -47,17 +44,9 @@ class TokenService @Inject constructor(private val iam: IAMAdapter,
         val user = iam.register(registration)
 
         Executors.newCachedThreadPool().submit {
-            eventDao.connection().use {
-                eventDao.saveEventForPublishing(it, EventEnvelope(
-                        EventId.random(),
-                        when (user.type) {
-                            UserType.CUSTOMER -> EventType.CUSTOMER_ACCOUNT_CREATED
-                            UserType.SERVICE_PROVIDER -> EventType.SERVICE_PROVIDER_ACCOUNT_CREATED
-                        },
-                        objectMapper.writeValueAsString(AccountCreatedEvent(user)),
-                        user.id.toString(),
-                        User::class.simpleName!!
-                ), IdempotencyUUID.of(user.id.value))
+            when (user.type) {
+                UserType.CUSTOMER -> createCustomerSaga.start(AccountCreatedEvent(user))
+                UserType.SERVICE_PROVIDER -> createServiceProviderSaga.start(AccountCreatedEvent(user))
             }
         }
 
