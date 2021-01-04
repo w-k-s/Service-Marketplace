@@ -15,6 +15,7 @@ class DefaultOutboxDao @Inject constructor(dataSource: DataSource) : BaseDao(dat
         return create(connection).insertInto(
                 table("outbox"),
                 field("message_uuid"),
+                field("message_type"),
                 field("payload"),
                 field("published"),
                 field("destination_exchange"),
@@ -28,6 +29,7 @@ class DefaultOutboxDao @Inject constructor(dataSource: DataSource) : BaseDao(dat
                 field("dead_letter_queue")
         ).values(
                 message.id.toString(),
+                message.type,
                 JSON.valueOf(message.payload),
                 message.published,
                 message.destinationExchange,
@@ -82,7 +84,7 @@ class DefaultOutboxDao @Inject constructor(dataSource: DataSource) : BaseDao(dat
     override fun setMessagePublished(connection: Connection, messageId: MessageId): Boolean {
         return create(connection).update(table("outbox"))
                 .set(field("published"), true)
-                .where(field("published").eq(false).and(field("message_uuid").eq(messageId.value)))
+                .where(field("published").eq(false).and(field("message_uuid").eq(messageId.toString())))
                 .execute() == 1
     }
 }

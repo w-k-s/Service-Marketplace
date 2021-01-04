@@ -29,7 +29,7 @@ class ClientCredentialsTokenSupplier @Inject constructor(private val application
     private fun getRequestTokenFuture(): CompletableFuture<Token> {
         return CompletableFuture.supplyAsync {
             synchronized(TOKEN) {
-                if (TOKEN.get() != null) {
+                if (TOKEN.get() == null) {
                     val token = tokenService.apiToken(ClientCredentialsRequest(
                             applicationParameters.clientId,
                             applicationParameters.clientSecret

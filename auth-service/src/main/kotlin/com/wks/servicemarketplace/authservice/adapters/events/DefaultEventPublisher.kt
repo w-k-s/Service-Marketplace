@@ -16,26 +16,26 @@ data class DefaultEventPublisher @Inject constructor(private val channel: Channe
         private val LOGGER: Logger = LoggerFactory.getLogger(DefaultEventPublisher::class.java)
     }
 
-    init {
-        channel.exchangeDeclare(Exchange.CUSTOMER, BuiltinExchangeType.TOPIC, Durable.TRUE, AutoDelete.FALSE, Internal.FALSE, emptyMap())
-        channel.exchangeDeclare(Exchange.SERVICE_PROVIDER, BuiltinExchangeType.TOPIC, Durable.TRUE, AutoDelete.FALSE, Internal.FALSE, emptyMap())
-    }
-
     fun publish(token: String, message: Message): Boolean {
-        channel.basicPublish(
-                message.destinationExchange,
-                message.destinationRoutingKey,
-                MessageProperties.PERSISTENT_TEXT_PLAIN.builder()
-                        .messageId(message.id.toString())
-                        .replyTo(message.replyQueue)
-                        .correlationId(message.correlationId)
-                        .headers(mapOf(
-                                "Authorization" to token
-                        ))
-                        .build(),
-                objectMapper.writeValueAsBytes(message.payload)
-        )
-        // Consider publisher confirms.
-        return true
+        try {
+            channel.basicPublish(
+                    message.destinationExchange,
+                    message.destinationRoutingKey,
+                    MessageProperties.PERSISTENT_TEXT_PLAIN.builder()
+                            .messageId(message.id.toString())
+                            .replyTo(message.replyQueue)
+                            .correlationId(message.correlationId)
+                            .headers(mapOf(
+                                    "Authorization" to token
+                            ))
+                            .build(),
+                    objectMapper.writeValueAsBytes(message.payload)
+            )
+            // Consider publisher confirms.
+            return true
+        } catch (e: Exception) {
+            LOGGER.error("Failed to publish message '$message;", e)
+            return false
+        }
     }
 }

@@ -8,6 +8,7 @@ import com.wks.servicemarketplace.authservice.adapters.auth.fusionauth.FusionAut
 import com.wks.servicemarketplace.authservice.adapters.db.dao.DataSource
 import com.wks.servicemarketplace.authservice.adapters.db.dao.DefaultEventDao
 import com.wks.servicemarketplace.authservice.adapters.db.dao.DefaultOutboxDao
+import com.wks.servicemarketplace.authservice.adapters.db.dao.DefaultSagaDao
 import com.wks.servicemarketplace.authservice.adapters.events.DefaultEventPublisher
 import com.wks.servicemarketplace.authservice.adapters.events.DefaultEventReceiver
 import com.wks.servicemarketplace.authservice.adapters.events.TransactionalOutboxJobFactory
@@ -15,12 +16,8 @@ import com.wks.servicemarketplace.authservice.adapters.web.resources.ApiResource
 import com.wks.servicemarketplace.authservice.adapters.web.resources.DefaultExceptionMapper
 import com.wks.servicemarketplace.authservice.adapters.web.resources.HealthResource
 import com.wks.servicemarketplace.authservice.config.*
-import com.wks.servicemarketplace.authservice.core.EventDao
-import com.wks.servicemarketplace.authservice.core.IAMAdapter
-import com.wks.servicemarketplace.authservice.core.OutboxDao
-import com.wks.servicemarketplace.authservice.core.TokenService
-import com.wks.servicemarketplace.authservice.core.sagas.CreateCustomerSaga
-import com.wks.servicemarketplace.authservice.core.sagas.CreateServiceProviderSaga
+import com.wks.servicemarketplace.authservice.core.*
+import com.wks.servicemarketplace.authservice.core.sagas.CreateProfileSaga
 import org.glassfish.hk2.api.Immediate
 import org.glassfish.hk2.utilities.binding.AbstractBinder
 import org.glassfish.jersey.jetty.JettyHttpContainerFactory
@@ -72,12 +69,12 @@ class AuthServiceApplication : ResourceConfig() {
                 bind(TransactionalOutboxJobFactory::class.java).to(TransactionalOutboxJobFactory::class.java).`in`(Immediate::class.java)
                 bind(DefaultEventDao::class.java).to(EventDao::class.java).`in`(Immediate::class.java)
                 bind(DefaultOutboxDao::class.java).to(OutboxDao::class.java).`in`(Immediate::class.java)
+                bind(DefaultSagaDao::class.java).to(SagaDao::class.java).`in`(Immediate::class.java)
                 bind(FusionAuthAdapter::class.java).to(IAMAdapter::class.java).`in`(Immediate::class.java)
                 bind(TokenService::class.java).to(TokenService::class.java).`in`(Immediate::class.java)
                 bind(DefaultEventReceiver::class.java).to(DefaultEventReceiver::class.java).`in`(Immediate::class.java)
                 bind(DefaultEventPublisher::class.java).to(DefaultEventPublisher::class.java).`in`(Immediate::class.java)
-                bind(CreateCustomerSaga::class.java).to(CreateCustomerSaga::class.java).`in`(Immediate::class.java)
-                bind(CreateServiceProviderSaga::class.java).to(CreateServiceProviderSaga::class.java).`in`(Immediate::class.java)
+                bind(CreateProfileSaga::class.java).to(CreateProfileSaga::class.java).`in`(Immediate::class.java)
                 bind(AssignGroupRetrier::class.java).to(AssignGroupRetrier::class.java).`in`(Immediate::class.java)
             }
         })

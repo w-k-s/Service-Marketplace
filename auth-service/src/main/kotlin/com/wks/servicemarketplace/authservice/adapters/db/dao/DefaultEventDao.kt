@@ -1,7 +1,7 @@
 package com.wks.servicemarketplace.authservice.adapters.db.dao
 
 import com.wks.servicemarketplace.authservice.core.EventDao
-import com.wks.servicemarketplace.authservice.core.events.EventEnvelope
+import com.wks.servicemarketplace.common.events.EventEnvelope
 import org.jooq.JSON
 import org.jooq.impl.DSL.*
 import java.sql.Connection
