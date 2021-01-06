@@ -1,6 +1,6 @@
 package com.wks.servicemarketplace.customerservice.adapters.auth;
 
-import com.wks.servicemarketplace.customerservice.core.auth.Authentication;
+import com.wks.servicemarketplace.common.auth.Authentication;
 
 import javax.ws.rs.core.SecurityContext;
 import java.security.Principal;

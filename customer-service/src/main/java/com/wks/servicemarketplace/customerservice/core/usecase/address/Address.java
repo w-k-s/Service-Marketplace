@@ -1,10 +1,13 @@
 package com.wks.servicemarketplace.customerservice.core.usecase.address;
 
 import com.google.common.base.Preconditions;
+import com.wks.servicemarketplace.common.CountryCode;
+import com.wks.servicemarketplace.common.ModelValidator;
+import com.wks.servicemarketplace.customerservice.api.AddressId;
+import com.wks.servicemarketplace.customerservice.api.AddressUUID;
+import com.wks.servicemarketplace.customerservice.api.CustomerId;
 import com.wks.servicemarketplace.customerservice.core.usecase.ResultWithEvents;
 import com.wks.servicemarketplace.customerservice.core.usecase.customer.Customer;
-import com.wks.servicemarketplace.customerservice.core.usecase.customer.CustomerId;
-import com.wks.servicemarketplace.customerservice.core.utils.ModelValidator;
 import lombok.NonNull;
 import lombok.Value;
 

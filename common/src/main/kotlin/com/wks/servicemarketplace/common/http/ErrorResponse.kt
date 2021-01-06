@@ -4,10 +4,10 @@ import com.wks.servicemarketplace.common.errors.ErrorType
 
 fun ErrorType.httpStatusCode(): Int {
     return when (this) {
+        ErrorType.AUTHENTICATION_REQUIRED -> 401
         ErrorType.INVALID_TOKEN,
         ErrorType.AUTHORIZATION -> 403
         ErrorType.VALIDATION,
-        ErrorType.INVALID_COUNTRY,
         ErrorType.DUPLICATE_USERNAME -> 400
         ErrorType.USER_NOT_FOUND -> 404
         ErrorType.REGISTRATION_IN_PROGRESS -> 422

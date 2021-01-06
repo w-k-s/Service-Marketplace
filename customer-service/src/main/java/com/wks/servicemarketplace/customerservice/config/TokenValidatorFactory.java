@@ -1,8 +1,8 @@
 package com.wks.servicemarketplace.customerservice.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wks.servicemarketplace.customerservice.adapters.auth.StandardTokenValidator;
-import com.wks.servicemarketplace.customerservice.adapters.auth.TokenValidator;
+import com.wks.servicemarketplace.common.auth.StandardTokenValidator;
+import com.wks.servicemarketplace.common.auth.TokenValidator;
 import org.glassfish.hk2.api.Factory;
 
 import javax.inject.Inject;
@@ -11,11 +11,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.RSAPublicKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 import java.util.stream.Collectors;

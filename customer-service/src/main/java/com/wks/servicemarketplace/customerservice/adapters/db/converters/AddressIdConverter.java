@@ -1,6 +1,6 @@
 package com.wks.servicemarketplace.customerservice.adapters.db.converters;
 
-import com.wks.servicemarketplace.customerservice.core.usecase.address.AddressId;
+import com.wks.servicemarketplace.customerservice.api.AddressId;
 import org.jooq.Converter;
 
 public class AddressIdConverter implements Converter<Long, AddressId> {

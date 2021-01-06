@@ -1,7 +1,6 @@
 package com.wks.servicemarketplace.customerservice.adapters.db.converters;
 
-import com.wks.servicemarketplace.customerservice.core.usecase.address.AddressId;
-import com.wks.servicemarketplace.customerservice.core.usecase.address.AddressUUID;
+import com.wks.servicemarketplace.customerservice.api.AddressUUID;
 import org.jooq.Converter;
 
 public class AddressUUIDConverter implements Converter<String, AddressUUID> {

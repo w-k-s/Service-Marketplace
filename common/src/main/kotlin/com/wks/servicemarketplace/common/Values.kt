@@ -96,6 +96,7 @@ data class Name internal constructor(
 data class CountryCode private constructor(@JsonValue private val code: String) {
 
     companion object {
+        @JvmStatic
         fun of(code: String) = CountryCode(com.neovisionaries.i18n.CountryCode.getByAlpha2Code(code)?.alpha2
                 ?: throw InvalidCountryException(code, "ISO 3166-1 alpha-2"))
     }

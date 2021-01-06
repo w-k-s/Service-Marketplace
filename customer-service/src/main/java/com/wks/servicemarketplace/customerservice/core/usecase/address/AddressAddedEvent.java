@@ -1,7 +1,9 @@
 package com.wks.servicemarketplace.customerservice.core.usecase.address;
 
-import com.wks.servicemarketplace.customerservice.core.usecase.customer.CustomerId;
-import com.wks.servicemarketplace.customerservice.core.usecase.DomainEvent;
+import com.wks.servicemarketplace.common.events.DomainEvent;
+import com.wks.servicemarketplace.common.events.EventType;
+import com.wks.servicemarketplace.customerservice.api.AddressId;
+import com.wks.servicemarketplace.customerservice.api.CustomerId;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -54,11 +56,21 @@ public class AddressAddedEvent implements DomainEvent {
                 address.getLine1(),
                 address.getLine2(),
                 address.getCity(),
-                address.getCountry().getCountryCode(),
+                address.getCountry().toString(),
                 address.getLatitude(),
                 address.getLongitude(),
                 address.getCreatedBy(),
                 address.getVersion()
         );
+    }
+
+    @Override
+    public EventType getEventType() {
+        return EventType.ADDRESS_ADDED;
+    }
+
+    @Override
+    public String getEntityType() {
+        return Address.class.getSimpleName();
     }
 }

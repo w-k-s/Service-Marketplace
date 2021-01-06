@@ -1,25 +1,31 @@
 package com.wks.servicemarketplace.customerservice.core.usecase.address;
 
+import com.wks.servicemarketplace.common.CountryCode;
+import com.wks.servicemarketplace.common.UserId;
+import com.wks.servicemarketplace.common.auth.Authentication;
+import com.wks.servicemarketplace.common.auth.User;
+import com.wks.servicemarketplace.common.errors.CoreException;
+import com.wks.servicemarketplace.common.errors.UserNotFoundException;
+import com.wks.servicemarketplace.customerservice.api.AddressRequest;
+import com.wks.servicemarketplace.customerservice.api.AddressResponse;
+import com.wks.servicemarketplace.customerservice.api.CustomerUUID;
 import com.wks.servicemarketplace.customerservice.core.auth.AuthorizationUtils;
-import com.wks.servicemarketplace.customerservice.core.auth.User;
 import com.wks.servicemarketplace.customerservice.core.daos.CustomerDao;
 import com.wks.servicemarketplace.customerservice.core.daos.TransactionUtils;
 import com.wks.servicemarketplace.customerservice.core.events.CustomerEventsPublisher;
-import com.wks.servicemarketplace.customerservice.core.exceptions.AuthenticationRequiredException;
-import com.wks.servicemarketplace.customerservice.core.exceptions.CoreException;
-import com.wks.servicemarketplace.customerservice.core.exceptions.ErrorType;
-import com.wks.servicemarketplace.customerservice.core.exceptions.UserNotFoundException;
 import com.wks.servicemarketplace.customerservice.core.usecase.ResultWithEvents;
 import com.wks.servicemarketplace.customerservice.core.usecase.UseCase;
 import com.wks.servicemarketplace.customerservice.core.usecase.customer.CreateCustomerUseCase;
 import com.wks.servicemarketplace.customerservice.core.usecase.customer.Customer;
-import com.wks.servicemarketplace.customerservice.core.usecase.customer.CustomerUUID;
 import com.wks.servicemarketplace.customerservice.core.utils.CloseableUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import java.io.IOException;
 import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Optional;
 
 public class AddAddressUseCase implements UseCase<AddressRequest, AddressResponse> {
 
@@ -45,11 +51,12 @@ public class AddAddressUseCase implements UseCase<AddressRequest, AddressRespons
 
             final Customer customer = customerDao.findCustomerByUuid(
                     connection,
-                    request.getAuthentication()
-                            .getUser()
+                    Optional.ofNullable(request.getAuthentication())
+                            .map(Authentication::getUser)
                             .map(User::getId)
+                            .map(UserId::getValue)
                             .map(CustomerUUID::of)
-                            .orElseThrow(AuthenticationRequiredException::new)
+                            .orElseThrow(UserNotFoundException::new)
             ).orElseThrow(UserNotFoundException::new);
 
             final ResultWithEvents<Address, AddressAddedEvent> addressAndEvents = Address.create(
@@ -59,7 +66,7 @@ public class AddAddressUseCase implements UseCase<AddressRequest, AddressRespons
                     request.getLine1(),
                     request.getLine2(),
                     request.getCity(),
-                    new CountryCode(request.getCountry()),
+                    CountryCode.of(request.getCountry()),
                     request.getLatitude(),
                     request.getLongitude(),
                     request.getAuthentication().getName()
@@ -79,7 +86,7 @@ public class AddAddressUseCase implements UseCase<AddressRequest, AddressRespons
                     .line1(address.getLine1())
                     .line2(address.getLine2())
                     .city(address.getCity())
-                    .country(address.getCountry().getCountryCode())
+                    .country(address.getCountry().toString())
                     .latitude(address.getLatitude())
                     .longitude(address.getLongitude())
                     .version(address.getVersion())
@@ -88,10 +95,10 @@ public class AddAddressUseCase implements UseCase<AddressRequest, AddressRespons
             LOGGER.error("Failed to add address.", e);
             TransactionUtils.rollback(connection);
             throw e;
-        } catch (Exception e) {
+        } catch (SQLException | IOException e) {
             LOGGER.error("Failed to add address.", e);
             TransactionUtils.rollback(connection);
-            throw new CoreException(ErrorType.ADDRESS_NOT_CREATED, e);
+            throw new RuntimeException("Failed to add address", e);
         } finally {
             CloseableUtils.close(connection);
         }

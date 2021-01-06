@@ -32,5 +32,7 @@ data class EventId private constructor(val value: UUID) {
 
 enum class EventType {
     CUSTOMER_ACCOUNT_CREATED,
-    SERVICE_PROVIDER_ACCOUNT_CREATED
+    SERVICE_PROVIDER_ACCOUNT_CREATED,
+    ADDRESS_ADDED,
+    CUSTOMER_PROFILE_CREATED
 }

@@ -3,11 +3,11 @@ package com.wks.servicemarketplace.customerservice.adapters.events;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.BuiltinExchangeType;
 import com.rabbitmq.client.Channel;
-import com.wks.servicemarketplace.customerservice.adapters.auth.InvalidTokenException;
-import com.wks.servicemarketplace.customerservice.adapters.auth.TokenValidator;
-import com.wks.servicemarketplace.customerservice.core.exceptions.CoreException;
+import com.wks.servicemarketplace.common.auth.TokenValidator;
+import com.wks.servicemarketplace.common.errors.CoreException;
+import com.wks.servicemarketplace.common.errors.InvalidTokenException;
+import com.wks.servicemarketplace.customerservice.api.CustomerRequest;
 import com.wks.servicemarketplace.customerservice.core.usecase.customer.CreateCustomerUseCase;
-import com.wks.servicemarketplace.customerservice.core.usecase.customer.CustomerRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

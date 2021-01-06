@@ -4,14 +4,13 @@ import com.codahale.metrics.health.HealthCheckRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
-import com.wks.servicemarketplace.customerservice.adapters.auth.TokenValidator;
+import com.wks.servicemarketplace.common.auth.TokenValidator;
 import com.wks.servicemarketplace.customerservice.adapters.db.dao.DataSource;
 import com.wks.servicemarketplace.customerservice.adapters.db.dao.DefaultCustomerDao;
 import com.wks.servicemarketplace.customerservice.adapters.events.DefaultCustomerEventsPublisher;
 import com.wks.servicemarketplace.customerservice.adapters.events.DefaultCustomerEventsReceiver;
-import com.wks.servicemarketplace.customerservice.adapters.graphql.AddressDataFetcher;
-import com.wks.servicemarketplace.customerservice.adapters.graphql.CreateAddressDataFetcher;
-import com.wks.servicemarketplace.customerservice.adapters.web.GraphQLResource;
+import com.wks.servicemarketplace.customerservice.adapters.web.ApiResource;
+import com.wks.servicemarketplace.customerservice.adapters.web.DefaultExceptionMapper;
 import com.wks.servicemarketplace.customerservice.adapters.web.HealthResource;
 import com.wks.servicemarketplace.customerservice.config.*;
 import com.wks.servicemarketplace.customerservice.config.healthchecks.HealthChecksFactory;
@@ -20,7 +19,6 @@ import com.wks.servicemarketplace.customerservice.core.events.CustomerEventsPubl
 import com.wks.servicemarketplace.customerservice.core.usecase.address.AddAddressUseCase;
 import com.wks.servicemarketplace.customerservice.core.usecase.address.FindAddressByCustomerUuidUseCase;
 import com.wks.servicemarketplace.customerservice.core.usecase.customer.CreateCustomerUseCase;
-import graphql.GraphQL;
 import org.eclipse.jetty.server.Server;
 import org.glassfish.hk2.api.Immediate;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
@@ -31,7 +29,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
-import java.security.PublicKey;
 
 public class CustomerServiceApplication extends ResourceConfig {
 
@@ -45,6 +42,7 @@ public class CustomerServiceApplication extends ResourceConfig {
         register(ImmediateFeature.class);
         register(ObjectMapperProvider.class);
         register(AuthenticationFilter.class);
+        register(DefaultExceptionMapper.class);
         register(new AbstractBinder() {
             @Override
             protected void configure() {
@@ -54,7 +52,6 @@ public class CustomerServiceApplication extends ResourceConfig {
                 bindFactory(AmqpConnectionFactory.class, Immediate.class).to(Connection.class).in(Immediate.class);
                 bindFactory(AmqpChannelFactory.class, Immediate.class).to(Channel.class).in(Immediate.class);
                 bindFactory(DefaultCustomerEventsReceiverFactory.class, Immediate.class).to(DefaultCustomerEventsReceiver.class).in(Immediate.class);
-                bindFactory(GraphQLFactory.class, Immediate.class).to(GraphQL.class).in(Immediate.class);
                 bindFactory(HealthChecksFactory.class, Immediate.class).to(HealthCheckRegistry.class).in(Immediate.class);
                 bind(DefaultCustomerDao.class).to(CustomerDao.class);
                 bind(DefaultCustomerEventsPublisher.class).to(CustomerEventsPublisher.class);
@@ -63,11 +60,9 @@ public class CustomerServiceApplication extends ResourceConfig {
                 bind(CreateCustomerUseCase.class).to(CreateCustomerUseCase.class);
                 bind(AddAddressUseCase.class).to(AddAddressUseCase.class);
                 bind(FindAddressByCustomerUuidUseCase.class).to(FindAddressByCustomerUuidUseCase.class);
-                bind(AddressDataFetcher.class).to(AddressDataFetcher.class);
-                bind(CreateAddressDataFetcher.class).to(CreateAddressDataFetcher.class);
             }
         });
-        register(GraphQLResource.class);
+        register(ApiResource.class);
         register(HealthResource.class);
     }
 

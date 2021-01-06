@@ -1,10 +1,10 @@
 package com.wks.servicemarketplace.customerservice.core.daos;
 
+import com.wks.servicemarketplace.customerservice.api.AddressId;
+import com.wks.servicemarketplace.customerservice.api.CustomerId;
+import com.wks.servicemarketplace.customerservice.api.CustomerUUID;
 import com.wks.servicemarketplace.customerservice.core.usecase.address.Address;
-import com.wks.servicemarketplace.customerservice.core.usecase.address.AddressId;
 import com.wks.servicemarketplace.customerservice.core.usecase.customer.Customer;
-import com.wks.servicemarketplace.customerservice.core.usecase.customer.CustomerId;
-import com.wks.servicemarketplace.customerservice.core.usecase.customer.CustomerUUID;
 
 import java.sql.Connection;
 import java.sql.SQLException;

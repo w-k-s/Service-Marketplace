@@ -1,9 +1,9 @@
 package com.wks.servicemarketplace.customerservice.config;
 
+import com.wks.servicemarketplace.common.auth.Authentication;
+import com.wks.servicemarketplace.common.auth.TokenValidator;
+import com.wks.servicemarketplace.common.errors.InvalidTokenException;
 import com.wks.servicemarketplace.customerservice.adapters.auth.DefaultSecurityContext;
-import com.wks.servicemarketplace.customerservice.adapters.auth.InvalidTokenException;
-import com.wks.servicemarketplace.customerservice.adapters.auth.TokenValidator;
-import com.wks.servicemarketplace.customerservice.core.auth.Authentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

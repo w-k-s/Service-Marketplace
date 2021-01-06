@@ -1,2 +1,4 @@
 rootProject.name = 'customer-service'
 
+includeBuild '../common'
+includeBuild '../customer-services-api'

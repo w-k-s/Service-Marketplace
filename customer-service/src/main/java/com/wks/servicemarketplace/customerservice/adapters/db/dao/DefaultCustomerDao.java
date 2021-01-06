@@ -1,14 +1,13 @@
 package com.wks.servicemarketplace.customerservice.adapters.db.dao;
 
+import com.wks.servicemarketplace.common.CountryCode;
 import com.wks.servicemarketplace.customerservice.adapters.db.converters.*;
+import com.wks.servicemarketplace.customerservice.api.AddressId;
+import com.wks.servicemarketplace.customerservice.api.CustomerId;
+import com.wks.servicemarketplace.customerservice.api.CustomerUUID;
 import com.wks.servicemarketplace.customerservice.core.daos.CustomerDao;
 import com.wks.servicemarketplace.customerservice.core.usecase.address.Address;
-import com.wks.servicemarketplace.customerservice.core.usecase.address.AddressId;
-import com.wks.servicemarketplace.customerservice.core.usecase.address.AddressUUID;
-import com.wks.servicemarketplace.customerservice.core.usecase.address.CountryCode;
 import com.wks.servicemarketplace.customerservice.core.usecase.customer.Customer;
-import com.wks.servicemarketplace.customerservice.core.usecase.customer.CustomerId;
-import com.wks.servicemarketplace.customerservice.core.usecase.customer.CustomerUUID;
 import org.jooq.Record;
 import org.jooq.RecordMapper;
 import org.slf4j.Logger;
@@ -53,8 +52,8 @@ public class DefaultCustomerDao extends BaseDAO implements CustomerDao {
         ).values(
                 customer.getExternalId(),
                 customer.getUuid(),
-                customer.getName().firstName,
-                customer.getName().lastName,
+                customer.getName().getFirstName(),
+                customer.getName().getLastName(),
                 customer.getCreatedBy()
         ).execute();
     }
@@ -152,7 +151,7 @@ public class DefaultCustomerDao extends BaseDAO implements CustomerDao {
                 address.getLine1(),
                 address.getLine2(),
                 address.getCity(),
-                address.getCountry().getCountryCode(),
+                address.getCountry().toString(),
                 address.getLatitude(),
                 address.getLongitude(),
                 address.getCreatedBy()
@@ -196,7 +195,7 @@ public class DefaultCustomerDao extends BaseDAO implements CustomerDao {
                 record.get("a.line_1", String.class),
                 record.get("a.line_2", String.class),
                 record.get("a.city", String.class),
-                new CountryCode(record.get("a.country_code", String.class)),
+                CountryCode.of(record.get("a.country_code", String.class)),
                 record.get("a.latitude", BigDecimal.class),
                 record.get("a.longitude", BigDecimal.class),
                 record.get("a.created_date", new OffsetDateTimeConverter()),
