@@ -1,13 +1,10 @@
 package com.wks.servicemarketplace.customerservice.core.usecase.address;
 
 import com.google.common.base.Preconditions;
-import com.wks.servicemarketplace.common.CountryCode;
-import com.wks.servicemarketplace.common.ModelValidator;
-import com.wks.servicemarketplace.customerservice.api.AddressId;
-import com.wks.servicemarketplace.customerservice.api.AddressUUID;
-import com.wks.servicemarketplace.customerservice.api.CustomerId;
+import com.wks.servicemarketplace.common.*;
 import com.wks.servicemarketplace.customerservice.core.usecase.ResultWithEvents;
 import com.wks.servicemarketplace.customerservice.core.usecase.customer.Customer;
+import com.wks.servicemarketplace.customerservice.messaging.AddressAddedEvent;
 import lombok.NonNull;
 import lombok.Value;
 
@@ -116,6 +113,18 @@ public class Address {
                 0L
         );
 
-        return ResultWithEvents.of(ModelValidator.validate(address), Collections.singletonList(AddressAddedEvent.of(address)));
+        return ResultWithEvents.of(ModelValidator.validate(address), Collections.singletonList(new AddressAddedEvent(
+                address.getExternalId(),
+                address.getCustomerExternalId(),
+                address.getName(),
+                address.getLine1(),
+                address.getLine2(),
+                address.getCity(),
+                address.getCountry().toString(),
+                address.getLatitude(),
+                address.getLongitude(),
+                address.getCreatedBy(),
+                address.getVersion()
+        )));
     }
 }

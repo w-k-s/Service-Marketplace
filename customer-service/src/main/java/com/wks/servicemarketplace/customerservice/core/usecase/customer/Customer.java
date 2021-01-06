@@ -1,11 +1,8 @@
 package com.wks.servicemarketplace.customerservice.core.usecase.customer;
 
-import com.wks.servicemarketplace.common.ModelValidator;
-import com.wks.servicemarketplace.common.Name;
-import com.wks.servicemarketplace.customerservice.api.AddressId;
-import com.wks.servicemarketplace.customerservice.api.CustomerId;
-import com.wks.servicemarketplace.customerservice.api.CustomerUUID;
+import com.wks.servicemarketplace.common.*;
 import com.wks.servicemarketplace.customerservice.core.usecase.ResultWithEvents;
+import com.wks.servicemarketplace.customerservice.messaging.CustomerCreatedEvent;
 import lombok.NonNull;
 import lombok.Value;
 
@@ -65,12 +62,13 @@ public class Customer {
     }
 
     public static ResultWithEvents<Customer, CustomerCreatedEvent> create(final CustomerId externalId,
+                                                                          final CustomerUUID customerUUID,
                                                                           final Name name,
                                                                           final String createdBy) {
         final Customer customer = new Customer(
                 0L,
                 externalId,
-                CustomerUUID.random(),
+                customerUUID,
                 name,
                 Collections.emptyList(),
                 null,
@@ -80,7 +78,13 @@ public class Customer {
                 0
         );
 
-        return ResultWithEvents.of(ModelValidator.validate(customer), Collections.singletonList(CustomerCreatedEvent.of(customer)));
+        return ResultWithEvents.of(ModelValidator.validate(customer), Collections.singletonList(new CustomerCreatedEvent(
+                customer.getExternalId(),
+                customer.getUuid(),
+                customer.getName(),
+                customer.getCreatedBy(),
+                customer.getVersion()
+        )));
     }
 
     public static Builder builder() {

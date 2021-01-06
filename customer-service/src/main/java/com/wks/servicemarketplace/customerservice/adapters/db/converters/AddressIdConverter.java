@@ -1,6 +1,6 @@
 package com.wks.servicemarketplace.customerservice.adapters.db.converters;
 
-import com.wks.servicemarketplace.customerservice.api.AddressId;
+import com.wks.servicemarketplace.common.AddressId;
 import org.jooq.Converter;
 
 public class AddressIdConverter implements Converter<Long, AddressId> {
@@ -12,7 +12,7 @@ public class AddressIdConverter implements Converter<Long, AddressId> {
 
     @Override
     public Long to(AddressId id) {
-        return id == null ? null : id.getId();
+        return id == null ? null : id.getValue();
     }
 
     @Override

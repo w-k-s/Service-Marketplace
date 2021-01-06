@@ -1,5 +1,8 @@
 package com.wks.servicemarketplace.customerservice.api;
 
+import com.wks.servicemarketplace.common.CustomerId;
+import com.wks.servicemarketplace.common.CustomerUUID;
+import com.wks.servicemarketplace.common.Name;
 import lombok.*;
 
 import java.util.List;
@@ -13,9 +16,7 @@ public class CustomerResponse {
     @NonNull
     private CustomerId externalId;
     @NonNull
-    private String firstName;
-    @NonNull
-    private String lastName;
+    private Name name;
     @NonNull
     private List<AddressResponse> addresses;
     @NonNull

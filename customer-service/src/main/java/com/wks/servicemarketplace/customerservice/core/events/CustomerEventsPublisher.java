@@ -1,7 +1,7 @@
 package com.wks.servicemarketplace.customerservice.core.events;
 
-import com.wks.servicemarketplace.customerservice.core.usecase.address.AddressAddedEvent;
-import com.wks.servicemarketplace.customerservice.core.usecase.customer.CustomerCreatedEvent;
+import com.wks.servicemarketplace.customerservice.messaging.AddressAddedEvent;
+import com.wks.servicemarketplace.customerservice.messaging.CustomerCreatedEvent;
 
 import java.io.IOException;
 import java.util.List;

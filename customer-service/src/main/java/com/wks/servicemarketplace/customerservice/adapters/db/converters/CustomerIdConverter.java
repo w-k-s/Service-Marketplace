@@ -1,6 +1,6 @@
 package com.wks.servicemarketplace.customerservice.adapters.db.converters;
 
-import com.wks.servicemarketplace.customerservice.api.CustomerId;
+import com.wks.servicemarketplace.common.CustomerId;
 import org.jooq.Converter;
 
 public class CustomerIdConverter implements Converter<Long, CustomerId> {
@@ -12,7 +12,7 @@ public class CustomerIdConverter implements Converter<Long, CustomerId> {
 
     @Override
     public Long to(CustomerId id) {
-        return id == null ? null : id.getId();
+        return id == null ? null : id.getValue();
     }
 
     @Override

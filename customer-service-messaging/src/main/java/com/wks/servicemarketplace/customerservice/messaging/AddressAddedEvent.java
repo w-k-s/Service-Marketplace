@@ -1,9 +1,9 @@
-package com.wks.servicemarketplace.customerservice.core.usecase.address;
+package com.wks.servicemarketplace.customerservice.messaging;
 
+import com.wks.servicemarketplace.common.AddressId;
+import com.wks.servicemarketplace.common.CustomerId;
 import com.wks.servicemarketplace.common.events.DomainEvent;
 import com.wks.servicemarketplace.common.events.EventType;
-import com.wks.servicemarketplace.customerservice.api.AddressId;
-import com.wks.servicemarketplace.customerservice.api.CustomerId;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -14,7 +14,7 @@ import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 @Value
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class AddressAddedEvent implements DomainEvent {
 
     private final AddressId externalId;
@@ -48,22 +48,6 @@ public class AddressAddedEvent implements DomainEvent {
     @NonNull
     private final Long version;
 
-    public static AddressAddedEvent of(Address address) {
-        return new AddressAddedEvent(
-                address.getExternalId(),
-                address.getCustomerExternalId(),
-                address.getName(),
-                address.getLine1(),
-                address.getLine2(),
-                address.getCity(),
-                address.getCountry().toString(),
-                address.getLatitude(),
-                address.getLongitude(),
-                address.getCreatedBy(),
-                address.getVersion()
-        );
-    }
-
     @Override
     public EventType getEventType() {
         return EventType.ADDRESS_ADDED;
@@ -71,6 +55,6 @@ public class AddressAddedEvent implements DomainEvent {
 
     @Override
     public String getEntityType() {
-        return Address.class.getSimpleName();
+        return "Address";
     }
 }

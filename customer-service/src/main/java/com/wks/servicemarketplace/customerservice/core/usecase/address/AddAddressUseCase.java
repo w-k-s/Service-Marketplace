@@ -1,6 +1,7 @@
 package com.wks.servicemarketplace.customerservice.core.usecase.address;
 
 import com.wks.servicemarketplace.common.CountryCode;
+import com.wks.servicemarketplace.common.CustomerUUID;
 import com.wks.servicemarketplace.common.UserId;
 import com.wks.servicemarketplace.common.auth.Authentication;
 import com.wks.servicemarketplace.common.auth.User;
@@ -8,7 +9,6 @@ import com.wks.servicemarketplace.common.errors.CoreException;
 import com.wks.servicemarketplace.common.errors.UserNotFoundException;
 import com.wks.servicemarketplace.customerservice.api.AddressRequest;
 import com.wks.servicemarketplace.customerservice.api.AddressResponse;
-import com.wks.servicemarketplace.customerservice.api.CustomerUUID;
 import com.wks.servicemarketplace.customerservice.core.auth.AuthorizationUtils;
 import com.wks.servicemarketplace.customerservice.core.daos.CustomerDao;
 import com.wks.servicemarketplace.customerservice.core.daos.TransactionUtils;
@@ -18,6 +18,7 @@ import com.wks.servicemarketplace.customerservice.core.usecase.UseCase;
 import com.wks.servicemarketplace.customerservice.core.usecase.customer.CreateCustomerUseCase;
 import com.wks.servicemarketplace.customerservice.core.usecase.customer.Customer;
 import com.wks.servicemarketplace.customerservice.core.utils.CloseableUtils;
+import com.wks.servicemarketplace.customerservice.messaging.AddressAddedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +55,6 @@ public class AddAddressUseCase implements UseCase<AddressRequest, AddressRespons
                     Optional.ofNullable(request.getAuthentication())
                             .map(Authentication::getUser)
                             .map(User::getId)
-                            .map(UserId::getValue)
                             .map(CustomerUUID::of)
                             .orElseThrow(UserNotFoundException::new)
             ).orElseThrow(UserNotFoundException::new);

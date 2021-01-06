@@ -13,10 +13,10 @@ import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
 import kotlin.reflect.KClass
 
-data class UserId private constructor(@NotNull @JsonValue val value: UUID) {
+data class UserId private constructor(@JsonValue val value: UUID) {
     companion object {
         @JvmStatic
-        fun of(uuid: UUID) = ModelValidator.validate(UserId(uuid))
+        fun of(uuid: UUID) = UserId(uuid)
 
         @JvmStatic
         fun fromString(uuidString: String) = UserId(UUID.fromString(uuidString))
@@ -27,6 +27,52 @@ data class UserId private constructor(@NotNull @JsonValue val value: UUID) {
 
     override fun toString() = value.toString()
 }
+
+data class CustomerUUID private constructor(@JsonValue val value: UUID) {
+    companion object {
+        @JvmStatic
+        fun of(userId: UserId) = CustomerUUID(userId.value)
+
+        @JvmStatic
+        fun fromString(uuidString: String) = CustomerUUID(UUID.fromString(uuidString))
+    }
+
+    override fun toString() = value.toString()
+}
+
+data class CustomerId private constructor(@JsonValue val value: Long) {
+    companion object {
+        @JvmStatic
+        fun of(id: Long) = CustomerId(id)
+    }
+
+    override fun toString() = value.toString()
+}
+
+data class AddressUUID private constructor(@JsonValue val value: UUID) {
+    companion object {
+        @JvmStatic
+        fun of(uuid: UUID) = AddressUUID(uuid)
+
+        @JvmStatic
+        fun fromString(uuidString: String) = AddressUUID(UUID.fromString(uuidString))
+
+        @JvmStatic
+        fun random() = AddressUUID(UUID.randomUUID())
+    }
+
+    override fun toString() = value.toString()
+}
+
+data class AddressId private constructor(@JsonValue val value: Long) {
+    companion object {
+        @JvmStatic
+        fun of(id: Long) = AddressId(id)
+    }
+
+    override fun toString() = value.toString()
+}
+
 
 @Target(AnnotationTarget.FIELD)
 @MustBeDocumented

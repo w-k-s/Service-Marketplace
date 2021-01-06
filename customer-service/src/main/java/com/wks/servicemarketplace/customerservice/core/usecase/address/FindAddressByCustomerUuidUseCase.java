@@ -1,7 +1,7 @@
 package com.wks.servicemarketplace.customerservice.core.usecase.address;
 
+import com.wks.servicemarketplace.common.CustomerUUID;
 import com.wks.servicemarketplace.customerservice.api.AddressResponse;
-import com.wks.servicemarketplace.customerservice.api.CustomerUUID;
 import com.wks.servicemarketplace.customerservice.core.daos.CustomerDao;
 import com.wks.servicemarketplace.customerservice.core.usecase.UseCase;
 

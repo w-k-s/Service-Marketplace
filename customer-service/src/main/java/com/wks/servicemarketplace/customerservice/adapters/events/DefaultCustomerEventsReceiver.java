@@ -1,8 +1,8 @@
 package com.wks.servicemarketplace.customerservice.adapters.events;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rabbitmq.client.BuiltinExchangeType;
 import com.rabbitmq.client.Channel;
+import com.wks.servicemarketplace.authservice.messaging.AuthMessaging;
 import com.wks.servicemarketplace.common.auth.TokenValidator;
 import com.wks.servicemarketplace.common.errors.CoreException;
 import com.wks.servicemarketplace.common.errors.InvalidTokenException;
@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.util.Collections;
 
 public class DefaultCustomerEventsReceiver {
 
@@ -28,7 +27,6 @@ public class DefaultCustomerEventsReceiver {
 
         this.tokenValidator = tokenValidator;
         try {
-            channel.exchangeDeclare(Exchange.AUTH_EXCHANGE, BuiltinExchangeType.TOPIC, true, true, Collections.emptyMap());
             consumeCustomerCreated(createCustomerUseCase, objectMapper, channel);
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
@@ -37,7 +35,7 @@ public class DefaultCustomerEventsReceiver {
 
     private void consumeCustomerCreated(CreateCustomerUseCase createCustomerUseCase, ObjectMapper objectMapper, Channel channel) throws IOException {
         String queueName = channel.queueDeclare().getQueue();
-        channel.queueBind(queueName, Exchange.AUTH_EXCHANGE, RoutingKey.Incoming.CUSTOMER_ACCOUNT_CREATED);
+        channel.queueBind(queueName, AuthMessaging.Exchange.MAIN, AuthMessaging.RoutingKey.CUSTOMER_ACCOUNT_CREATED);
 
         channel.basicConsume(queueName, false, (consumerTag, message) -> {
             try {

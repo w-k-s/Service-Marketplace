@@ -1,5 +1,6 @@
 package com.wks.servicemarketplace.customerservice.adapters.web;
 
+import com.wks.servicemarketplace.common.CustomerUUID;
 import com.wks.servicemarketplace.common.UserId;
 import com.wks.servicemarketplace.common.auth.Authentication;
 import com.wks.servicemarketplace.common.auth.User;
@@ -7,7 +8,6 @@ import com.wks.servicemarketplace.common.errors.CoreException;
 import com.wks.servicemarketplace.common.errors.UserNotFoundException;
 import com.wks.servicemarketplace.customerservice.api.AddressRequest;
 import com.wks.servicemarketplace.customerservice.api.CustomerService;
-import com.wks.servicemarketplace.customerservice.api.CustomerUUID;
 import com.wks.servicemarketplace.customerservice.core.usecase.address.AddAddressUseCase;
 import com.wks.servicemarketplace.customerservice.core.usecase.address.FindAddressByCustomerUuidUseCase;
 import org.glassfish.jersey.process.internal.RequestScoped;
@@ -43,7 +43,6 @@ public class ApiResource {
         final var authentication = (Authentication) securityContext.getUserPrincipal();
         final var customerId = Optional.ofNullable(authentication.getUser())
                 .map(User::getId)
-                .map(UserId::getValue)
                 .map(CustomerUUID::of)
                 .orElseThrow(UserNotFoundException::new);
 

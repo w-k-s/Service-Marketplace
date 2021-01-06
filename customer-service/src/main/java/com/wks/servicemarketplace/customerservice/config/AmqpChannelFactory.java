@@ -1,14 +1,17 @@
 package com.wks.servicemarketplace.customerservice.config;
 
+import com.rabbitmq.client.BuiltinExchangeType;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.wks.servicemarketplace.customerservice.core.utils.CloseableUtils;
+import com.wks.servicemarketplace.customerservice.messaging.CustomerMessaging;
 import org.glassfish.hk2.api.Factory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.util.Collections;
 
 public class AmqpChannelFactory implements Factory<Channel> {
 
@@ -19,6 +22,7 @@ public class AmqpChannelFactory implements Factory<Channel> {
     @Inject
     public AmqpChannelFactory(Connection connection) throws IOException {
         this.channel = connection.createChannel();
+        channel.exchangeDeclare(CustomerMessaging.Exchange.MAIN, BuiltinExchangeType.TOPIC, true, false, false, Collections.emptyMap());
     }
 
     @Override

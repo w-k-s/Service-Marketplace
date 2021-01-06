@@ -1,5 +1,8 @@
 package com.wks.servicemarketplace.customerservice.api;
 
+import com.wks.servicemarketplace.common.AddressId;
+import com.wks.servicemarketplace.common.AddressUUID;
+import com.wks.servicemarketplace.common.CustomerId;
 import lombok.*;
 
 import javax.validation.constraints.NotNull;

@@ -1,8 +1,12 @@
 package com.wks.servicemarketplace.customerservice.core.usecase.customer;
 
+import com.wks.servicemarketplace.common.CustomerUUID;
 import com.wks.servicemarketplace.common.Name;
+import com.wks.servicemarketplace.common.auth.Authentication;
+import com.wks.servicemarketplace.common.auth.User;
 import com.wks.servicemarketplace.common.errors.CoreException;
 import com.wks.servicemarketplace.common.errors.ErrorType;
+import com.wks.servicemarketplace.common.errors.UserNotFoundException;
 import com.wks.servicemarketplace.customerservice.api.CustomerRequest;
 import com.wks.servicemarketplace.customerservice.api.CustomerResponse;
 import com.wks.servicemarketplace.customerservice.core.auth.AuthorizationUtils;
@@ -12,12 +16,14 @@ import com.wks.servicemarketplace.customerservice.core.events.CustomerEventsPubl
 import com.wks.servicemarketplace.customerservice.core.usecase.ResultWithEvents;
 import com.wks.servicemarketplace.customerservice.core.usecase.UseCase;
 import com.wks.servicemarketplace.customerservice.core.utils.CloseableUtils;
+import com.wks.servicemarketplace.customerservice.messaging.CustomerCreatedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.sql.Connection;
 import java.util.Collections;
+import java.util.Optional;
 
 public class CreateCustomerUseCase implements UseCase<CustomerRequest, CustomerResponse> {
 
@@ -38,11 +44,17 @@ public class CreateCustomerUseCase implements UseCase<CustomerRequest, CustomerR
         Connection connection = null;
         try {
             AuthorizationUtils.checkRole(customerRequest.getAuthentication(), "account.create");
+            final var customerUUID = Optional.ofNullable(customerRequest.getAuthentication())
+                    .map(Authentication::getUser)
+                    .map(User::getId)
+                    .map(CustomerUUID::of)
+                    .orElseThrow(UserNotFoundException::new);
 
             connection = TransactionUtils.beginTransaction(customerDao.getConnection());
 
             ResultWithEvents<Customer, CustomerCreatedEvent> customerAndEvents = Customer.create(
                     customerDao.newCustomerExternalId(connection),
+                    customerUUID,
                     Name.of(customerRequest.getFirstName(), customerRequest.getLastName()),
                     customerRequest.getEmail()
             );
@@ -57,8 +69,7 @@ public class CreateCustomerUseCase implements UseCase<CustomerRequest, CustomerR
                     .builder()
                     .uuid(customer.getUuid())
                     .externalId(customer.getExternalId())
-                    .firstName(customer.getName().getFirstName())
-                    .lastName(customer.getName().getLastName())
+                    .name(customer.getName())
                     .addresses(Collections.emptyList())
                     .version(customer.getVersion())
                     .build();
