@@ -26,6 +26,7 @@ dependencies {
     implementation("com.wks.servicemarketplace:common:1.0-SNAPSHOT")
     implementation("com.wks.servicemarketplace:auth-service-api:1.0-SNAPSHOT")
     implementation("com.wks.servicemarketplace:auth-service-messages:1.0-SNAPSHOT")
+    implementation("com.wks.servicemarketplace:customer-service-messaging:1.0-SNAPSHOT")
     implementation("org.glassfish.jersey.containers:jersey-container-jetty-http:2.31")
     implementation("org.glassfish.jersey.inject:jersey-hk2:2.31")
     implementation("javax.xml.bind:jaxb-api:2.3.1")
@@ -40,9 +41,6 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.0") // Support for java 8's time API
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.11.1")
     implementation("javax.activation:activation:1.1.1") // Needed by jackson-jaxrs-json-provider
-
-    // RabbitMQ
-    implementation("com.rabbitmq:amqp-client:5.9.0")
 
     // FusionAuth
     implementation("io.fusionauth:fusionauth-java-client:1.20.0")

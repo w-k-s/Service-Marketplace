@@ -6,6 +6,7 @@ import com.wks.servicemarketplace.common.messaging.Message;
 import com.wks.servicemarketplace.customerservice.adapters.utils.Pair;
 import com.wks.servicemarketplace.customerservice.core.daos.OutboxDao;
 import com.wks.servicemarketplace.customerservice.core.daos.TransactionUtils;
+import com.wks.servicemarketplace.customerservice.core.utils.CloseableUtils;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -39,20 +40,25 @@ public class TransactionalOutboxJob implements Job {
     }
 
     @Override
-    public void execute(JobExecutionContext context) throws JobExecutionException {
+    public void execute(JobExecutionContext context) {
         Executors.newCachedThreadPool().submit(() -> {
-            final var connection = getConnectionOrThrow();
-            final var pair = getTokenAndMessages(connection);
-            pair.getRight().forEach(message -> {
-                try {
-                    TransactionUtils.beginTransaction(connection);
-                    publisher.publish(message, pair.getLeft().getAccessToken());
-                    outboxDao.setMessagePublished(connection, message.getId());
-                    connection.commit();
-                } catch (Exception e) {
-                    TransactionUtils.rollback(connection);
+            Connection connection = null;
+            try {
+                connection = getConnectionOrThrow();
+                final var pair = getTokenAndMessages(connection);
+                for (Message message : pair.getRight()) {
+                    try {
+                        TransactionUtils.beginTransaction(connection);
+                        publisher.publish(message, pair.getLeft().getAccessToken());
+                        outboxDao.setMessagePublished(connection, message.getId());
+                        connection.commit();
+                    } catch (Exception e) {
+                        TransactionUtils.rollback(connection);
+                    }
                 }
-            });
+            } finally {
+                CloseableUtils.close(connection);
+            }
         });
     }
 

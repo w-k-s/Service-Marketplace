@@ -2,6 +2,7 @@ package com.wks.servicemarketplace.customerservice.adapters.db.dao;
 
 import com.wks.servicemarketplace.common.events.EventEnvelope;
 import com.wks.servicemarketplace.customerservice.core.daos.EventDao;
+import org.jooq.JSON;
 
 import javax.inject.Inject;
 import java.sql.Connection;
@@ -28,7 +29,7 @@ public class DefaultEventDao extends BaseDAO implements EventDao {
         ).values(
                 event.getEventId().toString(),
                 event.getEventType().toString(),
-                event.getEventBody(),
+                JSON.valueOf(event.getEventBody()),
                 event.getEntityId(),
                 event.getEntityType()
         ).execute() == 1;

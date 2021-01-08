@@ -4,12 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wks.servicemarketplace.common.CustomerUUID;
 import com.wks.servicemarketplace.common.Name;
-import com.wks.servicemarketplace.common.auth.Authentication;
-import com.wks.servicemarketplace.common.auth.User;
-import com.wks.servicemarketplace.common.errors.CoreException;
 import com.wks.servicemarketplace.common.errors.CoreRuntimeException;
 import com.wks.servicemarketplace.common.errors.CoreThrowable;
-import com.wks.servicemarketplace.common.errors.UserNotFoundException;
 import com.wks.servicemarketplace.common.events.EventEnvelope;
 import com.wks.servicemarketplace.common.messaging.Message;
 import com.wks.servicemarketplace.common.messaging.MessageId;
@@ -33,7 +29,6 @@ import javax.inject.Inject;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.Optional;
 
 public class CreateCustomerUseCase implements UseCase<CustomerRequest, CustomerResponse> {
 
@@ -56,22 +51,15 @@ public class CreateCustomerUseCase implements UseCase<CustomerRequest, CustomerR
     }
 
     @Override
-    public CustomerResponse execute(CustomerRequest customerRequest) throws CoreException, SQLException {
-        CustomerUUID customerUUID;
+    public CustomerResponse execute(CustomerRequest customerRequest) {
         Connection connection = null;
         try {
             AuthorizationUtils.checkRole(customerRequest.getAuthentication(), "customer.create");
             connection = TransactionUtils.beginTransaction(customerDao.getConnection());
 
-            customerUUID = Optional.ofNullable(customerRequest.getAuthentication())
-                    .map(Authentication::getUser)
-                    .map(User::getId)
-                    .map(CustomerUUID::of)
-                    .orElseThrow(UserNotFoundException::new);
-
             ResultWithEvents<Customer, CustomerCreatedEvent> customerAndEvents = Customer.create(
                     customerDao.newCustomerExternalId(connection),
-                    customerUUID,
+                    CustomerUUID.of(customerRequest.getUserId()),
                     Name.of(customerRequest.getFirstName(), customerRequest.getLastName()),
                     customerRequest.getEmail()
             );
@@ -92,14 +80,15 @@ public class CreateCustomerUseCase implements UseCase<CustomerRequest, CustomerR
                     .addresses(Collections.emptyList())
                     .version(customer.getVersion())
                     .build();
-        } catch (CoreException | CoreRuntimeException e) {
+        } catch (CoreRuntimeException e) {
+            LOGGER.error("Failed to create customer.", e);
             TransactionUtils.rollback(connection);
             publishCustomerCreationFailed(connection, customerRequest, e);
             throw e;
-        } catch (Exception e) {
+        } catch (SQLException e) {
             LOGGER.error("Failed to create customer.", e);
             TransactionUtils.rollback(connection);
-            throw e;
+            throw new RuntimeException(e);
         } finally {
             CloseableUtils.close(connection);
         }

@@ -10,6 +10,7 @@ import com.wks.servicemarketplace.customerservice.core.usecase.address.Address;
 import com.wks.servicemarketplace.customerservice.core.usecase.customer.Customer;
 import org.jooq.Record;
 import org.jooq.RecordMapper;
+import org.jooq.impl.DSL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,8 +37,7 @@ public class DefaultCustomerDao extends BaseDAO implements CustomerDao {
     @Override
     public CustomerId newCustomerExternalId(Connection connection) {
         return CustomerId.of(create(connection)
-                .nextval(sequence("customer_external_id"))
-                .longValue());
+                .nextval(sequence(DSL.name("customer_external_id"), Long.class)));
     }
 
     @Override
@@ -50,8 +50,8 @@ public class DefaultCustomerDao extends BaseDAO implements CustomerDao {
                 field("last_name"),
                 field("created_by")
         ).values(
-                customer.getExternalId(),
-                customer.getUuid(),
+                customer.getExternalId().getValue(),
+                customer.getUuid().toString(),
                 customer.getName().getFirstName(),
                 customer.getName().getLastName(),
                 customer.getCreatedBy()

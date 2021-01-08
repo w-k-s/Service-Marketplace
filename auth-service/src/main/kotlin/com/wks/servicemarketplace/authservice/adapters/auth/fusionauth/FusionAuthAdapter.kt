@@ -15,6 +15,7 @@ import com.wks.servicemarketplace.common.auth.User
 import com.wks.servicemarketplace.common.auth.UserRole
 import com.wks.servicemarketplace.common.auth.UserType
 import com.wks.servicemarketplace.common.errors.CoreException
+import com.wks.servicemarketplace.common.errors.CoreRuntimeException
 import com.wks.servicemarketplace.common.errors.ErrorType
 import com.wks.servicemarketplace.common.errors.ValidationException
 import io.fusionauth.client.FusionAuthClient
@@ -230,6 +231,16 @@ class FusionAuthAdapter @Inject constructor(
         return getUser(clientCredentials.clientId, clientCredentials.clientSecret)
                 .let { it.user }
                 .let { FusionAuthM2MClient(it.username, it.getRoleNamesForApplication(UUID.fromString(config.applicationId)).toList()) }
+    }
+
+    override fun userRoles(userId: String): List<String> {
+        val response = fusionAuthUserClient.retrieveUser(UUID.fromString(userId))
+        when {
+            response.wasSuccessful() -> return response.successResponse.user.registrations.first { it.applicationId.toString() == config.applicationId }.roles.toList()
+            response.errorResponse != null -> throw response.errorResponse.toCoreException()
+            response.exception != null -> throw CoreException(ErrorType.UNKNOWN, cause = response.exception)
+            else -> throw CoreRuntimeException(ErrorType.UNKNOWN, "Failed to retrieve user roles")
+        }
     }
 }
 

@@ -15,27 +15,12 @@ import java.time.*
 
 
 class StandardToken(subject: String,
-                    user: User? = null,
+                    userId: UserId?,
                     permissions: List<String>,
                     expiration: Duration,
                     otherClaims: Map<String, String> = emptyMap(),
                     privateKey: PrivateKey
 ) : Token {
-
-    data class Claims(
-            val subject: String,
-            val user: User? = null,
-            val permissions: List<String>
-    )
-
-    data class User(
-            val id: UserId,
-            val firstName: String,
-            val lastName: String,
-            val username: Email,
-            val email: Email,
-            val role: String
-    )
 
     override val expirationTimeUTC: OffsetDateTime
     override val accessToken: String
@@ -50,7 +35,7 @@ class StandardToken(subject: String,
                 claims.expirationTime = NumericDate.fromMilliseconds(expiryMillis.toEpochMilli())
                 claims.subject = subject
                 claims.setStringListClaim("permissions", permissions)
-                user?.let { theUser -> claims.setClaim("user", objectMapper.convertValue(theUser, Map::class.java)) }
+                userId?.let { claims.setClaim("userId", it.toString()) }
                 otherClaims.forEach { claim -> claims.setClaim(claim.key, claim.value) }
             }.toJson()
             it.key = privateKey
@@ -59,6 +44,12 @@ class StandardToken(subject: String,
     }
 
     override val refreshToken: String? = null
+
+    data class Claims(
+            val subject: String,
+            val user: UserId? = null,
+            val permissions: List<String>
+    )
 
     companion object {
         val objectMapper = ObjectMapper()
@@ -76,7 +67,7 @@ class StandardToken(subject: String,
             return jwtClaims.let {
                 Claims(
                         it.subject,
-                        objectMapper.convertValue(it.getClaimValue("user", Map::class.java), User::class.java),
+                        UserId.fromString(it.getStringClaimValue("userId")),
                         it.getStringListClaimValue("permissions")
                 )
             }

@@ -1,49 +1,76 @@
 package com.wks.servicemarketplace.authservice.adapters.events
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.rabbitmq.client.BuiltinExchangeType
 import com.rabbitmq.client.Channel
 import com.rabbitmq.client.Delivery
-import com.wks.servicemarketplace.authservice.core.IAMAdapter
-import com.wks.servicemarketplace.common.auth.UserRole
+import com.wks.servicemarketplace.authservice.core.sagas.CreateProfileSaga
+import com.wks.servicemarketplace.authservice.messaging.AuthMessaging
+import com.wks.servicemarketplace.common.auth.StandardTokenValidator
+import com.wks.servicemarketplace.common.auth.TokenValidator
+import com.wks.servicemarketplace.customerservice.messaging.CustomerCreatedEvent
+import com.wks.servicemarketplace.customerservice.messaging.CustomerCreationFailedEvent
+import com.wks.servicemarketplace.customerservice.messaging.CustomerMessaging
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import javax.inject.Inject
 
-data class CompanyCreatedEvent constructor(val createdBy: String)
-
-class DefaultEventReceiver @Inject constructor(iamAdapter: IAMAdapter,
-                                               objectMapper: ObjectMapper,
-                                               channel: Channel) {
+class DefaultEventReceiver @Inject constructor(private val createProfileSaga: CreateProfileSaga,
+                                               private val tokenValidator: TokenValidator,
+                                               private val objectMapper: ObjectMapper,
+                                               private val channel: Channel) {
 
     companion object {
         private val LOGGER: Logger = LoggerFactory.getLogger(DefaultEventReceiver::class.java)
     }
 
     init {
-        companyCreated(iamAdapter, objectMapper, channel)
+        customerCreated()
+        customerCreationFailed()
     }
 
-    private fun companyCreated(iamAdapter: IAMAdapter, objectMapper: ObjectMapper, channel: Channel) {
-        channel.exchangeDeclare(Exchange.SERVICE_PROVIDER, BuiltinExchangeType.TOPIC, Durable.TRUE, AutoDelete.FALSE, Internal.FALSE, emptyMap())
-        val queueName = channel.queueDeclare(
-                Incoming.Queue.COMPANY_CREATED,
-                Durable.TRUE,
-                Exclusive.FALSE,
-                AutoDelete.FALSE,
-                emptyMap()
-        ).queue
-        channel.queueBind(queueName, Exchange.SERVICE_PROVIDER, Incoming.RoutingKey.COMPANY_CREATED)
-
-        channel.basicConsume(queueName, false, { _: String, message: Delivery ->
+    private fun customerCreated() {
+        CustomerMessaging.Exchange.MAIN.declare(channel)
+        AuthMessaging.Queue.CUSTOMER_PROFILE_CREATED.declare(channel);
+        channel.queueBind(
+                AuthMessaging.Queue.CUSTOMER_PROFILE_CREATED.queueName,
+                CustomerMessaging.Exchange.MAIN.exchangeName,
+                CustomerMessaging.RoutingKey.CUSTOMER_PROFILE_CREATED
+        )
+        channel.basicConsume(AuthMessaging.Queue.CUSTOMER_PROFILE_CREATED.queueName, false, { _: String, message: Delivery ->
             try {
-                val userId = objectMapper.readValue(message.body, CompanyCreatedEvent::class.java).createdBy
-                iamAdapter.assignRole(UserRole.SERVICE_PROVIDER, userId)
+                createProfileSaga.on(
+                        tokenValidator.authenticate(message.authorizationToken()),
+                        objectMapper.readValue(message.body, CustomerCreatedEvent::class.java)
+                )
                 channel.basicAck(message.envelope.deliveryTag, false)
             } catch (e: Exception) {
                 LOGGER.error(e.message, e)
-                // TODO: handle properly (e.g. put in error queue)
             }
         }, { _: String -> /*noop*/ })
     }
+
+    private fun customerCreationFailed() {
+        CustomerMessaging.Exchange.MAIN.declare(channel)
+        AuthMessaging.Queue.CUSTOMER_PROFILE_CREATION_FAILED.declare(channel);
+        channel.queueBind(
+                AuthMessaging.Queue.CUSTOMER_PROFILE_CREATION_FAILED.queueName,
+                CustomerMessaging.Exchange.MAIN.exchangeName,
+                CustomerMessaging.RoutingKey.CUSTOMER_PROFILE_CREATION_FAILED
+        )
+        channel.basicConsume(AuthMessaging.Queue.CUSTOMER_PROFILE_CREATION_FAILED.queueName, false, { _: String, message: Delivery ->
+            try {
+                createProfileSaga.on(
+                        tokenValidator.authenticate(message.authorizationToken()),
+                        objectMapper.readValue(message.body, CustomerCreationFailedEvent::class.java)
+                )
+                channel.basicAck(message.envelope.deliveryTag, false)
+            } catch (e: Exception) {
+                LOGGER.error(e.message, e)
+            }
+        }, { _: String -> /*noop*/ })
+    }
+}
+
+fun Delivery.authorizationToken(): String {
+    return properties.headers["Authorization"].toString().substring("Bearer".length).trim()
 }

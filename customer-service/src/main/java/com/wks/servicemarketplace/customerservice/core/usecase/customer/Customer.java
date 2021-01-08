@@ -20,7 +20,6 @@ public class Customer {
     private CustomerId externalId;
 
     @NonNull
-    @NotBlank
     private CustomerUUID uuid;
 
     @NonNull

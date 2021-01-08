@@ -11,4 +11,5 @@ interface IAMAdapter {
     fun register(registration: Registration): User
     fun apiToken(clientCredentials: ClientCredentials): Client
     fun assignRole(role: UserRole, userId: String)
+    fun userRoles(userId: String): List<String>
 }

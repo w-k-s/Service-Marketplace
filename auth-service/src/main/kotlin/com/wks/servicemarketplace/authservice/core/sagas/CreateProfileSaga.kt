@@ -7,6 +7,7 @@ import com.wks.servicemarketplace.authservice.core.OutboxDao
 import com.wks.servicemarketplace.authservice.core.SagaDao
 import com.wks.servicemarketplace.authservice.messaging.AccountCreatedEvent
 import com.wks.servicemarketplace.authservice.messaging.AuthMessaging
+import com.wks.servicemarketplace.common.auth.Authentication
 import com.wks.servicemarketplace.common.auth.UserType
 import com.wks.servicemarketplace.common.events.EventEnvelope
 import com.wks.servicemarketplace.common.events.EventId
@@ -15,6 +16,8 @@ import com.wks.servicemarketplace.common.messaging.MessageId
 import com.wks.servicemarketplace.common.sagas.DeadlineAfter
 import com.wks.servicemarketplace.common.sagas.Saga
 import com.wks.servicemarketplace.common.sagas.TransactionId
+import com.wks.servicemarketplace.customerservice.messaging.CustomerCreatedEvent
+import com.wks.servicemarketplace.customerservice.messaging.CustomerCreationFailedEvent
 import org.slf4j.LoggerFactory
 import java.time.Duration
 import javax.inject.Inject
@@ -86,5 +89,13 @@ class CreateProfileSaga @Inject constructor(private val dataSource: DataSource,
                 throw e
             }
         }
+    }
+
+    fun on(authentication: Authentication, customerCreatedEvent: CustomerCreatedEvent) {
+
+    }
+
+    fun on(authentication: Authentication, customerCreationFailedEvent: CustomerCreationFailedEvent) {
+
     }
 }

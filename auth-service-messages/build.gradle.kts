@@ -16,6 +16,10 @@ dependencies {
     // Jackson
     implementation("com.fasterxml.jackson.core:jackson-databind:2.11.0")
     implementation("com.fasterxml.jackson.core:jackson-annotations:2.11.0")
+
+    // RabbitMQ
+    implementation("com.rabbitmq:amqp-client:5.9.0")
+
     testImplementation(kotlin("test-junit5"))
 }
 tasks.withType<KotlinCompile>() {

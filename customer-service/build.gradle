@@ -59,9 +59,6 @@ dependencies {
     // Hikari
     implementation 'com.zaxxer:HikariCP:3.4.5'
 
-    // RabbitMQ
-    implementation 'com.rabbitmq:amqp-client:5.9.0'
-
     // JOOQ
     implementation 'org.jooq:jooq:3.12.3'
     implementation 'org.jooq:jooq-meta:3.12.3'

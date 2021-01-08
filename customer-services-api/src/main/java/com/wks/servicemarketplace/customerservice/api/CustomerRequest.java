@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.wks.servicemarketplace.common.ModelValidator;
+import com.wks.servicemarketplace.common.UserId;
 import com.wks.servicemarketplace.common.auth.Authentication;
-import com.wks.servicemarketplace.common.messaging.Message;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -15,6 +15,9 @@ import java.util.Optional;
 
 @JsonDeserialize(builder = CustomerRequest.Builder.class)
 public class CustomerRequest {
+
+    @NotNull
+    private final UserId userId;
 
     @NotBlank
     @Size(min = 2, max = 50)
@@ -33,6 +36,10 @@ public class CustomerRequest {
 
     @NotNull
     private final Optional<String> correlationId;
+
+    public UserId getUserId() {
+        return userId;
+    }
 
     public String getFirstName() {
         return firstName;
@@ -55,6 +62,7 @@ public class CustomerRequest {
     }
 
     private CustomerRequest(Builder builder) {
+        this.userId = builder.userId;
         this.firstName = builder.firstName;
         this.lastName = builder.lastName;
         this.email = builder.email;
@@ -72,6 +80,8 @@ public class CustomerRequest {
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class Builder {
+        @JsonProperty("userId")
+        private UserId userId;
         @JsonProperty("firstName")
         private String firstName;
         @JsonProperty("lastName")
@@ -80,6 +90,11 @@ public class CustomerRequest {
         private String email;
         private Authentication authentication;
         private String correlationId;
+
+        public Builder userId(UserId userId) {
+            this.userId = userId;
+            return this;
+        }
 
         public Builder firstName(String firstName) {
             this.firstName = firstName;

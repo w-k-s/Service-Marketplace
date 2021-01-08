@@ -39,28 +39,22 @@ public class DefaultCustomerEventsReceiver {
             String queueName = channel.queueDeclare().getQueue();
             channel.queueBind(queueName, AuthMessaging.Exchange.MAIN, AuthMessaging.RoutingKey.CUSTOMER_ACCOUNT_CREATED);
             channel.basicConsume(queueName, false, (consumerTag, message) -> {
-                try {
 
-                    final var token = message.getProperties().getHeaders().get("Authorization").toString().substring("Bearer".length()).trim();
-                    final var accountCreatedEvent = objectMapper.readValue(message.getBody(), AccountCreatedEvent.class);
-                    final var customerRequest = CustomerRequest.builder()
-                            .firstName(accountCreatedEvent.getName().getFirstName())
-                            .lastName(accountCreatedEvent.getName().getLastName())
-                            .email(accountCreatedEvent.getEmail().toString())
-                            .correlationId(message.getProperties().getCorrelationId())
-                            .authentication(tokenValidator.authenticate(token))
-                            .build();
+                final var token = message.getProperties().getHeaders().get("Authorization").toString().substring("Bearer".length()).trim();
+                final var accountCreatedEvent = objectMapper.readValue(message.getBody(), AccountCreatedEvent.class);
+                final var customerRequest = CustomerRequest.builder()
+                        .userId(accountCreatedEvent.getUuid())
+                        .firstName(accountCreatedEvent.getName().getFirstName())
+                        .lastName(accountCreatedEvent.getName().getLastName())
+                        .email(accountCreatedEvent.getEmail().toString())
+                        .correlationId(message.getProperties().getCorrelationId())
+                        .authentication(tokenValidator.authenticate(token))
+                        .build();
 
-                    LOGGER.info("Received create customer request: {}", customerRequest);
-                    createCustomerUseCase.execute(customerRequest);
-                    channel.basicAck(message.getEnvelope().getDeliveryTag(), false);
-                } catch (Exception e) {
-                    LOGGER.error("Failed to create customer: {}", message.getProperties().getCorrelationId(), e);
-                    if (!(e instanceof CoreThrowable)) {
-                        LOGGER.info("Requeing message to create customer {}", message.getProperties().getCorrelationId());
-                        channel.basicNack(message.getEnvelope().getDeliveryTag(), false, true);
-                    }
-                }
+                LOGGER.info("Received create customer request: {}", customerRequest);
+                createCustomerUseCase.execute(customerRequest);
+                channel.basicAck(message.getEnvelope().getDeliveryTag(), false);
+
             }, consumerTag -> { /*noop*/ });
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
