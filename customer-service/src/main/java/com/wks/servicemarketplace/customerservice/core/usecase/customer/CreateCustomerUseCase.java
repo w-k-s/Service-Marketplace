@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wks.servicemarketplace.common.CustomerUUID;
 import com.wks.servicemarketplace.common.Name;
-import com.wks.servicemarketplace.common.errors.CoreRuntimeException;
+import com.wks.servicemarketplace.common.errors.CoreException;
 import com.wks.servicemarketplace.common.errors.CoreThrowable;
 import com.wks.servicemarketplace.common.events.EventEnvelope;
 import com.wks.servicemarketplace.common.messaging.Message;
@@ -80,7 +80,7 @@ public class CreateCustomerUseCase implements UseCase<CustomerRequest, CustomerR
                     .addresses(Collections.emptyList())
                     .version(customer.getVersion())
                     .build();
-        } catch (CoreRuntimeException e) {
+        } catch (CoreException e) {
             LOGGER.error("Failed to create customer.", e);
             TransactionUtils.rollback(connection);
             publishCustomerCreationFailed(connection, customerRequest, e);
@@ -116,7 +116,7 @@ public class CreateCustomerUseCase implements UseCase<CustomerRequest, CustomerR
                     MessageId.random(),
                     event.getEventType().toString(),
                     payload,
-                    CustomerMessaging.Exchange.MAIN,
+                    CustomerMessaging.Exchange.MAIN.exchangeName,
                     false,
                     correlationId,
                     CustomerMessaging.RoutingKey.CUSTOMER_PROFILE_CREATED,
@@ -146,7 +146,7 @@ public class CreateCustomerUseCase implements UseCase<CustomerRequest, CustomerR
                     MessageId.random(),
                     profileCreationFailed.getEventType().toString(),
                     payload,
-                    CustomerMessaging.Exchange.MAIN,
+                    CustomerMessaging.Exchange.MAIN.exchangeName,
                     false,
                     correlationId,
                     CustomerMessaging.RoutingKey.CUSTOMER_PROFILE_CREATION_FAILED,

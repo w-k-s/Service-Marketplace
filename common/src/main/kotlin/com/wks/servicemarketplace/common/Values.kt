@@ -3,7 +3,8 @@ package com.wks.servicemarketplace.common
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonValue
-import com.wks.servicemarketplace.common.errors.InvalidCountryException
+import com.wks.servicemarketplace.common.errors.CoreException
+import com.wks.servicemarketplace.common.errors.ErrorType
 import java.util.*
 import javax.validation.Constraint
 import javax.validation.ConstraintValidator
@@ -145,7 +146,7 @@ data class CountryCode private constructor(@JsonValue private val code: String) 
     companion object {
         @JvmStatic
         fun of(code: String) = CountryCode(com.neovisionaries.i18n.CountryCode.getByAlpha2Code(code)?.alpha2
-                ?: throw InvalidCountryException(code, "ISO 3166-1 alpha-2"))
+                ?: throw CoreException(ErrorType.VALIDATION, "Invalid country: $code"))
     }
 
     override fun toString() = code

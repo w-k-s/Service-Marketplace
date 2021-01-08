@@ -1,7 +1,8 @@
 package com.wks.servicemarketplace.common.auth
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.wks.servicemarketplace.common.errors.InvalidTokenException
+import com.wks.servicemarketplace.common.errors.CoreException
+import com.wks.servicemarketplace.common.errors.ErrorType
 import org.jose4j.jwa.AlgorithmConstraints
 import org.jose4j.jws.AlgorithmIdentifiers
 import org.jose4j.jwt.MalformedClaimException
@@ -27,7 +28,6 @@ class StandardTokenValidator(publicKey: PublicKey, private val objectMapper: Obj
             .build()
 
 
-    @Throws(InvalidTokenException::class)
     override fun authenticate(token: String): Authentication {
         try {
             return consumer.processToClaims(token).let {
@@ -41,14 +41,13 @@ class StandardTokenValidator(publicKey: PublicKey, private val objectMapper: Obj
 
         } catch (e: InvalidJwtException) {
             LOGGER.error("Invalid JWT Token: {}", e.message, e)
-            throw InvalidTokenException(e.errorDetails
-                    .map(ErrorCodeValidator.Error::getErrorMessage)
-                    .joinToString { "," },
+            throw CoreException(ErrorType.AUTHENTICATION,
+                    e.errorDetails.map(ErrorCodeValidator.Error::getErrorMessage).joinToString { "," },
                     e
             )
         } catch (e: MalformedClaimException) {
             LOGGER.error("Invalid Claim: {}", e.message, e)
-            throw InvalidTokenException("Token's claims could not be read", e)
+            throw CoreException(ErrorType.INVALID_FORMAT, "Token's claims could not be read", e)
         }
     }
 }

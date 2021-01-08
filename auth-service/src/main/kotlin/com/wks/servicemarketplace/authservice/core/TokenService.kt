@@ -8,7 +8,6 @@ import com.wks.servicemarketplace.authservice.messaging.AccountCreatedEvent
 import com.wks.servicemarketplace.common.auth.StandardToken
 import com.wks.servicemarketplace.common.auth.Token
 import com.wks.servicemarketplace.common.auth.User
-import com.wks.servicemarketplace.common.errors.UnauthorizedException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.security.PrivateKey

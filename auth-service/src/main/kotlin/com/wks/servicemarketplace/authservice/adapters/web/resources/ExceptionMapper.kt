@@ -27,10 +27,7 @@ internal fun CoreException.toResponse(): Response {
             .entity(ErrorResponse(
                     this.errorType,
                     this.message,
-                    when (this) {
-                        is HasErrorDetails -> this.errorDetails
-                        else -> null
-                    }
+                    this.details
             ))
             .type(MediaType.APPLICATION_JSON_TYPE)
             .build()

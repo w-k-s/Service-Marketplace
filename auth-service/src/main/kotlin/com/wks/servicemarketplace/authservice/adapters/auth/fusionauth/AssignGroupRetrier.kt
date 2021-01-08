@@ -6,7 +6,8 @@ import com.wks.servicemarketplace.authservice.adapters.events.AutoDelete
 import com.wks.servicemarketplace.authservice.adapters.events.Durable
 import com.wks.servicemarketplace.authservice.adapters.events.Exclusive
 import com.wks.servicemarketplace.authservice.config.ApplicationParameters
-import com.wks.servicemarketplace.authservice.core.errors.RegistrationFailedException
+import com.wks.servicemarketplace.common.errors.ErrorType
+import com.wks.servicemarketplace.common.errors.toException
 import io.fusionauth.client.FusionAuthClient
 import io.fusionauth.domain.GroupMember
 import io.fusionauth.domain.api.MemberRequest
@@ -63,7 +64,7 @@ class AssignGroupRetrier @Inject constructor(private val channel: Channel,
                         })
                 ))
                 if (!response.wasSuccessful()) {
-                    throw RegistrationFailedException("Failed to assign to group")
+                    throw ErrorType.EXTERNAL_SYSTEM.toException("Failed to assign to group")
                 }
                 channel.basicAck(delivery.envelope.deliveryTag, false)
                 LOGGER.info("Successfully assigned group: $retryAssignGroupEvent")

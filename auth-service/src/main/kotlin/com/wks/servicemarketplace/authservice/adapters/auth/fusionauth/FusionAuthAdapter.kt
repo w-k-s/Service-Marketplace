@@ -6,18 +6,13 @@ import com.wks.servicemarketplace.authservice.api.Credentials
 import com.wks.servicemarketplace.authservice.api.Registration
 import com.wks.servicemarketplace.authservice.config.FusionAuthConfiguration
 import com.wks.servicemarketplace.authservice.core.*
-import com.wks.servicemarketplace.authservice.core.errors.LoginFailedException
-import com.wks.servicemarketplace.authservice.core.errors.RegistrationFailedException
-import com.wks.servicemarketplace.authservice.core.errors.RegistrationInProgressException
-import com.wks.servicemarketplace.authservice.core.errors.UserNotFoundException
 import com.wks.servicemarketplace.common.*
 import com.wks.servicemarketplace.common.auth.User
 import com.wks.servicemarketplace.common.auth.UserRole
 import com.wks.servicemarketplace.common.auth.UserType
 import com.wks.servicemarketplace.common.errors.CoreException
-import com.wks.servicemarketplace.common.errors.CoreRuntimeException
 import com.wks.servicemarketplace.common.errors.ErrorType
-import com.wks.servicemarketplace.common.errors.ValidationException
+import com.wks.servicemarketplace.common.errors.toException
 import io.fusionauth.client.FusionAuthClient
 import io.fusionauth.domain.Group
 import io.fusionauth.domain.GroupMember
@@ -54,7 +49,7 @@ class FusionAuthAdapter @Inject constructor(
             val group = groupForRole(registrationRoleFor(userType))
 
             assignGroupRetrier.retry(group.id, login.user.id.toString())
-            throw RegistrationInProgressException(message = "Registration is in progress. Try to login later")
+            throw ErrorType.PROCESSING.toException("Registration is in progress. Try to login later")
         }
 
         val permissions = login.user.registrations
@@ -95,10 +90,10 @@ class FusionAuthAdapter @Inject constructor(
 
         when {
             response.wasSuccessful() -> return response.successResponse
-            response.status == 404 -> throw UserNotFoundException()
+            response.status == 404 -> throw ErrorType.RESOURCE_NOT_FOUND.toException("User not found")
             response.errorResponse != null -> throw response.errorResponse.toCoreException()
-            response.exception != null -> throw CoreException(ErrorType.LOGIN_FAILED, cause = response.exception)
-            else -> throw LoginFailedException(message = "Login Failed")
+            response.exception != null -> throw ErrorType.EXTERNAL_SYSTEM.toException(cause = response.exception)
+            else -> throw ErrorType.AUTHENTICATION.toException("Login Failed")
         }
     }
 
@@ -163,8 +158,8 @@ class FusionAuthAdapter @Inject constructor(
         when {
             response.wasSuccessful() -> return response.successResponse
             response.errorResponse != null -> throw response.errorResponse.toCoreException()
-            response.exception != null -> throw CoreException(ErrorType.REGISTRATION_FAILED, cause = response.exception)
-            else -> throw RegistrationFailedException("Registration Failed")
+            response.exception != null -> throw ErrorType.EXTERNAL_SYSTEM.toException(cause = response.exception)
+            else -> throw ErrorType.UNKNOWN.toException("Registration Failed")
         }
     }
 
@@ -184,12 +179,10 @@ class FusionAuthAdapter @Inject constructor(
         return response.successResponse.groups
     }
 
-    @Throws(RegistrationFailedException::class)
     override fun assignRole(role: UserRole, userId: String) {
         assignGroup(role, userId)
     }
 
-    @Throws(RegistrationFailedException::class)
     private fun assignGroup(role: UserRole, userId: String): List<String> {
         val group = groupForRole(role)
 
@@ -209,8 +202,8 @@ class FusionAuthAdapter @Inject constructor(
             when {
                 response.wasSuccessful() -> return group.roles.values.flatten().map { it.name }.toList()
                 response.errorResponse != null -> throw response.errorResponse.toCoreException()
-                response.exception != null -> throw CoreException(ErrorType.REGISTRATION_FAILED, cause = response.exception)
-                else -> throw RegistrationFailedException("Failed to assign group")
+                response.exception != null -> throw ErrorType.EXTERNAL_SYSTEM.toException(cause = response.exception)
+                else -> throw ErrorType.UNKNOWN.toException("Failed to assign group")
             }
         } catch (e: Exception) {
             LOGGER.error("Failed to assign group: {}", e.message, e)
@@ -239,7 +232,7 @@ class FusionAuthAdapter @Inject constructor(
             response.wasSuccessful() -> return response.successResponse.user.registrations.first { it.applicationId.toString() == config.applicationId }.roles.toList()
             response.errorResponse != null -> throw response.errorResponse.toCoreException()
             response.exception != null -> throw CoreException(ErrorType.UNKNOWN, cause = response.exception)
-            else -> throw CoreRuntimeException(ErrorType.UNKNOWN, "Failed to retrieve user roles")
+            else -> throw ErrorType.UNKNOWN.toException("Failed to retrieve user roles")
         }
     }
 }
@@ -247,24 +240,19 @@ class FusionAuthAdapter @Inject constructor(
 fun Errors.toCoreException(): CoreException {
     val codes = fieldErrors.values.flatten().map { it.code }
 
-    val validations = fieldErrors.map { it.key to it.value.map { it.message } }.toMap()
-    val others = mapOf("general" to this.generalErrors.map { it.message }).toMap()
+    val validations = fieldErrors.map { it.key to it.value.map { it.message }.joinToString { "," } }.toMap()
+    val others = mapOf("general" to this.generalErrors.map { it.message }.joinToString { "," }).toMap()
     val fields = validations.plus(others)
 
-    val errorType = if (codes.contains("[duplicate]user.email") || codes.contains("[duplicate]user.username")) {
-        ErrorType.DUPLICATE_USERNAME
-    } else if (fieldErrors.isNotEmpty()) {
-        ErrorType.VALIDATION
-    } else {
-        ErrorType.UNKNOWN
+    val errorType = when {
+        codes.contains("[duplicate]") -> ErrorType.NOT_UNIQUE
+        fieldErrors.isNotEmpty() -> ErrorType.VALIDATION
+        else -> ErrorType.UNKNOWN
     }
 
     val messages = mutableListOf<String>()
     messages.addAll(fieldErrors.map { "${it.key}: ${it.value.map { it.message }.joinToString { "," }}" })
     messages.addAll(generalErrors.map { it.message })
 
-    return when(errorType){
-        ErrorType.VALIDATION -> ValidationException(fields)
-        else -> CoreException(errorType, messages.joinToString { "," })
-    }
+    return CoreException(errorType, messages.joinToString { "," }, details = fields)
 }

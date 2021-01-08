@@ -2,8 +2,8 @@ package com.wks.servicemarketplace.customerservice.core.auth;
 
 import com.google.common.base.Preconditions;
 import com.wks.servicemarketplace.common.auth.Authentication;
-import com.wks.servicemarketplace.common.errors.AuthenticationRequiredException;
-import com.wks.servicemarketplace.common.errors.UnauthorizedException;
+import com.wks.servicemarketplace.common.errors.CoreException;
+import com.wks.servicemarketplace.common.errors.ErrorType;
 
 public class AuthorizationUtils {
 
@@ -13,10 +13,10 @@ public class AuthorizationUtils {
         Preconditions.checkArgument(!role.isEmpty());
 
         if (authentication == null) {
-            throw new AuthenticationRequiredException();
+            throw new CoreException(ErrorType.AUTHENTICATION, null, null, null);
         }
         if (!authentication.hasRole(role)) {
-            throw UnauthorizedException.withMissingPermission(role);
+            throw CoreException.unauthorized(role);
         }
     }
 }

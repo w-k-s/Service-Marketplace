@@ -6,7 +6,7 @@ import com.wks.servicemarketplace.common.CustomerUUID;
 import com.wks.servicemarketplace.common.auth.Authentication;
 import com.wks.servicemarketplace.common.auth.User;
 import com.wks.servicemarketplace.common.errors.CoreException;
-import com.wks.servicemarketplace.common.errors.UserNotFoundException;
+import com.wks.servicemarketplace.common.errors.ErrorType;
 import com.wks.servicemarketplace.common.events.EventEnvelope;
 import com.wks.servicemarketplace.customerservice.api.AddressRequest;
 import com.wks.servicemarketplace.customerservice.api.AddressResponse;
@@ -60,8 +60,8 @@ public class AddAddressUseCase implements UseCase<AddressRequest, AddressRespons
                             .map(Authentication::getUser)
                             .map(User::getId)
                             .map(CustomerUUID::of)
-                            .orElseThrow(UserNotFoundException::new)
-            ).orElseThrow(UserNotFoundException::new);
+                            .orElseThrow(() -> new CoreException(ErrorType.AUTHENTICATION, "token does not contain user id", null, null))
+            ).orElseThrow(() -> new CoreException(ErrorType.RESOURCE_NOT_FOUND, "User not found", null, null));
 
             final ResultWithEvents<Address, AddressAddedEvent> addressAndEvents = Address.create(
                     customer,

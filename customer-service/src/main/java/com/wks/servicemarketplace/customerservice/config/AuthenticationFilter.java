@@ -2,7 +2,7 @@ package com.wks.servicemarketplace.customerservice.config;
 
 import com.wks.servicemarketplace.common.auth.Authentication;
 import com.wks.servicemarketplace.common.auth.TokenValidator;
-import com.wks.servicemarketplace.common.errors.InvalidTokenException;
+import com.wks.servicemarketplace.common.errors.CoreException;
 import com.wks.servicemarketplace.customerservice.adapters.auth.DefaultSecurityContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +34,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
         Authentication authentication = null;
         try {
             authentication = tokenValidator.authenticate(token);
-        } catch (InvalidTokenException e) {
+        } catch (CoreException e) {
             requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).entity(e.getMessage()).build());
             return;
         }

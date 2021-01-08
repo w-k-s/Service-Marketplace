@@ -58,6 +58,9 @@ dependencies {
     implementation("org.jooq:jooq:3.12.3")
     implementation("org.jooq:jooq-meta:3.12.3")
 
+    // RabbitMQ
+    implementation("com.rabbitmq:amqp-client:5.9.0")
+
     // Liquibase
     liquibaseRuntime("org.liquibase:liquibase-core:3.8.1")
     liquibaseRuntime("javax.xml.bind:jaxb-api:2.3.1")

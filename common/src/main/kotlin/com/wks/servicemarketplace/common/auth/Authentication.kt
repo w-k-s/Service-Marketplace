@@ -4,9 +4,8 @@ import com.wks.servicemarketplace.common.Email
 import com.wks.servicemarketplace.common.Name
 import com.wks.servicemarketplace.common.PhoneNumber
 import com.wks.servicemarketplace.common.UserId
-import com.wks.servicemarketplace.common.errors.UnauthorizedException
+import com.wks.servicemarketplace.common.errors.CoreException
 import java.security.Principal
-import kotlin.jvm.Throws
 
 interface Authentication : Principal {
     val user: User?
@@ -59,7 +58,7 @@ class DefaultAuthentication(override val user: User?,
 
     override fun checkRole(role: String) {
         if (!hasRole(role)) {
-            throw UnauthorizedException(message = "User does not have role '$role'")
+            throw CoreException.unauthorized(role)
         }
     }
 

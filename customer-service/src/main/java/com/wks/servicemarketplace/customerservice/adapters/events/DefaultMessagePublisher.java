@@ -1,17 +1,16 @@
 package com.wks.servicemarketplace.customerservice.adapters.events;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.MessageProperties;
 import com.wks.servicemarketplace.common.messaging.Message;
+import com.wks.servicemarketplace.customerservice.messaging.CustomerMessaging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.ws.rs.core.Context;
 import java.io.IOException;
 
 public class DefaultMessagePublisher {
@@ -21,12 +20,14 @@ public class DefaultMessagePublisher {
     private Channel channel;
 
     @Inject
-    public DefaultMessagePublisher(Channel amqpChannel) {
+    public DefaultMessagePublisher(Channel amqpChannel) throws IOException {
         this.channel = amqpChannel;
+        CustomerMessaging.Exchange.MAIN.declare(amqpChannel);
     }
 
     public boolean publish(Message message, String token) throws IOException {
         Preconditions.checkNotNull(message);
+
 
         try {
             channel.basicPublish(
