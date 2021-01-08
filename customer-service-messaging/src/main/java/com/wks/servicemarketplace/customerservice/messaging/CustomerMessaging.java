@@ -7,6 +7,7 @@ public class CustomerMessaging {
 
     public static class RoutingKey {
         public static final String ADDRESS_ADDED = "com.wks.servicemarketplace.customer.addressAdded";
-        public static final String CUSTOMER_PROFILE_CREATED = "com.wks.servicemarketplace.customer.profileCreated";
+        public static final String CUSTOMER_PROFILE_CREATED = "com.wks.servicemarketplace.customer.profile.created";
+        public static final String CUSTOMER_PROFILE_CREATION_FAILED = "com.wks.servicemarketplace.customer.profile.createFailed";
     }
 }

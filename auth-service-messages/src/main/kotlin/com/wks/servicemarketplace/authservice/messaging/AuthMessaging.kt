@@ -9,8 +9,8 @@ class AuthMessaging {
 
     class RoutingKey {
         companion object {
-            const val CUSTOMER_ACCOUNT_CREATED = "com.wks.servicemarketplace.auth.customer.accountCreated"
-            const val SERVICE_PROVIDER_ACCOUNT_CREATED = "com.wks.servicemarketplace.auth.customer.serviceProviderCreated"
+            const val CUSTOMER_ACCOUNT_CREATED = "com.wks.servicemarketplace.auth.customer.created"
+            const val SERVICE_PROVIDER_ACCOUNT_CREATED = "com.wks.servicemarketplace.auth.serviceProvider.created"
         }
     }
 }

@@ -4,18 +4,26 @@ import com.codahale.metrics.health.HealthCheckRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
+import com.wks.servicemarketplace.authservice.api.ClientCredentialsTokenSupplier;
 import com.wks.servicemarketplace.common.auth.TokenValidator;
 import com.wks.servicemarketplace.customerservice.adapters.db.dao.DataSource;
 import com.wks.servicemarketplace.customerservice.adapters.db.dao.DefaultCustomerDao;
-import com.wks.servicemarketplace.customerservice.adapters.events.DefaultCustomerEventsPublisher;
+import com.wks.servicemarketplace.customerservice.adapters.db.dao.DefaultEventDao;
+import com.wks.servicemarketplace.customerservice.adapters.db.dao.DefaultOutboxDao;
 import com.wks.servicemarketplace.customerservice.adapters.events.DefaultCustomerEventsReceiver;
+import com.wks.servicemarketplace.customerservice.adapters.events.DefaultMessagePublisher;
+import com.wks.servicemarketplace.customerservice.adapters.events.TransactionalOutboxJob;
+import com.wks.servicemarketplace.customerservice.adapters.events.TransactionalOutboxJobFactory;
 import com.wks.servicemarketplace.customerservice.adapters.web.ApiResource;
 import com.wks.servicemarketplace.customerservice.adapters.web.DefaultExceptionMapper;
 import com.wks.servicemarketplace.customerservice.adapters.web.HealthResource;
 import com.wks.servicemarketplace.customerservice.config.*;
 import com.wks.servicemarketplace.customerservice.config.healthchecks.HealthChecksFactory;
+import com.wks.servicemarketplace.customerservice.config.schedulers.Schedulers;
+import com.wks.servicemarketplace.customerservice.config.schedulers.SchedulersFactory;
 import com.wks.servicemarketplace.customerservice.core.daos.CustomerDao;
-import com.wks.servicemarketplace.customerservice.core.events.CustomerEventsPublisher;
+import com.wks.servicemarketplace.customerservice.core.daos.EventDao;
+import com.wks.servicemarketplace.customerservice.core.daos.OutboxDao;
 import com.wks.servicemarketplace.customerservice.core.usecase.address.AddAddressUseCase;
 import com.wks.servicemarketplace.customerservice.core.usecase.address.FindAddressByCustomerUuidUseCase;
 import com.wks.servicemarketplace.customerservice.core.usecase.customer.CreateCustomerUseCase;
@@ -43,6 +51,9 @@ public class CustomerServiceApplication extends ResourceConfig {
         register(ObjectMapperProvider.class);
         register(AuthenticationFilter.class);
         register(DefaultExceptionMapper.class);
+        register(ApiResource.class);
+        register(HealthResource.class);
+        register(DefaultApplicationEventListener.class);
         register(new AbstractBinder() {
             @Override
             protected void configure() {
@@ -53,17 +64,21 @@ public class CustomerServiceApplication extends ResourceConfig {
                 bindFactory(AmqpChannelFactory.class, Immediate.class).to(Channel.class).in(Immediate.class);
                 bindFactory(DefaultCustomerEventsReceiverFactory.class, Immediate.class).to(DefaultCustomerEventsReceiver.class).in(Immediate.class);
                 bindFactory(HealthChecksFactory.class, Immediate.class).to(HealthCheckRegistry.class).in(Immediate.class);
-                bind(DefaultCustomerDao.class).to(CustomerDao.class);
-                bind(DefaultCustomerEventsPublisher.class).to(CustomerEventsPublisher.class);
                 bindFactory(TokenValidatorFactory.class, Immediate.class).to(TokenValidator.class).in(Immediate.class);
+                bindFactory(ClientCredentialsTokenSupplierFactory.class, Immediate.class).to(ClientCredentialsTokenSupplier.class).in(Immediate.class);
+                bindFactory(SchedulersFactory.class, Immediate.class).to(Schedulers.class).in(Immediate.class);
 
-                bind(CreateCustomerUseCase.class).to(CreateCustomerUseCase.class);
-                bind(AddAddressUseCase.class).to(AddAddressUseCase.class);
-                bind(FindAddressByCustomerUuidUseCase.class).to(FindAddressByCustomerUuidUseCase.class);
+                bind(DefaultCustomerDao.class).to(CustomerDao.class).in(Immediate.class);
+                bind(DefaultOutboxDao.class).to(OutboxDao.class).in(Immediate.class);
+                bind(DefaultEventDao.class).to(EventDao.class).in(Immediate.class);
+                bind(AddAddressUseCase.class).to(AddAddressUseCase.class).in(Immediate.class);
+                bind(CreateCustomerUseCase.class).to(CreateCustomerUseCase.class).in(Immediate.class);
+                bind(DefaultMessagePublisher.class).to(DefaultMessagePublisher.class).in(Immediate.class);
+                bind(FindAddressByCustomerUuidUseCase.class).to(FindAddressByCustomerUuidUseCase.class).in(Immediate.class);
+                bind(TransactionalOutboxJobFactory.class).to(TransactionalOutboxJobFactory.class).in(Immediate.class);
             }
         });
-        register(ApiResource.class);
-        register(HealthResource.class);
+
     }
 
     public void run() throws Exception {

@@ -66,6 +66,9 @@ dependencies {
     liquibaseRuntime("org.postgresql:postgresql:42.2.12")
     liquibaseRuntime("ch.qos.logback:logback-core:1.2.3")
     liquibaseRuntime("ch.qos.logback:logback-classic:1.2.3")
+
+    //Retrofit
+    implementation("com.squareup.retrofit2:converter-jackson:2.9.0")
 }
 
 tasks {

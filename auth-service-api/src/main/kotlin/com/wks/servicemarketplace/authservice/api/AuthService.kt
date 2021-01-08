@@ -1,6 +1,6 @@
 package com.wks.servicemarketplace.authservice.api
 
-import com.sun.el.parser.Token
+import com.wks.servicemarketplace.common.auth.Token
 import com.wks.servicemarketplace.common.auth.User
 import retrofit2.Call
 import retrofit2.http.Body
@@ -22,5 +22,5 @@ interface AuthService {
     fun register(@Body request: Registration): Call<User>
 
     @POST("$PATH_V1_$ENDPOINT_CLIENT_CREDENTIALS")
-    fun clientCredentials(@Body request: Registration): Call<Token>
+    fun clientCredentials(@Body request: ClientCredentials): Call<TokenResponse>
 }

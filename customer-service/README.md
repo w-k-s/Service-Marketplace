@@ -84,6 +84,9 @@ You can now run the `liquibaseUpdate` command to set up the database:
 | jdbcPassword           | service database password         |                                                                                    | true     |
 | amqpHost               | RabbitMQ Broker Host              | localhost                                                                          | true     |
 | amqpPort               | RabbitMQ Broker port              | 5672                                                                               | true     |
+| clientId               | Username of auth-service user on FusionAuth | customer-service                                | true     |
+| clientSecret           | Password of auth-service user on FusionAuth | password                                    | true     |
+| authServiceBaseUrl     | Auth Service URL                            | http://localhost:8082                       | true     |
 | serverHost             | Listen to requests from host      | http://localhost                                                                   | true     |
 | serverPort             | Listen to requests for port       | 8081                                                                               | true     |
 

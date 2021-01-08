@@ -5,6 +5,8 @@ import org.glassfish.hk2.api.Factory;
 import javax.inject.Inject;
 import javax.ws.rs.ext.Provider;
 
+import static com.wks.servicemarketplace.customerservice.adapters.utils.NumberUtils.parseLong;
+
 @Provider
 public class ApplicationParametersFactory implements Factory<ApplicationParameters> {
 
@@ -20,6 +22,10 @@ public class ApplicationParametersFactory implements Factory<ApplicationParamete
                 .jdbcPassword(System.getenv("jdbcPassword"))
                 .amqpHost(System.getenv("amqpHost"))
                 .amqpPort(Integer.parseInt(System.getenv("amqpPort")))
+                .authServiceBaseUrl(System.getenv("authServiceBaseUrl"))
+                .clientId(System.getenv("clientId"))
+                .clientSecret(System.getenv("clientSecret"))
+                .outboxIntervalMillis(parseLong(System.getenv("outboxIntervalMillis")).orElse(300L))
                 .build();
     }
 

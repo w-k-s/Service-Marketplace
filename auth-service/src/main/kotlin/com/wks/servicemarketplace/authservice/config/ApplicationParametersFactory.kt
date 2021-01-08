@@ -11,6 +11,7 @@ class ApplicationParametersFactory : Factory<ApplicationParameters> {
                 tenantId = System.getenv("fusionTenantId"),
                 apiKey = System.getenv("fusionApiKey")
         )
+        it.authServiceBaseUrl = System.getenv("authServiceBaseUrl")
         it.jdbcUrl = System.getenv("jdbcUrl")
         it.jdbcUsername = System.getenv("jdbcUsername")
         it.jdbcPassword = System.getenv("jdbcPassword")

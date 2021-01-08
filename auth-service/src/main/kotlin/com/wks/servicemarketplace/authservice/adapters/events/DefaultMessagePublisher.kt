@@ -1,7 +1,6 @@
 package com.wks.servicemarketplace.authservice.adapters.events
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.rabbitmq.client.BuiltinExchangeType
 import com.rabbitmq.client.Channel
 import com.rabbitmq.client.MessageProperties
 import com.wks.servicemarketplace.common.messaging.Message
@@ -9,11 +8,11 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import javax.inject.Inject
 
-data class DefaultEventPublisher @Inject constructor(private val channel: Channel,
-                                                     private val objectMapper: ObjectMapper) {
+data class DefaultMessagePublisher @Inject constructor(private val channel: Channel,
+                                                       private val objectMapper: ObjectMapper) {
 
     companion object {
-        private val LOGGER: Logger = LoggerFactory.getLogger(DefaultEventPublisher::class.java)
+        private val LOGGER: Logger = LoggerFactory.getLogger(DefaultMessagePublisher::class.java)
     }
 
     fun publish(token: String, message: Message): Boolean {

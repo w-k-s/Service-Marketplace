@@ -4,12 +4,14 @@ import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
+
 @Value
 @Builder
 public class ApplicationParameters {
 
     private static final String DEFAULT_SERVER_HOST = "0.0.0.0";
     private static final String DEFAULT_SERVER_PORT = "8080";
+    private static final Long DEFAULT_OUTBOX_INTERVAL_MILLIS = 300L;
 
     @Builder.Default
     private final String serverHost = DEFAULT_SERVER_HOST;
@@ -24,4 +26,12 @@ public class ApplicationParameters {
     @NonNull
     private final String amqpHost;
     private final int amqpPort;
+    @NonNull
+    private final String authServiceBaseUrl;
+    @NonNull
+    private final String clientId;
+    @NonNull
+    private final String clientSecret;
+    @Builder.Default
+    private final Long outboxIntervalMillis = DEFAULT_OUTBOX_INTERVAL_MILLIS;
 }

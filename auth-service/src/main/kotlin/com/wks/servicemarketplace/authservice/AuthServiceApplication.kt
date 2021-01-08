@@ -9,12 +9,13 @@ import com.wks.servicemarketplace.authservice.adapters.db.dao.DataSource
 import com.wks.servicemarketplace.authservice.adapters.db.dao.DefaultEventDao
 import com.wks.servicemarketplace.authservice.adapters.db.dao.DefaultOutboxDao
 import com.wks.servicemarketplace.authservice.adapters.db.dao.DefaultSagaDao
-import com.wks.servicemarketplace.authservice.adapters.events.DefaultEventPublisher
+import com.wks.servicemarketplace.authservice.adapters.events.DefaultMessagePublisher
 import com.wks.servicemarketplace.authservice.adapters.events.DefaultEventReceiver
 import com.wks.servicemarketplace.authservice.adapters.events.TransactionalOutboxJobFactory
 import com.wks.servicemarketplace.authservice.adapters.web.resources.ApiResource
 import com.wks.servicemarketplace.authservice.adapters.web.resources.DefaultExceptionMapper
 import com.wks.servicemarketplace.authservice.adapters.web.resources.HealthResource
+import com.wks.servicemarketplace.authservice.api.ClientCredentialsTokenSupplier
 import com.wks.servicemarketplace.authservice.config.*
 import com.wks.servicemarketplace.authservice.core.*
 import com.wks.servicemarketplace.authservice.core.sagas.CreateProfileSaga
@@ -73,7 +74,7 @@ class AuthServiceApplication : ResourceConfig() {
                 bind(FusionAuthAdapter::class.java).to(IAMAdapter::class.java).`in`(Immediate::class.java)
                 bind(TokenService::class.java).to(TokenService::class.java).`in`(Immediate::class.java)
                 bind(DefaultEventReceiver::class.java).to(DefaultEventReceiver::class.java).`in`(Immediate::class.java)
-                bind(DefaultEventPublisher::class.java).to(DefaultEventPublisher::class.java).`in`(Immediate::class.java)
+                bind(DefaultMessagePublisher::class.java).to(DefaultMessagePublisher::class.java).`in`(Immediate::class.java)
                 bind(CreateProfileSaga::class.java).to(CreateProfileSaga::class.java).`in`(Immediate::class.java)
                 bind(AssignGroupRetrier::class.java).to(AssignGroupRetrier::class.java).`in`(Immediate::class.java)
             }

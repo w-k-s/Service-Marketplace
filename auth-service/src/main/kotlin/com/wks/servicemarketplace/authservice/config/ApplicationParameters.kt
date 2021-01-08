@@ -2,6 +2,7 @@ package com.wks.servicemarketplace.authservice.config
 
 data class ApplicationParameters(
         val fusionAuthConfiguration: FusionAuthConfiguration,
+        val authServiceBaseUrl: String,
         val jdbcUrl: String,
         val jdbcUsername: String,
         val jdbcPassword: String,
@@ -23,6 +24,7 @@ data class ApplicationParameters(
 
     class Builder {
         lateinit var fusionAuthConfiguration: FusionAuthConfiguration
+        lateinit var authServiceBaseUrl: String
         lateinit var jdbcUrl: String
         lateinit var jdbcUsername: String
         lateinit var jdbcPassword: String
@@ -36,6 +38,7 @@ data class ApplicationParameters(
 
         fun build() = ApplicationParameters(
                 this.fusionAuthConfiguration,
+                this.authServiceBaseUrl,
                 this.jdbcUrl,
                 this.jdbcUsername,
                 this.jdbcPassword,

@@ -1,18 +1,19 @@
 package com.wks.servicemarketplace.customerservice.core.usecase.address;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wks.servicemarketplace.common.CountryCode;
 import com.wks.servicemarketplace.common.CustomerUUID;
-import com.wks.servicemarketplace.common.UserId;
 import com.wks.servicemarketplace.common.auth.Authentication;
 import com.wks.servicemarketplace.common.auth.User;
 import com.wks.servicemarketplace.common.errors.CoreException;
 import com.wks.servicemarketplace.common.errors.UserNotFoundException;
+import com.wks.servicemarketplace.common.events.EventEnvelope;
 import com.wks.servicemarketplace.customerservice.api.AddressRequest;
 import com.wks.servicemarketplace.customerservice.api.AddressResponse;
 import com.wks.servicemarketplace.customerservice.core.auth.AuthorizationUtils;
 import com.wks.servicemarketplace.customerservice.core.daos.CustomerDao;
+import com.wks.servicemarketplace.customerservice.core.daos.EventDao;
 import com.wks.servicemarketplace.customerservice.core.daos.TransactionUtils;
-import com.wks.servicemarketplace.customerservice.core.events.CustomerEventsPublisher;
 import com.wks.servicemarketplace.customerservice.core.usecase.ResultWithEvents;
 import com.wks.servicemarketplace.customerservice.core.usecase.UseCase;
 import com.wks.servicemarketplace.customerservice.core.usecase.customer.CreateCustomerUseCase;
@@ -33,13 +34,16 @@ public class AddAddressUseCase implements UseCase<AddressRequest, AddressRespons
     private static final Logger LOGGER = LoggerFactory.getLogger(CreateCustomerUseCase.class);
 
     private final CustomerDao customerDao;
-    private final CustomerEventsPublisher customerEventsPublisher;
+    private final EventDao eventDao;
+    private final ObjectMapper objectMapper;
 
     @Inject
     public AddAddressUseCase(CustomerDao customerDao,
-                             CustomerEventsPublisher customerEventsPublisher) {
+                             EventDao eventDao,
+                             ObjectMapper objectMapper) {
         this.customerDao = customerDao;
-        this.customerEventsPublisher = customerEventsPublisher;
+        this.eventDao = eventDao;
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -74,9 +78,12 @@ public class AddAddressUseCase implements UseCase<AddressRequest, AddressRespons
 
             final Address address = addressAndEvents.getResult();
             customerDao.saveAddress(connection, address);
+            eventDao.saveEvent(connection, new EventEnvelope(
+                    addressAndEvents.firstEvent(),
+                    address.getUuid().toString(),
+                    objectMapper.writeValueAsString(addressAndEvents.firstEvent())
+            ));
             connection.commit();
-
-            customerEventsPublisher.addressAdded(addressAndEvents.getEvents());
 
             return AddressResponse.builder()
                     .uuid(address.getUuid())

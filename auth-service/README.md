@@ -67,6 +67,7 @@ Generate users with the following usernames for the following. Users with userna
 | fusionApplicationId    | Service Marketplace Application Id          | d64656ea-4f62-4127-b312-91afeeca96f9        | true     |
 | fusionTenantId         | Service Marketplace Tenant Id               | a84b174a-965c-44fe-807d-623efc3bff9c        | true     |
 | fusionApiKey           | Login/Register API Key                      | 9Am1DMurFnQo6B_Zae3qLdSqd2mOk7w4APyPoCTnLHw | true     |
+| authServiceBaseUrl     | Auth Service URL                            | http://localhost:8082                       | true     |
 | jdbcUrl                | JDBC URL of service database                | jdbc:postgresql://localhost:5432/auth       | true     |
 | jdbcUsername           | service database username                   |                                             | true     |
 | jdbcPassword           | service database password                   |                                             | true     |

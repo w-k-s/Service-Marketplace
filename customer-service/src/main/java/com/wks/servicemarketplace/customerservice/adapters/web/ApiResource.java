@@ -1,7 +1,6 @@
 package com.wks.servicemarketplace.customerservice.adapters.web;
 
 import com.wks.servicemarketplace.common.CustomerUUID;
-import com.wks.servicemarketplace.common.UserId;
 import com.wks.servicemarketplace.common.auth.Authentication;
 import com.wks.servicemarketplace.common.auth.User;
 import com.wks.servicemarketplace.common.errors.CoreException;

@@ -21,8 +21,6 @@ data class ClientCredentialsRequest constructor(override val clientId: String,
         @field:NotBlank
         var clientSecret: String? = null
 
-        @field:NotEmpty
-        @field:NotNull
         var requestedPermission: List<String> = emptyList()
 
         var impersonationToken: String? = null
@@ -30,7 +28,7 @@ data class ClientCredentialsRequest constructor(override val clientId: String,
         fun build(): ClientCredentialsRequest {
             ModelValidator.validate(this)
             return ClientCredentialsRequest(
-                    this.clientSecret!!,
+                    this.clientId!!,
                     this.clientSecret!!,
                     this.requestedPermission,
                     this.impersonationToken

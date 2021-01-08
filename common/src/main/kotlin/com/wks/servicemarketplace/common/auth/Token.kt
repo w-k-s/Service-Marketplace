@@ -9,4 +9,4 @@ interface Token {
     val expirationTimeUTC: OffsetDateTime
 }
 
-fun Token.isExpired() = this.expirationTimeUTC.isAfter(OffsetDateTime.now(Clock.systemUTC()))
+fun Token.isExpired() = this.expirationTimeUTC.isBefore(OffsetDateTime.now(Clock.systemUTC()))

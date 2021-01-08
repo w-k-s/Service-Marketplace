@@ -35,6 +35,7 @@ services:
       fusionApplicationId: d64656ea-4f62-4127-b312-91afeeca96f9
       fusionTenantId: a84b174a-965c-44fe-807d-623efc3bff9c
       fusionApiKey: 9Am1DMurFnQo6B_Zae3qLdSqd2mOk7w4APyPoCTnLHw
+      authServiceBaseUrl: http://localhost:8082
       serverHost: http://0.0.0.0
       serverPort: 8082
       amqpHost: rabbitmq
@@ -64,6 +65,7 @@ services:
       amqpPort: 5672
       serverHost: http://0.0.0.0
       serverPort: 8081
+      authServiceBaseUrl: http://auth-service:8082
     entrypoint: ["./wait-for-it.sh", "rabbitmq:5672","-t","0","--strict","--","java","-jar","/app.jar"]
 
   service-provider-service:

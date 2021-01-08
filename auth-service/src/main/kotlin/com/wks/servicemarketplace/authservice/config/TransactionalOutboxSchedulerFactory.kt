@@ -13,7 +13,7 @@ class TransactionalOutboxSchedulerFactory @Inject constructor(
         private val transactionalOutboxJobFactory: TransactionalOutboxJobFactory
 ) : Factory<Scheduler> {
 
-    val scheduler: Scheduler = StdSchedulerFactory.getDefaultScheduler().also {
+    private val scheduler: Scheduler = StdSchedulerFactory.getDefaultScheduler().also {
         it.setJobFactory(transactionalOutboxJobFactory)
         val transactionalOutboxJob = JobBuilder.newJob(TransactionalOutboxJob::class.java)
                 .withIdentity("transactionalOutboxJob", "transactionalOutbox")

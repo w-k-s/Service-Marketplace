@@ -1,6 +1,6 @@
 package com.wks.servicemarketplace.authservice.adapters.events
 
-import com.wks.servicemarketplace.authservice.config.ClientCredentialsTokenSupplier
+import com.wks.servicemarketplace.authservice.api.ClientCredentialsTokenSupplier
 import com.wks.servicemarketplace.authservice.core.OutboxDao
 import org.quartz.Job
 import org.quartz.JobExecutionContext
@@ -20,7 +20,7 @@ class TransactionalOutboxJob : Job {
     }
 
     lateinit var outboxDao: OutboxDao
-    lateinit var eventPublisher: DefaultEventPublisher
+    lateinit var messagePublisher: DefaultMessagePublisher
     lateinit var clientCredentialsTokenSupplier: ClientCredentialsTokenSupplier
 
     override fun execute(context: JobExecutionContext?) {
@@ -34,7 +34,7 @@ class TransactionalOutboxJob : Job {
                 messages.forEach { message ->
                     try {
                         conn.autoCommit = false
-                        eventPublisher.publish(token.accessToken, message)
+                        messagePublisher.publish(token.accessToken, message)
                         outboxDao.setMessagePublished(conn, message.id)
                         conn.commit()
                     } catch (e: Exception) {
@@ -48,13 +48,13 @@ class TransactionalOutboxJob : Job {
 }
 
 class TransactionalOutboxJobFactory @Inject constructor(private val outboxDao: OutboxDao,
-                                                        private val eventPublisher: DefaultEventPublisher,
+                                                        private val messagePublisher: DefaultMessagePublisher,
                                                         private val clientCredentialsTokenSupplier: ClientCredentialsTokenSupplier) : SimpleJobFactory() {
 
     override fun newJob(bundle: TriggerFiredBundle?, scheduler: Scheduler?): Job {
         return (super.newJob(bundle, scheduler) as TransactionalOutboxJob).also {
             it.outboxDao = outboxDao
-            it.eventPublisher = eventPublisher
+            it.messagePublisher = messagePublisher
             it.clientCredentialsTokenSupplier = clientCredentialsTokenSupplier
         }
     }

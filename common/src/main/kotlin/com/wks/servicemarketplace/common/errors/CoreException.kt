@@ -49,15 +49,21 @@ enum class ErrorType(val code: Int) {
 
 }
 
+interface CoreThrowable{
+    val errorType: ErrorType
+    val message: String?
+    val cause: Throwable?
+}
+
 interface HasErrorDetails {
     val errorDetails: Map<String, List<String>>
 }
 
-open class CoreException(val errorType: ErrorType, override val message: String? = null, override val cause: Throwable? = null)
-    : Exception(message, cause)
+open class CoreException(override val errorType: ErrorType, override val message: String? = null, override val cause: Throwable? = null)
+    : Exception(message, cause), CoreThrowable
 
-open class CoreRuntimeException(val errorType: ErrorType, override val message: String? = null, override val cause: Throwable? = null)
-    : RuntimeException(message, cause)
+open class CoreRuntimeException(override val errorType: ErrorType, override val message: String? = null, override val cause: Throwable? = null)
+    : RuntimeException(message, cause), CoreThrowable
 
 data class InvalidCountryException(private val code: String, private val iso: String)
     : CoreRuntimeException(ErrorType.VALIDATION, "'$code' is not a valid '$iso' code"), HasErrorDetails {
@@ -68,9 +74,9 @@ class ValidationException(override val errorDetails: Map<String, List<String>>, 
     : CoreException(ErrorType.VALIDATION, message), HasErrorDetails
 
 class UnauthorizedException(message: String? = "Insufficient Privileges")
-    : CoreRuntimeException(ErrorType.AUTHORIZATION, message){
+    : CoreRuntimeException(ErrorType.AUTHORIZATION, message) {
 
-    companion object{
+    companion object {
         @JvmStatic
         fun withMissingPermission(missingPermissions: String) = UnauthorizedException("User does not have permission '$missingPermissions'")
     }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.Channel;
 import com.wks.servicemarketplace.common.auth.TokenValidator;
 import com.wks.servicemarketplace.customerservice.adapters.events.DefaultCustomerEventsReceiver;
+import com.wks.servicemarketplace.customerservice.core.daos.OutboxDao;
 import com.wks.servicemarketplace.customerservice.core.usecase.customer.CreateCustomerUseCase;
 import org.glassfish.hk2.api.Factory;
 
@@ -17,7 +18,7 @@ public class DefaultCustomerEventsReceiverFactory implements Factory<DefaultCust
     public DefaultCustomerEventsReceiverFactory(CreateCustomerUseCase createCustomerUseCase,
                                                 ObjectMapper objectMapper,
                                                 TokenValidator tokenValidator,
-                                                Channel channel){
+                                                Channel channel) {
         this.eventReceiver = new DefaultCustomerEventsReceiver(
                 createCustomerUseCase,
                 tokenValidator,

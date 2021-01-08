@@ -34,6 +34,31 @@ CREATE TABLE IF NOT EXISTS addresses(
 	version INT NOT NULL DEFAULT 0
 );
 
+CREATE TABLE IF NOT EXISTS events(
+    event_uuid VARCHAR(64) PRIMARY KEY NOT NULL,
+	event_type VARCHAR(1000) NOT NULL,
+	event_body JSON NOT NULL,
+	entity_id VARCHAR(64) NOT NULL,
+	entity_type VARCHAR(1000) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS outbox(
+    message_uuid VARCHAR(64) PRIMARY KEY NOT NULL,
+    message_type VARCHAR(64) NOT NULL,
+	payload JSON NOT NULL,
+	correlation_id VARCHAR(64),
+	destination_exchange VARCHAR(255) NOT NULL,
+	destination_routing_key VARCHAR(255),
+	destination_queue VARCHAR(255),
+	reply_exchange VARCHAR(255),
+	reply_routing_key VARCHAR(255),
+	reply_queue VARCHAR(255),
+	dead_letter_exchange VARCHAR(255),
+	dead_letter_routing_key VARCHAR(255),
+	dead_letter_queue VARCHAR(255),
+	published BOOLEAN NOT NULL
+);
+
 create or replace function audit_record()
 returns trigger as $body$
   begin

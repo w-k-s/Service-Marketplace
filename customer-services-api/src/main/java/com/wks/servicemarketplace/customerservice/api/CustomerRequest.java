@@ -5,11 +5,13 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.wks.servicemarketplace.common.ModelValidator;
 import com.wks.servicemarketplace.common.auth.Authentication;
+import com.wks.servicemarketplace.common.messaging.Message;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.Optional;
 
 @JsonDeserialize(builder = CustomerRequest.Builder.class)
 public class CustomerRequest {
@@ -29,6 +31,9 @@ public class CustomerRequest {
     @NotNull
     private final Authentication authentication;
 
+    @NotNull
+    private final Optional<Message> message;
+
     public String getFirstName() {
         return firstName;
     }
@@ -45,11 +50,16 @@ public class CustomerRequest {
         return authentication;
     }
 
+    public Optional<Message> getMessage() {
+        return message;
+    }
+
     private CustomerRequest(Builder builder) {
         this.firstName = builder.firstName;
         this.lastName = builder.lastName;
         this.email = builder.email;
         this.authentication = builder.authentication;
+        this.message = Optional.ofNullable(builder.message);
     }
 
     private static CustomerRequest create(Builder builder) {
@@ -69,6 +79,7 @@ public class CustomerRequest {
         @JsonProperty("email")
         private String email;
         private Authentication authentication;
+        private Message message;
 
         public Builder firstName(String firstName) {
             this.firstName = firstName;
@@ -87,6 +98,11 @@ public class CustomerRequest {
 
         public Builder authentication(Authentication authentication) {
             this.authentication = authentication;
+            return this;
+        }
+
+        public Builder message(Message message) {
+            this.message = message;
             return this;
         }
 
