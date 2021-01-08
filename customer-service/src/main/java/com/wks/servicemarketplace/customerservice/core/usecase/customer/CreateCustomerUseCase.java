@@ -2,7 +2,6 @@ package com.wks.servicemarketplace.customerservice.core.usecase.customer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rabbitmq.client.Delivery;
 import com.wks.servicemarketplace.common.CustomerUUID;
 import com.wks.servicemarketplace.common.Name;
 import com.wks.servicemarketplace.common.auth.Authentication;
@@ -11,7 +10,6 @@ import com.wks.servicemarketplace.common.errors.CoreException;
 import com.wks.servicemarketplace.common.errors.CoreRuntimeException;
 import com.wks.servicemarketplace.common.errors.CoreThrowable;
 import com.wks.servicemarketplace.common.errors.UserNotFoundException;
-import com.wks.servicemarketplace.common.events.DomainEvent;
 import com.wks.servicemarketplace.common.events.EventEnvelope;
 import com.wks.servicemarketplace.common.messaging.Message;
 import com.wks.servicemarketplace.common.messaging.MessageId;
@@ -62,7 +60,7 @@ public class CreateCustomerUseCase implements UseCase<CustomerRequest, CustomerR
         CustomerUUID customerUUID;
         Connection connection = null;
         try {
-            AuthorizationUtils.checkRole(customerRequest.getAuthentication(), "account.create");
+            AuthorizationUtils.checkRole(customerRequest.getAuthentication(), "customer.create");
             connection = TransactionUtils.beginTransaction(customerDao.getConnection());
 
             customerUUID = Optional.ofNullable(customerRequest.getAuthentication())
@@ -96,7 +94,7 @@ public class CreateCustomerUseCase implements UseCase<CustomerRequest, CustomerR
                     .build();
         } catch (CoreException | CoreRuntimeException e) {
             TransactionUtils.rollback(connection);
-            customerRequest.getMessage().ifPresent(message -> publishCustomerCreationFailed(message, e));
+            publishCustomerCreationFailed(connection, customerRequest, e);
             throw e;
         } catch (Exception e) {
             LOGGER.error("Failed to create customer.", e);
@@ -124,14 +122,14 @@ public class CreateCustomerUseCase implements UseCase<CustomerRequest, CustomerR
                 payload
         ));
 
-        request.getMessage().ifPresent(message -> {
+        request.getCorrelationId().ifPresent(correlationId -> {
             outboxDao.saveMessage(connection, new Message(
                     MessageId.random(),
                     event.getEventType().toString(),
                     payload,
                     CustomerMessaging.Exchange.MAIN,
                     false,
-                    message.getCorrelationId(),
+                    correlationId,
                     CustomerMessaging.RoutingKey.CUSTOMER_PROFILE_CREATED,
                     null,
                     null,
@@ -144,32 +142,33 @@ public class CreateCustomerUseCase implements UseCase<CustomerRequest, CustomerR
         });
     }
 
-    private void publishCustomerCreationFailed(Message message, CoreThrowable error) {
+    private void publishCustomerCreationFailed(Connection connection, CustomerRequest customerRequest, CoreThrowable error) {
+        customerRequest.getCorrelationId().ifPresent(correlationId -> {
+            var profileCreationFailed = new CustomerCreationFailedEvent(error);
 
-        var profileCreationFailed = new CustomerCreationFailedEvent(error);
+            final String payload;
+            try {
+                payload = objectMapper.writeValueAsString(profileCreationFailed);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
 
-        final String payload;
-        try {
-            payload = objectMapper.writeValueAsString(profileCreationFailed);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-
-        outboxDao.saveMessage(null, new Message(
-                MessageId.random(),
-                profileCreationFailed.getEventType().toString(),
-                payload,
-                CustomerMessaging.Exchange.MAIN,
-                false,
-                message.getCorrelationId(),
-                CustomerMessaging.RoutingKey.CUSTOMER_PROFILE_CREATION_FAILED,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
-        ));
+            outboxDao.saveMessage(connection, new Message(
+                    MessageId.random(),
+                    profileCreationFailed.getEventType().toString(),
+                    payload,
+                    CustomerMessaging.Exchange.MAIN,
+                    false,
+                    correlationId,
+                    CustomerMessaging.RoutingKey.CUSTOMER_PROFILE_CREATION_FAILED,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+            ));
+        });
     }
 }

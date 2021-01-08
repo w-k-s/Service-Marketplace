@@ -2,6 +2,7 @@ package com.wks.servicemarketplace.customerservice.adapters.events;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.Channel;
+import com.wks.servicemarketplace.authservice.messaging.AccountCreatedEvent;
 import com.wks.servicemarketplace.authservice.messaging.AuthMessaging;
 import com.wks.servicemarketplace.common.auth.TokenValidator;
 import com.wks.servicemarketplace.common.errors.CoreThrowable;
@@ -41,14 +42,22 @@ public class DefaultCustomerEventsReceiver {
                 try {
 
                     final var token = message.getProperties().getHeaders().get("Authorization").toString().substring("Bearer".length()).trim();
-                    final var customerRequest = objectMapper.readValue(message.getBody(), CustomerRequest.Builder.class)
+                    final var accountCreatedEvent = objectMapper.readValue(message.getBody(), AccountCreatedEvent.class);
+                    final var customerRequest = CustomerRequest.builder()
+                            .firstName(accountCreatedEvent.getName().getFirstName())
+                            .lastName(accountCreatedEvent.getName().getLastName())
+                            .email(accountCreatedEvent.getEmail().toString())
+                            .correlationId(message.getProperties().getCorrelationId())
                             .authentication(tokenValidator.authenticate(token))
                             .build();
 
+                    LOGGER.info("Received create customer request: {}", customerRequest);
                     createCustomerUseCase.execute(customerRequest);
                     channel.basicAck(message.getEnvelope().getDeliveryTag(), false);
                 } catch (Exception e) {
+                    LOGGER.error("Failed to create customer: {}", message.getProperties().getCorrelationId(), e);
                     if (!(e instanceof CoreThrowable)) {
+                        LOGGER.info("Requeing message to create customer {}", message.getProperties().getCorrelationId());
                         channel.basicNack(message.getEnvelope().getDeliveryTag(), false, true);
                     }
                 }

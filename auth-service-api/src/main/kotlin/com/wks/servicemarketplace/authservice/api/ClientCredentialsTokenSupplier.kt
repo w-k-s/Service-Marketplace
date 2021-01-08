@@ -37,7 +37,7 @@ class ClientCredentialsTokenSupplier constructor(
     private fun getRequestTokenFuture(): CompletableFuture<Token> {
         return CompletableFuture.supplyAsync {
             synchronized(TOKEN) {
-                if (TOKEN.get() == null) {
+                if (TOKEN.get() == null || TOKEN.get()!!.isExpired()) {
                     val response = authService.clientCredentials(clientCredentials).execute()
                     response.body()?.let {
                         TOKEN.compareAndSet(null, it)

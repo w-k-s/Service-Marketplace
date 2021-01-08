@@ -32,7 +32,7 @@ class StandardTokenValidator(publicKey: PublicKey, private val objectMapper: Obj
         try {
             return consumer.processToClaims(token).let {
                 DefaultAuthentication(
-                        objectMapper.readValue(it.getStringClaimValue("user"), DefaultUser::class.java),
+                        it.getStringClaimValue("user")?.let { user -> objectMapper.readValue(user, DefaultUser::class.java) },
                         token,
                         it.subject,
                         it.getStringListClaimValue("permissions")

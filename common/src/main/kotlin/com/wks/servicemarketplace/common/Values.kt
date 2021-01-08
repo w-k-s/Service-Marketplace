@@ -1,5 +1,6 @@
 package com.wks.servicemarketplace.common
 
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonValue
 import com.wks.servicemarketplace.common.errors.InvalidCountryException
@@ -123,7 +124,7 @@ data class PhoneNumber internal constructor(@JsonValue
     override fun toString() = value
 }
 
-data class Name internal constructor(
+data class Name @JsonCreator internal constructor(
         @JsonProperty("firstName")
         @field:Size(min = 2, max = 50)
         val firstName: String,

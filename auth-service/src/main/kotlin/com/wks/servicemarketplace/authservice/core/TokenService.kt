@@ -63,7 +63,7 @@ class TokenService @Inject constructor(private val iam: IAMAdapter,
         val allowedPermissions = claims?.permissions?.let { client.permissions.intersect(it) } ?: client.permissions
         val permissions = clientCredentials.requestedPermissions
                 .takeIf { allowedPermissions.containsAll(it) }
-                ?.let { allowedPermissions.intersect(clientCredentials.requestedPermissions) }
+                ?.let { allowedPermissions.intersect(clientCredentials.requestedPermissions).union(client.permissions) }
                 ?.toList()
                 ?: throw UnauthorizedException("Requested permissions included permissions that client/impersonated user does not have")
 

@@ -32,7 +32,7 @@ public class CustomerRequest {
     private final Authentication authentication;
 
     @NotNull
-    private final Optional<Message> message;
+    private final Optional<String> correlationId;
 
     public String getFirstName() {
         return firstName;
@@ -50,8 +50,8 @@ public class CustomerRequest {
         return authentication;
     }
 
-    public Optional<Message> getMessage() {
-        return message;
+    public Optional<String> getCorrelationId() {
+        return correlationId;
     }
 
     private CustomerRequest(Builder builder) {
@@ -59,7 +59,7 @@ public class CustomerRequest {
         this.lastName = builder.lastName;
         this.email = builder.email;
         this.authentication = builder.authentication;
-        this.message = Optional.ofNullable(builder.message);
+        this.correlationId = Optional.ofNullable(builder.correlationId);
     }
 
     private static CustomerRequest create(Builder builder) {
@@ -79,7 +79,7 @@ public class CustomerRequest {
         @JsonProperty("email")
         private String email;
         private Authentication authentication;
-        private Message message;
+        private String correlationId;
 
         public Builder firstName(String firstName) {
             this.firstName = firstName;
@@ -101,8 +101,8 @@ public class CustomerRequest {
             return this;
         }
 
-        public Builder message(Message message) {
-            this.message = message;
+        public Builder correlationId(String correlationId) {
+            this.correlationId = correlationId;
             return this;
         }
 

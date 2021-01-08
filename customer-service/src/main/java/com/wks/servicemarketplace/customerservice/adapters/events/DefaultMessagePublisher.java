@@ -19,12 +19,10 @@ public class DefaultMessagePublisher {
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultMessagePublisher.class);
 
     private Channel channel;
-    private ObjectMapper objectMapper;
 
     @Inject
-    public DefaultMessagePublisher(Channel amqpChannel, @Context ObjectMapper objectMapper) throws IOException {
+    public DefaultMessagePublisher(Channel amqpChannel) {
         this.channel = amqpChannel;
-        this.objectMapper = objectMapper;
     }
 
     public boolean publish(Message message, String token) throws IOException {
@@ -38,9 +36,9 @@ public class DefaultMessagePublisher {
                             .correlationId(message.getCorrelationId())
                             .messageId(message.getId().toString())
                             .replyTo(message.getReplyQueue())
-                            .headers(ImmutableMap.of("Authorization", token))
+                            .headers(ImmutableMap.of("Authorization", String.format("Bearer %s", token)))
                             .build(),
-                    objectMapper.writeValueAsBytes(message.getPayload())
+                    message.getPayload().getBytes()
             );
             return true;
         } catch (JsonProcessingException e) {

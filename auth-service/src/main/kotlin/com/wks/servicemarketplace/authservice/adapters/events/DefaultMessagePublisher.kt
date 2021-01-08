@@ -8,8 +8,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import javax.inject.Inject
 
-data class DefaultMessagePublisher @Inject constructor(private val channel: Channel,
-                                                       private val objectMapper: ObjectMapper) {
+data class DefaultMessagePublisher @Inject constructor(private val channel: Channel) {
 
     companion object {
         private val LOGGER: Logger = LoggerFactory.getLogger(DefaultMessagePublisher::class.java)
@@ -25,10 +24,10 @@ data class DefaultMessagePublisher @Inject constructor(private val channel: Chan
                             .replyTo(message.replyQueue)
                             .correlationId(message.correlationId)
                             .headers(mapOf(
-                                    "Authorization" to token
+                                    "Authorization" to "Bearer $token"
                             ))
                             .build(),
-                    objectMapper.writeValueAsBytes(message.payload)
+                    message.payload.toByteArray()
             )
             // Consider publisher confirms.
             return true

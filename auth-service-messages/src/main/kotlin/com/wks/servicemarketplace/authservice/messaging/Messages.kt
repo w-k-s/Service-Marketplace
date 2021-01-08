@@ -1,5 +1,7 @@
 package com.wks.servicemarketplace.authservice.messaging
 
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.wks.servicemarketplace.common.Email
 import com.wks.servicemarketplace.common.Name
 import com.wks.servicemarketplace.common.PhoneNumber
@@ -9,13 +11,13 @@ import com.wks.servicemarketplace.common.auth.UserType
 import com.wks.servicemarketplace.common.events.DomainEvent
 import com.wks.servicemarketplace.common.events.EventType
 
-data class AccountCreatedEvent(
-        val uuid: UserId,
-        val username: Email,
-        val name: Name,
-        val email: Email,
-        val mobileNumber: PhoneNumber,
-        val type: UserType
+data class AccountCreatedEvent @JsonCreator constructor(
+        @JsonProperty("uuid") val uuid: UserId,
+        @JsonProperty("username") val username: Email,
+        @JsonProperty("name") val name: Name,
+        @JsonProperty("email") val email: Email,
+        @JsonProperty("mobileNumber") val mobileNumber: PhoneNumber,
+        @JsonProperty("type") val type: UserType
 ) : DomainEvent {
 
     override val eventType = when (this.type) {
