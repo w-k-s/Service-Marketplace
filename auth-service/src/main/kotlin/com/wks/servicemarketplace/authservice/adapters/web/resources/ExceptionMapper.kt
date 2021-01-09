@@ -2,7 +2,6 @@ package com.wks.servicemarketplace.authservice.adapters.web.resources
 
 import com.wks.servicemarketplace.common.errors.CoreException
 import com.wks.servicemarketplace.common.errors.ErrorType
-import com.wks.servicemarketplace.common.errors.HasErrorDetails
 import com.wks.servicemarketplace.common.http.ErrorResponse
 import com.wks.servicemarketplace.common.http.httpStatusCode
 import org.glassfish.jersey.server.spi.ResponseErrorMapper

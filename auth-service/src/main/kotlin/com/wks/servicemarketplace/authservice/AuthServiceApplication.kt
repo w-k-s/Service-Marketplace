@@ -19,6 +19,7 @@ import com.wks.servicemarketplace.authservice.api.ClientCredentialsTokenSupplier
 import com.wks.servicemarketplace.authservice.config.*
 import com.wks.servicemarketplace.authservice.core.*
 import com.wks.servicemarketplace.authservice.core.sagas.CreateProfileSaga
+import com.wks.servicemarketplace.common.auth.TokenValidator
 import org.glassfish.hk2.api.Immediate
 import org.glassfish.hk2.utilities.binding.AbstractBinder
 import org.glassfish.jersey.jetty.JettyHttpContainerFactory
@@ -66,6 +67,7 @@ class AuthServiceApplication : ResourceConfig() {
                 bindFactory(TransactionalOutboxSchedulerFactory::class.java).to(Scheduler::class.java)
                 bindFactory(DataSourceFactory::class.java, Immediate::class.java).to(DataSource::class.java).`in`(Immediate::class.java)
                 bindFactory(ClientCredentialsTokenSupplierFactory::class.java, Immediate::class.java).to(ClientCredentialsTokenSupplier::class.java).`in`(Immediate::class.java)
+                bindFactory(TokenValidatorFactory::class.java, Immediate::class.java).to(TokenValidator::class.java).`in`(Immediate::class.java)
 
                 bind(TransactionalOutboxJobFactory::class.java).to(TransactionalOutboxJobFactory::class.java).`in`(Immediate::class.java)
                 bind(DefaultEventDao::class.java).to(EventDao::class.java).`in`(Immediate::class.java)

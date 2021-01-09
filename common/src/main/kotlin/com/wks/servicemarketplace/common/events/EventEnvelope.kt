@@ -1,7 +1,6 @@
 package com.wks.servicemarketplace.common.events
 
 import com.wks.servicemarketplace.common.errors.CoreException
-import com.wks.servicemarketplace.common.errors.CoreThrowable
 import com.wks.servicemarketplace.common.errors.ErrorType
 import java.util.*
 
@@ -17,7 +16,7 @@ interface FailureEvent : DomainEvent {
 
 open class DefaultFailureEvent(override val eventType: EventType,
                                override val entityType: String,
-                               coreException: CoreThrowable) : FailureEvent {
+                               coreException: CoreException) : FailureEvent {
     override val errorType = coreException.errorType
     override val description = coreException.message
 }

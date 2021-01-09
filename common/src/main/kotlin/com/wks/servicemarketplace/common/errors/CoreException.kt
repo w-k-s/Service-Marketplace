@@ -12,23 +12,12 @@ enum class ErrorType(val code: Int) {
     INVALID_FORMAT(1402);
 }
 
-interface CoreThrowable {
-    val errorType: ErrorType
-    val message: String?
-    val cause: Throwable?
-    val details: Map<String, String>?
-}
-
-interface HasErrorDetails {
-    val errorDetails: Map<String, List<String>>
-}
-
 data class CoreException(
-        override val errorType: ErrorType,
+        val errorType: ErrorType,
         override val message: String? = null,
         override val cause: Throwable? = null,
-        override val details: Map<String, String>? = emptyMap()
-) : RuntimeException(message, cause), CoreThrowable {
+        val details: Map<String, String>? = emptyMap()
+) : RuntimeException(message, cause) {
     companion object {
         @JvmStatic
         fun validation(errors: Map<String, String>): CoreException {

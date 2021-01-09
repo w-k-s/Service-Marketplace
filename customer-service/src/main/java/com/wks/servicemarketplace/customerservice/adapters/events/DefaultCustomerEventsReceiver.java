@@ -5,7 +5,6 @@ import com.rabbitmq.client.Channel;
 import com.wks.servicemarketplace.authservice.messaging.AccountCreatedEvent;
 import com.wks.servicemarketplace.authservice.messaging.AuthMessaging;
 import com.wks.servicemarketplace.common.auth.TokenValidator;
-import com.wks.servicemarketplace.common.errors.CoreThrowable;
 import com.wks.servicemarketplace.customerservice.api.CustomerRequest;
 import com.wks.servicemarketplace.customerservice.core.usecase.customer.CreateCustomerUseCase;
 import org.slf4j.Logger;

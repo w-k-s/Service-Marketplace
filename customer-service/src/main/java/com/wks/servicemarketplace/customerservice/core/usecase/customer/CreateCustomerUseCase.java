@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wks.servicemarketplace.common.CustomerUUID;
 import com.wks.servicemarketplace.common.Name;
 import com.wks.servicemarketplace.common.errors.CoreException;
-import com.wks.servicemarketplace.common.errors.CoreThrowable;
+import com.wks.servicemarketplace.common.errors.ErrorType;
 import com.wks.servicemarketplace.common.events.EventEnvelope;
 import com.wks.servicemarketplace.common.messaging.Message;
 import com.wks.servicemarketplace.common.messaging.MessageId;
@@ -88,6 +88,7 @@ public class CreateCustomerUseCase implements UseCase<CustomerRequest, CustomerR
         } catch (SQLException e) {
             LOGGER.error("Failed to create customer.", e);
             TransactionUtils.rollback(connection);
+            publishCustomerCreationFailed(connection, customerRequest, new CoreException(ErrorType.EXTERNAL_SYSTEM, e.getMessage(), e, null));
             throw new RuntimeException(e);
         } finally {
             CloseableUtils.close(connection);
@@ -131,7 +132,7 @@ public class CreateCustomerUseCase implements UseCase<CustomerRequest, CustomerR
         });
     }
 
-    private void publishCustomerCreationFailed(Connection connection, CustomerRequest customerRequest, CoreThrowable error) {
+    private void publishCustomerCreationFailed(Connection connection, CustomerRequest customerRequest, CoreException error) {
         customerRequest.getCorrelationId().ifPresent(correlationId -> {
             var profileCreationFailed = new CustomerCreationFailedEvent(error);
 

@@ -240,19 +240,27 @@ class FusionAuthAdapter @Inject constructor(
 fun Errors.toCoreException(): CoreException {
     val codes = fieldErrors.values.flatten().map { it.code }
 
-    val validations = fieldErrors.map { it.key to it.value.map { it.message }.joinToString { "," } }.toMap()
-    val others = mapOf("general" to this.generalErrors.map { it.message }.joinToString { "," }).toMap()
-    val fields = validations.plus(others)
+    val validations = fieldErrors
+            .takeIf { it.isNotEmpty() }
+            ?.map { it.key to it.value.joinToString { value -> value.message } }
+            ?.toMap()
+            ?: emptyMap()
+
+    val general = generalErrors
+            .takeIf { it.isNotEmpty() }
+            ?.joinToString { it.message }
+            ?.let { "general" to it }
+            ?.let { mapOf(it) }
+            ?: emptyMap()
+
+    val fields = validations.plus(general)
+    val messages = fields.map { "${it.key}: ${it.value}" }.joinToString(",")
 
     val errorType = when {
         codes.contains("[duplicate]") -> ErrorType.NOT_UNIQUE
         fieldErrors.isNotEmpty() -> ErrorType.VALIDATION
         else -> ErrorType.UNKNOWN
     }
-
-    val messages = mutableListOf<String>()
-    messages.addAll(fieldErrors.map { "${it.key}: ${it.value.map { it.message }.joinToString { "," }}" })
-    messages.addAll(generalErrors.map { it.message })
-
-    return CoreException(errorType, messages.joinToString { "," }, details = fields)
+    
+    return CoreException(errorType, messages, details = fields)
 }
