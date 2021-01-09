@@ -40,7 +40,7 @@ class ClientCredentialsTokenSupplier constructor(
                 if (TOKEN.get() == null || TOKEN.get()!!.isExpired()) {
                     val response = authService.clientCredentials(clientCredentials).execute()
                     response.body()?.let {
-                        TOKEN.compareAndSet(null, it)
+                        TOKEN.set(it)
                     }
                 }
                 TOKEN.get()
