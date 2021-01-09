@@ -261,6 +261,6 @@ fun Errors.toCoreException(): CoreException {
         fieldErrors.isNotEmpty() -> ErrorType.VALIDATION
         else -> ErrorType.UNKNOWN
     }
-    
+
     return CoreException(errorType, messages, details = fields)
 }

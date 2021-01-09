@@ -1,5 +1,7 @@
 package com.wks.servicemarketplace.common.events
 
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.wks.servicemarketplace.common.errors.CoreException
 import com.wks.servicemarketplace.common.errors.ErrorType
 import java.util.*
@@ -14,10 +16,15 @@ interface FailureEvent : DomainEvent {
     val description: String?
 }
 
-open class DefaultFailureEvent(override val eventType: EventType,
-                               override val entityType: String,
-                               coreException: CoreException) : FailureEvent {
+open class DefaultFailureEvent @JsonCreator constructor(@JsonProperty("eventType")
+                                                        override val eventType: EventType,
+                                                        @JsonProperty("entityType")
+                                                        override val entityType: String,
+                                                        coreException: CoreException) : FailureEvent {
+    @JsonProperty("errorType")
     override val errorType = coreException.errorType
+
+    @JsonProperty("description")
     override val description = coreException.message
 }
 

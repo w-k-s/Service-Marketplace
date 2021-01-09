@@ -78,7 +78,6 @@ public class Customer {
         );
 
         return ResultWithEvents.of(ModelValidator.validate(customer), Collections.singletonList(new CustomerCreatedEvent(
-                customer.getExternalId(),
                 customer.getUuid(),
                 customer.getName(),
                 customer.getCreatedBy(),
