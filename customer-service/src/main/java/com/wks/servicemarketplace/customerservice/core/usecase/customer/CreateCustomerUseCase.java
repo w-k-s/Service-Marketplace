@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wks.servicemarketplace.common.CustomerUUID;
 import com.wks.servicemarketplace.common.Name;
+import com.wks.servicemarketplace.common.auth.Permission;
 import com.wks.servicemarketplace.common.errors.CoreException;
 import com.wks.servicemarketplace.common.errors.ErrorType;
 import com.wks.servicemarketplace.common.events.EventEnvelope;
@@ -54,7 +55,7 @@ public class CreateCustomerUseCase implements UseCase<CustomerRequest, CustomerR
     public CustomerResponse execute(CustomerRequest customerRequest) {
         Connection connection = null;
         try {
-            AuthorizationUtils.checkRole(customerRequest.getAuthentication(), "customer.create");
+            AuthorizationUtils.checkRole(customerRequest.getAuthentication(), Permission.CREATE_CUSTOMER);
             connection = TransactionUtils.beginTransaction(customerDao.getConnection());
 
             ResultWithEvents<Customer, CustomerCreatedEvent> customerAndEvents = Customer.create(

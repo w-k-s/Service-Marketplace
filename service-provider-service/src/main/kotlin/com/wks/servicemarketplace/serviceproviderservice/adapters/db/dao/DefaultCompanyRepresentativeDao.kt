@@ -1,5 +1,8 @@
 package com.wks.servicemarketplace.serviceproviderservice.adapters.db.dao
 
+import com.wks.servicemarketplace.common.Email
+import com.wks.servicemarketplace.common.Name
+import com.wks.servicemarketplace.common.PhoneNumber
 import com.wks.servicemarketplace.serviceproviderservice.core.*
 import org.jooq.impl.DSL
 import org.jooq.impl.DSL.*
@@ -29,8 +32,8 @@ class DefaultCompanyRepresentativeDao @Inject constructor(dataSource: DataSource
         ).values(
                 admin.externalId.value,
                 admin.uuid.value,
-                admin.name.first,
-                admin.name.last,
+                admin.name.firstName,
+                admin.name.lastName,
                 admin.email.value,
                 admin.phone.value,
                 admin.createdBy,

@@ -1,6 +1,8 @@
 package com.wks.servicemarketplace.serviceproviderservice.adapters.auth
 
-import com.wks.servicemarketplace.serviceproviderservice.core.auth.Authentication
+import com.wks.servicemarketplace.common.auth.Authentication
+import com.wks.servicemarketplace.common.auth.Permission
+import java.lang.Exception
 import java.security.Principal
 import javax.ws.rs.core.SecurityContext
 
@@ -13,7 +15,11 @@ class DefaultSecurityContext(private val authentication: Authentication,
     }
 
     override fun isUserInRole(role: String): Boolean {
-        return authentication.hasRole(role)
+        return try {
+            authentication.hasRole(Permission.valueOf(role))
+        } catch (e: Exception) {
+            false
+        }
     }
 
     override fun isSecure(): Boolean {

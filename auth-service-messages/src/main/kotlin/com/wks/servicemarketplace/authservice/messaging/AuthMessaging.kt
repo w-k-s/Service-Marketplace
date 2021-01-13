@@ -1,20 +1,26 @@
 package com.wks.servicemarketplace.authservice.messaging
 
+import com.rabbitmq.client.BuiltinExchangeType
 import com.rabbitmq.client.Channel
 
 class AuthMessaging {
-    class Exchange {
-        companion object {
-            const val MAIN = "com.wks.servicemarketplace.auth.exchange.main"
+
+    enum class Exchange(val exchangeName: String) {
+        MAIN("com.wks.servicemarketplace.auth.exchange.main");
+
+        fun declare(channel: Channel) {
+            channel.exchangeDeclare(this.exchangeName, BuiltinExchangeType.TOPIC, true, false, false, emptyMap());
         }
     }
 
-    enum class Queue(val queueName: String) {
+    enum class Queue(val queueName: String){
         CUSTOMER_PROFILE_CREATED("com.wks.servicemarketplace.auth.queue.customerCreated"),
-        CUSTOMER_PROFILE_CREATION_FAILED("com.wks.servicemarketplace.auth.queue.customerCreationFailed");
+        CUSTOMER_PROFILE_CREATION_FAILED("com.wks.servicemarketplace.auth.queue.customerCreationFailed"),
+        SERVICE_PROVIDER_PROFILE_CREATED("com.wks.servicemarketplace.auth.queue.serviceProviderCreated"),
+        SERVICE_PROVIDER_PROFILE_CREATION_FAILED("com.wks.servicemarketplace.auth.queue.serviceProviderCreationFailed");
 
-        fun declare(channel: Channel){
-            channel.queueDeclare(this.queueName, true, false, false, emptyMap())
+        fun declare(channel: Channel) {
+            channel.queueDeclare(this.queueName, true, false, false, emptyMap());
         }
     }
 

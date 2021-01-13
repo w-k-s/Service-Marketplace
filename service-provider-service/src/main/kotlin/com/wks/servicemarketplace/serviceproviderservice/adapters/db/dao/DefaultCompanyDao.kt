@@ -1,5 +1,7 @@
 package com.wks.servicemarketplace.serviceproviderservice.adapters.db.dao
 
+import com.wks.servicemarketplace.common.Email
+import com.wks.servicemarketplace.common.PhoneNumber
 import com.wks.servicemarketplace.serviceproviderservice.core.*
 import org.jooq.impl.DSL.*
 import java.sql.Connection

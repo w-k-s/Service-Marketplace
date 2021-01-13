@@ -62,7 +62,7 @@ class CreateProfileSaga @Inject constructor(private val dataSource: DataSource,
                         messageId,
                         accountCreated.eventType.name,
                         payload,
-                        destinationExchange = AuthMessaging.Exchange.MAIN,
+                        destinationExchange = AuthMessaging.Exchange.MAIN.exchangeName,
                         destinationRoutingKey = when (accountCreated.type) {
                             UserType.SERVICE_PROVIDER -> AuthMessaging.RoutingKey.SERVICE_PROVIDER_ACCOUNT_CREATED
                             UserType.CUSTOMER -> AuthMessaging.RoutingKey.CUSTOMER_ACCOUNT_CREATED

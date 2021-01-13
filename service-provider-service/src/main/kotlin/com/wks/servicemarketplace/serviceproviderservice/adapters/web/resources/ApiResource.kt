@@ -1,6 +1,6 @@
 package com.wks.servicemarketplace.serviceproviderservice.adapters.web.resources
 
-import com.wks.servicemarketplace.serviceproviderservice.core.auth.Authentication
+import com.wks.servicemarketplace.common.auth.Authentication
 import com.wks.servicemarketplace.serviceproviderservice.core.usecase.CreateCompanyRequest
 import com.wks.servicemarketplace.serviceproviderservice.core.usecase.CreateCompanyResponse
 import com.wks.servicemarketplace.serviceproviderservice.core.usecase.CreateCompanyUseCase
@@ -20,10 +20,11 @@ class ApiResource @Inject constructor(private val createCompanyUseCase: CreateCo
     @Path("/company")
     @RolesAllowed("company.create")
     @Produces(MediaType.APPLICATION_JSON)
-    fun createCompany(request: CreateCompanyRequest.Builder, @Context context: SecurityContext) : CreateCompanyResponse {
-        return createCompanyUseCase.execute(request
-                .authentication(context.userPrincipal as? Authentication)
-                .build()
+    fun createCompany(request: CreateCompanyRequest.Builder, @Context context: SecurityContext): CreateCompanyResponse {
+        return createCompanyUseCase.execute(
+            request.also {
+                it.authentication = context.userPrincipal as? Authentication
+            }.build()
         )
     }
 }

@@ -1,12 +1,16 @@
 package com.wks.servicemarketplace.serviceproviderservice.core
 
 import com.fasterxml.jackson.annotation.JsonValue
+import com.wks.servicemarketplace.common.Email
+import com.wks.servicemarketplace.common.PhoneNumber
+import com.wks.servicemarketplace.common.events.DomainEvent
+import com.wks.servicemarketplace.common.events.EventType
 import java.time.Clock
 import java.time.OffsetDateTime
 import java.util.*
 
-data class CompanyId(@JsonValue override val value: Long) : Id<Long>(value)
-data class CompanyUUID(@JsonValue override val value: UUID) : Id<UUID>(value) {
+data class CompanyId(@JsonValue val value: Long)
+data class CompanyUUID(@JsonValue val value: UUID) {
     companion object {
         fun random() = CompanyUUID(UUID.randomUUID())
         fun fromString(uuidString: String) = CompanyUUID(UUID.fromString(uuidString))
@@ -14,50 +18,52 @@ data class CompanyUUID(@JsonValue override val value: UUID) : Id<UUID>(value) {
 }
 
 data class Company(
-        val id: Long = 0L,
-        val externalId: CompanyId,
-        val uuid: CompanyUUID,
-        val name: String,
-        val phone: PhoneNumber,
-        val email: Email,
-        val logoUrl: String?,
-        val services: Services,
-        val createdBy: CompanyRepresentativeUUID,
-        val createdDate: OffsetDateTime = OffsetDateTime.now(Clock.systemUTC()),
-        val lastModifiedDate: OffsetDateTime? = null,
-        val lastModifiedBy: String? = null,
-        val version: Long = 0L
+    val id: Long = 0L,
+    val externalId: CompanyId,
+    val uuid: CompanyUUID,
+    val name: String,
+    val phone: PhoneNumber,
+    val email: Email,
+    val logoUrl: String?,
+    val services: Services,
+    val createdBy: CompanyRepresentativeUUID,
+    val createdDate: OffsetDateTime = OffsetDateTime.now(Clock.systemUTC()),
+    val lastModifiedDate: OffsetDateTime? = null,
+    val lastModifiedBy: String? = null,
+    val version: Long = 0L
 ) {
     companion object {
-        fun create(externalId: CompanyId,
-                   name: String,
-                   email: Email,
-                   phoneNumber: PhoneNumber,
-                   services: Services,
-                   createdBy: CompanyRepresentativeUUID,
-                   logoUrl: String? = null): ResultWithEvents<Company, DomainEvent> {
+        fun create(
+            externalId: CompanyId,
+            name: String,
+            email: Email,
+            phoneNumber: PhoneNumber,
+            services: Services,
+            createdBy: CompanyRepresentativeUUID,
+            logoUrl: String? = null
+        ): ResultWithEvents<Company, DomainEvent> {
 
             val result = Company(
-                    0L,
-                    externalId,
-                    CompanyUUID.random(),
-                    name,
-                    phoneNumber,
-                    email,
-                    logoUrl,
-                    services,
-                    createdBy
+                0L,
+                externalId,
+                CompanyUUID.random(),
+                name,
+                phoneNumber,
+                email,
+                logoUrl,
+                services,
+                createdBy
             )
 
             val event = CompanyCreatedEvent(
-                    externalId,
-                    result.uuid,
-                    name,
-                    phoneNumber,
-                    email,
-                    services,
-                    createdBy,
-                    result.createdDate
+                externalId,
+                result.uuid,
+                name,
+                phoneNumber,
+                email,
+                services,
+                createdBy,
+                result.createdDate
             )
 
             return ResultWithEvents(result, listOf(event))
@@ -66,13 +72,16 @@ data class Company(
 }
 
 class CompanyCreatedEvent internal constructor(
-        val externalId: CompanyId,
-        val uuid: CompanyUUID,
-        val name: String,
-        val phone: PhoneNumber,
-        val email: Email,
-        val services: Services,
-        val createdBy: CompanyRepresentativeUUID,
-        val createdDate: OffsetDateTime,
-        val version: Long = 0L,
-) : DomainEvent
+    val externalId: CompanyId,
+    val uuid: CompanyUUID,
+    val name: String,
+    val phone: PhoneNumber,
+    val email: Email,
+    val services: Services,
+    val createdBy: CompanyRepresentativeUUID,
+    val createdDate: OffsetDateTime,
+    val version: Long = 0L,
+) : DomainEvent {
+    override val eventType = EventType.COMPANY_CREATED
+    override val entityType = "Company"
+}

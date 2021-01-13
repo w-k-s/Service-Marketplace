@@ -1,6 +1,7 @@
 package com.wks.servicemarketplace.customerservice.adapters.auth;
 
 import com.wks.servicemarketplace.common.auth.Authentication;
+import com.wks.servicemarketplace.common.auth.Permission;
 
 import javax.ws.rs.core.SecurityContext;
 import java.security.Principal;
@@ -25,7 +26,11 @@ public class DefaultSecurityContext implements SecurityContext {
 
     @Override
     public boolean isUserInRole(String role) {
-        return authentication.hasRole(role);
+        try {
+            return authentication.hasRole(Permission.valueOf(role));
+        }catch (Exception e){
+            return false;
+        }
     }
 
     @Override

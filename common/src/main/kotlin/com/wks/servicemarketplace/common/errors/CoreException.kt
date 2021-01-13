@@ -1,5 +1,7 @@
 package com.wks.servicemarketplace.common.errors
 
+import com.wks.servicemarketplace.common.auth.Permission
+
 enum class ErrorType(val code: Int) {
     VALIDATION(400),
     AUTHENTICATION(401),
@@ -30,7 +32,7 @@ data class CoreException(
         }
 
         @JvmStatic
-        fun unauthorized(missingPermission: String): CoreException {
+        fun unauthorized(missingPermission: Permission): CoreException {
             return CoreException(
                     ErrorType.AUTHORIZATION,
                     "User does not have permission $missingPermission"

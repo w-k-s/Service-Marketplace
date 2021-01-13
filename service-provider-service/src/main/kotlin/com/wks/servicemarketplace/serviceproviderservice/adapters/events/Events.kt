@@ -7,7 +7,6 @@ typealias RoutingKeyName = String
 
 class Exchange {
     companion object {
-        const val ACCOUNT: ExchangeName = "com.wks.servicemarketplace.account.exchange"
         const val SERVICE_PROVIDER: ExchangeName = "com.wks.servicemarketplace.serviceProvider.exchange"
     }
 }

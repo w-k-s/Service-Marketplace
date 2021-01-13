@@ -12,7 +12,7 @@ data class DefaultEventPublisher @Inject constructor(private val channel: Channe
                                                      private val objectMapper: ObjectMapper) : EventPublisher {
 
     init {
-        channel.exchangeDeclare(Exchange.SERVICE_PROVIDER, BuiltinExchangeType.TOPIC, true, true, emptyMap())
+        channel.exchangeDeclare(Exchange.SERVICE_PROVIDER, BuiltinExchangeType.TOPIC, true, false, emptyMap())
     }
 
     override fun companyCreated(token: String, event: CompanyCreatedEvent) {

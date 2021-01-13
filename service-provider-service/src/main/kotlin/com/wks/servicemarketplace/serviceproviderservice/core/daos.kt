@@ -1,5 +1,6 @@
 package com.wks.servicemarketplace.serviceproviderservice.core
 
+import com.wks.servicemarketplace.common.AddressId
 import java.sql.Connection
 import java.sql.SQLException
 import kotlin.jvm.Throws

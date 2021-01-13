@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.rabbitmq.client.Channel
 import com.rabbitmq.client.Connection
 import com.wks.servicemarketplace.authservice.adapters.web.resources.HealthResource
-import com.wks.servicemarketplace.serviceproviderservice.adapters.auth.TokenValidator
+import com.wks.servicemarketplace.common.auth.TokenValidator
 import com.wks.servicemarketplace.serviceproviderservice.adapters.db.dao.*
 import com.wks.servicemarketplace.serviceproviderservice.adapters.events.DefaultEventPublisher
 import com.wks.servicemarketplace.serviceproviderservice.adapters.events.DefaultEventReceiver

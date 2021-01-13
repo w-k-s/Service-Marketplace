@@ -40,8 +40,7 @@ public class ApiResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAddresses(@Context SecurityContext securityContext) {
         final var authentication = (Authentication) securityContext.getUserPrincipal();
-        final var customerId = Optional.ofNullable(authentication.getUser())
-                .map(User::getId)
+        final var customerId = Optional.ofNullable(authentication.getUserId())
                 .map(CustomerUUID::of)
                 .orElseThrow(() -> new CoreException(ErrorType.AUTHENTICATION, "token does not contain user id", null, null));
 

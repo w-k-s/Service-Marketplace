@@ -1,5 +1,8 @@
 package com.wks.servicemarketplace.serviceproviderservice.adapters.db.dao
 
+import com.wks.servicemarketplace.common.Email
+import com.wks.servicemarketplace.common.Name
+import com.wks.servicemarketplace.common.PhoneNumber
 import com.wks.servicemarketplace.serviceproviderservice.core.*
 import org.jooq.Record
 import org.jooq.RecordMapper
@@ -48,8 +51,8 @@ class DefaultEmployeeDao @Inject constructor(dataSource: DataSource) : BaseDao(d
         ).values(
                 employee.externalId.value,
                 employee.uuid.value,
-                employee.name.first,
-                employee.name.last,
+                employee.name.firstName,
+                employee.name.lastName,
                 employee.email.value,
                 employee.phone.value,
                 employee.companyId.value,

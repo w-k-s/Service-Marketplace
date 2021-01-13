@@ -1,8 +1,8 @@
 package com.wks.servicemarketplace.serviceproviderservice.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.wks.servicemarketplace.serviceproviderservice.adapters.auth.StandardTokenValidator
-import com.wks.servicemarketplace.serviceproviderservice.adapters.auth.TokenValidator
+import com.wks.servicemarketplace.common.auth.StandardTokenValidator
+import com.wks.servicemarketplace.common.auth.TokenValidator
 import org.glassfish.hk2.api.Factory
 import java.io.BufferedReader
 import java.io.IOException

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wks.servicemarketplace.common.CountryCode;
 import com.wks.servicemarketplace.common.CustomerUUID;
 import com.wks.servicemarketplace.common.auth.Authentication;
+import com.wks.servicemarketplace.common.auth.Permission;
 import com.wks.servicemarketplace.common.auth.User;
 import com.wks.servicemarketplace.common.errors.CoreException;
 import com.wks.servicemarketplace.common.errors.ErrorType;
@@ -50,15 +51,14 @@ public class AddAddressUseCase implements UseCase<AddressRequest, AddressRespons
     public AddressResponse execute(AddressRequest request) throws CoreException {
         Connection connection = null;
         try {
-            AuthorizationUtils.checkRole(request.getAuthentication(), "address.create");
+            AuthorizationUtils.checkRole(request.getAuthentication(), Permission.CREATE_ADDRESS);
 
             connection = TransactionUtils.beginTransaction(customerDao.getConnection());
 
             final Customer customer = customerDao.findCustomerByUuid(
                     connection,
                     Optional.ofNullable(request.getAuthentication())
-                            .map(Authentication::getUser)
-                            .map(User::getId)
+                            .map(Authentication::getUserId)
                             .map(CustomerUUID::of)
                             .orElseThrow(() -> new CoreException(ErrorType.AUTHENTICATION, "token does not contain user id", null, null))
             ).orElseThrow(() -> new CoreException(ErrorType.RESOURCE_NOT_FOUND, "User not found", null, null));

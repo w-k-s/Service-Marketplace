@@ -1,9 +1,9 @@
 package com.wks.servicemarketplace.serviceproviderservice.config
 
+import com.wks.servicemarketplace.common.auth.TokenValidator
+import com.wks.servicemarketplace.common.errors.CoreException
+import com.wks.servicemarketplace.common.http.httpStatusCode
 import com.wks.servicemarketplace.serviceproviderservice.adapters.auth.DefaultSecurityContext
-import com.wks.servicemarketplace.serviceproviderservice.adapters.auth.InvalidTokenException
-import com.wks.servicemarketplace.serviceproviderservice.adapters.auth.TokenValidator
-import org.ietf.jgss.GSSException.UNAUTHORIZED
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import javax.inject.Inject
@@ -26,8 +26,8 @@ class AuthenticationFilter @Inject constructor(private val tokenValidator: Token
                         requestContext.securityContext = DefaultSecurityContext(it, false, "Bearer")
                         LOGGER.info("Security Context set for user: '{}'", it.name)
                     } ?: LOGGER.info("authorization token not found")
-        } catch (e: InvalidTokenException) {
-            requestContext.abortWith(Response.status(UNAUTHORIZED).entity(e.message).build())
+        } catch (e: CoreException) {
+            requestContext.abortWith(Response.status(e.errorType.httpStatusCode()).entity(e.message).build())
         }
     }
 }

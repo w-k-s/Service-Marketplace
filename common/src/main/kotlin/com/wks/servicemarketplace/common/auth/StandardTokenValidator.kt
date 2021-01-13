@@ -1,6 +1,7 @@
 package com.wks.servicemarketplace.common.auth
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.wks.servicemarketplace.common.UserId
 import com.wks.servicemarketplace.common.errors.CoreException
 import com.wks.servicemarketplace.common.errors.ErrorType
 import org.jose4j.jwa.AlgorithmConstraints
@@ -32,7 +33,7 @@ class StandardTokenValidator(publicKey: PublicKey, private val objectMapper: Obj
         try {
             return consumer.processToClaims(token).let {
                 DefaultAuthentication(
-                        it.getStringClaimValue("user")?.let { user -> objectMapper.readValue(user, DefaultUser::class.java) },
+                        it.getStringClaimValue("userId")?.let { uuidString -> UserId.fromString(uuidString) },
                         token,
                         it.subject,
                         it.getStringListClaimValue("permissions")

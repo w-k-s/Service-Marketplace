@@ -1,5 +1,8 @@
 package com.wks.servicemarketplace.serviceproviderservice.adapters.db.dao
 
+import com.wks.servicemarketplace.common.AddressId
+import com.wks.servicemarketplace.common.AddressUUID
+import com.wks.servicemarketplace.common.CountryCode
 import com.wks.servicemarketplace.serviceproviderservice.core.*
 import org.jooq.Record
 import org.jooq.RecordMapper
@@ -15,14 +18,14 @@ class DefaultAddressDao @Inject constructor(dataSource: DataSource) : BaseDao(da
         record?.let {
             Address(
                     it.get("a.id", Long::class.java),
-                    AddressId(it.get("a.external_id", Long::class.java)),
+                    AddressId.of(it.get("a.external_id", Long::class.java)),
                     AddressUUID.fromString(it.get("a.uuid", String::class.java)),
                     CompanyId(it.get("a.company_external_id", Long::class.java)),
                     it.get("a.name", String::class.java),
                     it.get("a.line_1", String::class.java),
                     it.get("a.line_2", String::class.java),
                     it.get("a.city", String::class.java),
-                    CountryCode(it.get("a.country_code", String::class.java)),
+                    CountryCode.of(it.get("a.country_code", String::class.java)),
                     it.get("a.latitude", BigDecimal::class.java),
                     it.get("a.longitude", BigDecimal::class.java),
                     it.get("a.created_by", String::class.java),

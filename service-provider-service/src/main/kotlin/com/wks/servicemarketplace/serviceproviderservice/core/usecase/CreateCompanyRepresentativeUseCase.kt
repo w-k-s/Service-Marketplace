@@ -2,18 +2,21 @@ package com.wks.servicemarketplace.serviceproviderservice.core.usecase
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder
+import com.wks.servicemarketplace.common.Email
+import com.wks.servicemarketplace.common.ModelValidator
+import com.wks.servicemarketplace.common.Name
+import com.wks.servicemarketplace.common.PhoneNumber
+import com.wks.servicemarketplace.common.auth.Authentication
+import com.wks.servicemarketplace.common.auth.Permission
 import com.wks.servicemarketplace.serviceproviderservice.core.*
-import com.wks.servicemarketplace.serviceproviderservice.core.auth.Authentication
-import com.wks.servicemarketplace.serviceproviderservice.core.exceptions.CoreRuntimeException
-import com.wks.servicemarketplace.serviceproviderservice.core.exceptions.ErrorType
-import com.wks.servicemarketplace.serviceproviderservice.core.utils.ModelValidator
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.*
 import javax.inject.Inject
 import javax.validation.constraints.NotNull
 
-class CreateCompanyRepresentativeUseCase @Inject constructor(private val companyRepresentativeDao: CompanyRepresentativeDao) : UseCase<CreateCompanyRepresentativeRequest, CreateCompanyRepresentativeResponse> {
+class CreateCompanyRepresentativeUseCase @Inject constructor(private val companyRepresentativeDao: CompanyRepresentativeDao) :
+    UseCase<CreateCompanyRepresentativeRequest, CreateCompanyRepresentativeResponse> {
 
     companion object {
         val LOGGER: Logger = LoggerFactory.getLogger(CreateCompanyRepresentativeUseCase::class.java)
@@ -24,16 +27,16 @@ class CreateCompanyRepresentativeUseCase @Inject constructor(private val company
             it.autoCommit = false
 
             try {
-                input.authentication.checkRole("comprep.create")
+                input.authentication.checkRole(Permission.CREATE_COMPANY_REPRESENTATIVE)
 
                 val companyRepresentative = CompanyRepresentative(
-                        0L,
-                        companyRepresentativeDao.newCompanyRepresentativeId(it),
-                        CompanyRepresentativeUUID(input.uuid),
-                        input.name,
-                        input.email,
-                        input.phoneNumber,
-                        input.authentication.name
+                    0L,
+                    companyRepresentativeDao.newCompanyRepresentativeId(it),
+                    CompanyRepresentativeUUID(input.uuid),
+                    input.name,
+                    input.email,
+                    input.phoneNumber,
+                    input.authentication.name
                 )
 
                 companyRepresentativeDao.save(it, companyRepresentative)
@@ -42,19 +45,15 @@ class CreateCompanyRepresentativeUseCase @Inject constructor(private val company
 
                 return companyRepresentative.let { rep ->
                     CreateCompanyRepresentativeResponse(
-                            rep.externalId,
-                            rep.uuid
+                        rep.externalId,
+                        rep.uuid
                     )
                 }
 
-            } catch (e: CoreRuntimeException) {
-                LOGGER.error("Failed to create company representative: ${e.message}", e)
-                it.rollback()
-                throw e
             } catch (e: Exception) {
                 LOGGER.error("Failed to create company representative: ${e.message}", e)
                 it.rollback()
-                throw CoreRuntimeException(ErrorType.UNKNOWN, e)
+                throw e
             }
         }
     }
@@ -62,70 +61,42 @@ class CreateCompanyRepresentativeUseCase @Inject constructor(private val company
 
 @JsonDeserialize(builder = CreateCompanyRepresentativeRequest.Builder::class)
 data class CreateCompanyRepresentativeRequest(
-        val uuid: UUID,
-        val name: Name,
-        val email: Email,
-        val phoneNumber: PhoneNumber,
-        val authentication: Authentication
+    val uuid: UUID,
+    val name: Name,
+    val email: Email,
+    val phoneNumber: PhoneNumber,
+    val authentication: Authentication
 ) {
     @JsonPOJOBuilder(buildMethodName = "build", withPrefix = "")
     class Builder(
-            @NotNull
-            var uuid: String?,
-            @NotNull
-            var firstName: String?,
-            @NotNull
-            var lastName: String?,
-            @NotNull
-            var email: String?,
-            @NotNull
-            var mobileNumber: String?,
-            @NotNull
-            var authentication: Authentication?
+        @NotNull
+        var uuid: String?,
+        @NotNull
+        var firstName: String?,
+        @NotNull
+        var lastName: String?,
+        @NotNull
+        var email: String?,
+        @NotNull
+        var mobileNumber: String?,
+        @NotNull
+        var authentication: Authentication?
     ) {
-        fun uuid(uuid: String?): Builder {
-            this.uuid = uuid
-            return this
-        }
-
-        fun firstName(firstName: String?): Builder {
-            this.firstName = firstName
-            return this
-        }
-
-        fun lastName(lastName: String?): Builder {
-            this.lastName = lastName
-            return this
-        }
-
-        fun email(email: String?): Builder {
-            this.email = email
-            return this
-        }
-
-        fun mobileNumber(mobileNumber: String?): Builder {
-            this.mobileNumber = mobileNumber
-            return this
-        }
-
-        fun authentication(authentication: Authentication?): Builder {
-            this.authentication = authentication
-            return this
-        }
-
         fun build(): CreateCompanyRepresentativeRequest {
             return ModelValidator.validate(this).let {
                 CreateCompanyRepresentativeRequest(
-                        UUID.fromString(this.uuid!!),
-                        Name.of(this.firstName!!, this.lastName!!),
-                        Email.of(this.email!!),
-                        PhoneNumber.of(this.mobileNumber!!),
-                        this.authentication!!
+                    UUID.fromString(this.uuid!!),
+                    Name.of(this.firstName!!, this.lastName!!),
+                    Email.of(this.email!!),
+                    PhoneNumber.of(this.mobileNumber!!),
+                    this.authentication!!
                 )
             }
         }
     }
 }
 
-data class CreateCompanyRepresentativeResponse(private val externalId: CompanyRepresentativeId,
-                                          private val uuid: CompanyRepresentativeUUID)
+data class CreateCompanyRepresentativeResponse(
+    private val externalId: CompanyRepresentativeId,
+    private val uuid: CompanyRepresentativeUUID
+)

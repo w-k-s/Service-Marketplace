@@ -12,10 +12,14 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.util.Collections;
 
 public class DefaultCustomerEventsReceiver {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultCustomerEventsReceiver.class);
+
+    private static final String QUEUE_CUSTOMER_CREATED = "com.wks.servicemarketplace.customer.queue.customerAccountCreated";
+
     private final TokenValidator tokenValidator;
     private final ObjectMapper objectMapper;
     private final Channel channel;
@@ -35,8 +39,8 @@ public class DefaultCustomerEventsReceiver {
 
     private void consumeCustomerCreated(CreateCustomerUseCase createCustomerUseCase) {
         try {
-            String queueName = channel.queueDeclare().getQueue();
-            channel.queueBind(queueName, AuthMessaging.Exchange.MAIN, AuthMessaging.RoutingKey.CUSTOMER_ACCOUNT_CREATED);
+            String queueName = channel.queueDeclare(QUEUE_CUSTOMER_CREATED,true, false, false, Collections.emptyMap()).getQueue();
+            channel.queueBind(queueName, AuthMessaging.Exchange.MAIN.getExchangeName(), AuthMessaging.RoutingKey.CUSTOMER_ACCOUNT_CREATED);
             channel.basicConsume(queueName, false, (consumerTag, message) -> {
 
                 final var token = message.getProperties().getHeaders().get("Authorization").toString().substring("Bearer".length()).trim();
