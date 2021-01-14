@@ -7,7 +7,6 @@ import com.wks.servicemarketplace.authservice.core.OutboxDao
 import com.wks.servicemarketplace.authservice.core.SagaDao
 import com.wks.servicemarketplace.authservice.messaging.AccountCreatedEvent
 import com.wks.servicemarketplace.authservice.messaging.AuthMessaging
-import com.wks.servicemarketplace.common.auth.Authentication
 import com.wks.servicemarketplace.common.auth.UserType
 import com.wks.servicemarketplace.common.events.EventEnvelope
 import com.wks.servicemarketplace.common.events.EventId
@@ -24,16 +23,19 @@ import javax.inject.Inject
 
 enum class CreateProfileState : Saga.State {
     CREATING_PROFILE,
-    PROFILE_CREATED;
+    PROFILE_CREATED,
+    PROFILE_CREATION_FAILED;
 
     override fun stateName() = this.name
 }
 
-class CreateProfileSaga @Inject constructor(private val dataSource: DataSource,
-                                            private val eventDao: EventDao,
-                                            private val outboxDao: OutboxDao,
-                                            private val sagaDao: SagaDao,
-                                            private val objectMapper: ObjectMapper) {
+class CreateProfileSaga @Inject constructor(
+    private val dataSource: DataSource,
+    private val eventDao: EventDao,
+    private val outboxDao: OutboxDao,
+    private val sagaDao: SagaDao,
+    private val objectMapper: ObjectMapper
+) {
 
     companion object {
         val LOGGER = LoggerFactory.getLogger(this::class.java)
@@ -50,15 +52,18 @@ class CreateProfileSaga @Inject constructor(private val dataSource: DataSource,
                 val transactionId = TransactionId.random()
                 val payload = objectMapper.writeValueAsString(accountCreated)
 
-                eventDao.saveEvent(conn, EventEnvelope(
+                eventDao.saveEvent(
+                    conn, EventEnvelope(
                         eventId,
                         accountCreated.eventType,
                         payload,
                         accountCreated.uuid.toString(),
                         accountCreated.entityType
-                ))
+                    )
+                )
 
-                outboxDao.saveMessage(conn, Message(
+                outboxDao.saveMessage(
+                    conn, Message(
                         messageId,
                         accountCreated.eventType.name,
                         payload,
@@ -67,10 +72,12 @@ class CreateProfileSaga @Inject constructor(private val dataSource: DataSource,
                             UserType.SERVICE_PROVIDER -> AuthMessaging.RoutingKey.SERVICE_PROVIDER_ACCOUNT_CREATED
                             UserType.CUSTOMER -> AuthMessaging.RoutingKey.CUSTOMER_ACCOUNT_CREATED
                         },
-                        correlationId = accountCreated.uuid.toString()
-                ))
+                        correlationId = transactionId.toString()
+                    )
+                )
 
-                sagaDao.saveSaga(conn, Saga(
+                sagaDao.saveSaga(
+                    conn, Saga(
                         transactionId,
                         SAGA_NAME,
                         accountCreated.uuid.toString(),
@@ -78,7 +85,8 @@ class CreateProfileSaga @Inject constructor(private val dataSource: DataSource,
                         CreateProfileState.CREATING_PROFILE,
                         DeadlineAfter(Duration.ofMinutes(1)),
                         eventId
-                ))
+                    )
+                )
 
                 conn.commit()
 
@@ -91,11 +99,47 @@ class CreateProfileSaga @Inject constructor(private val dataSource: DataSource,
         }
     }
 
-    fun on(authentication: Authentication, customerCreatedEvent: CustomerCreatedEvent) {
-
+    fun on(
+        correlationId: String,
+        customerCreatedEvent: CustomerCreatedEvent
+    ) {
+        LOGGER.info("Received CustomerCreatedEvent: $customerCreatedEvent")
+        val transactionId = TransactionId.fromString(correlationId)
+        dataSource.connection().use { conn ->
+            try {
+                conn.autoCommit = false
+                val saga = sagaDao.fetchSaga(conn, transactionId, CreateProfileState::valueOf)
+                sagaDao.updateSaga(conn, transactionId, saga.copy(
+                    state = CreateProfileState.PROFILE_CREATED,
+                    deadline = null
+                ), CreateProfileState.CREATING_PROFILE)
+                conn.commit()
+            } catch (e: Exception) {
+                LOGGER.error("Failed to update saga state", e)
+                conn.rollback()
+            }
+        }
     }
 
-    fun on(authentication: Authentication, customerCreationFailedEvent: CustomerCreationFailedEvent) {
-
+    fun on(
+        correlationId: String,
+        customerCreationFailedEvent: CustomerCreationFailedEvent
+    ) {
+        LOGGER.info("Received CustomerCreationFailedEvent: $customerCreationFailedEvent")
+        val transactionId = TransactionId.fromString(correlationId)
+        dataSource.connection().use { conn ->
+            try {
+                conn.autoCommit = false
+                val saga = sagaDao.fetchSaga(conn, transactionId, CreateProfileState::valueOf)
+                sagaDao.updateSaga(conn, transactionId, saga.copy(
+                    state = CreateProfileState.PROFILE_CREATION_FAILED,
+                    deadline = null
+                ), CreateProfileState.CREATING_PROFILE)
+                conn.commit()
+            } catch (e: Exception) {
+                LOGGER.error("Failed to update saga state", e)
+                conn.rollback()
+            }
+        }
     }
 }

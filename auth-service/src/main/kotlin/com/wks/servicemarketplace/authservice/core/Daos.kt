@@ -25,5 +25,6 @@ interface OutboxDao : Dao {
 
 interface SagaDao : Dao {
     fun saveSaga(connection: Connection, saga: Saga): Boolean
+    fun <T : Saga.State> fetchSaga(connection: Connection, transaction: TransactionId, stateMapper: (String) -> T): Saga
     fun updateSaga(connection: Connection, transaction: TransactionId, updatedSaga: Saga, oldState: Saga.State): Boolean
 }
