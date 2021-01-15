@@ -1,6 +1,6 @@
 package com.wks.servicesmarketplace.orderservice.config
 
-import com.wks.servicesmarketplace.orderservice.adapters.auth.TokenValidator
+import com.wks.servicemarketplace.common.auth.TokenValidator
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity

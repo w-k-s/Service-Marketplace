@@ -1,6 +1,6 @@
 package com.wks.servicesmarketplace.orderservice.core.usecases
 
-import com.wks.servicesmarketplace.orderservice.core.CustomerUUID
+import com.wks.servicemarketplace.common.CustomerUUID
 import com.wks.servicesmarketplace.orderservice.core.OrderUUID
 import com.wks.servicesmarketplace.orderservice.core.ServiceOrderStatus
 import java.time.OffsetDateTime

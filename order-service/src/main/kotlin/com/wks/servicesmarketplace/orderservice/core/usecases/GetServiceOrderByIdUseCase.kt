@@ -1,8 +1,9 @@
 package com.wks.servicesmarketplace.orderservice.core.usecases
 
+import com.wks.servicemarketplace.common.auth.Authentication
+import com.wks.servicemarketplace.common.errors.CoreException
+import com.wks.servicemarketplace.common.errors.ErrorType
 import com.wks.servicesmarketplace.orderservice.core.OrderUUID
-import com.wks.servicesmarketplace.orderservice.core.auth.Authentication
-import com.wks.servicesmarketplace.orderservice.core.exceptions.ServiceOrderNotFoundException
 import com.wks.servicesmarketplace.orderservice.core.repositories.ServiceOrderRepository
 import org.springframework.stereotype.Service
 
@@ -30,7 +31,10 @@ class GetServiceOrderByIdUseCase(private val serviceOrderRepository: ServiceOrde
                             it.version
                     )
                 }
-                .orElseThrow { ServiceOrderNotFoundException(request.orderUUID) }
+                .orElseThrow { CoreException(
+                    ErrorType.RESOURCE_NOT_FOUND,
+                    "Order ${request.orderUUID} not found"
+                ) }
     }
 
 }

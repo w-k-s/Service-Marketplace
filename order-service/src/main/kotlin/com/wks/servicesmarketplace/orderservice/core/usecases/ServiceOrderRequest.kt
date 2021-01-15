@@ -1,8 +1,7 @@
 package com.wks.servicesmarketplace.orderservice.core.usecases
 
-import com.wks.servicesmarketplace.orderservice.core.auth.Authentication
-import com.wks.servicesmarketplace.orderservice.core.utils.ModelValidator
-import com.wks.servicesmarketplace.orderservice.core.utils.ServiceOrderDateTime
+import com.wks.servicemarketplace.common.ModelValidator
+import com.wks.servicemarketplace.common.auth.Authentication
 import java.math.BigDecimal
 import java.time.OffsetDateTime
 import javax.validation.constraints.*

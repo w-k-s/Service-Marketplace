@@ -1,12 +1,11 @@
 package com.wks.servicesmarketplace.orderservice.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.wks.servicesmarketplace.orderservice.adapters.auth.StandardTokenValidator
-import com.wks.servicesmarketplace.orderservice.adapters.auth.TokenValidator
+import com.wks.servicemarketplace.common.auth.StandardTokenValidator
+import com.wks.servicemarketplace.common.auth.TokenValidator
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import java.io.BufferedReader
-import java.io.FileNotFoundException
 import java.io.IOException
 import java.io.InputStreamReader
 import java.security.KeyFactory

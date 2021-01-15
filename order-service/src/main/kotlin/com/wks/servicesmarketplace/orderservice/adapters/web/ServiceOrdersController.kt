@@ -1,6 +1,6 @@
 package com.wks.servicesmarketplace.orderservice.adapters.web
 
-import com.wks.servicesmarketplace.orderservice.core.auth.Authentication
+import com.wks.servicemarketplace.common.auth.Authentication
 import com.wks.servicesmarketplace.orderservice.core.OrderUUID
 import com.wks.servicesmarketplace.orderservice.core.usecases.*
 import org.springframework.security.core.annotation.AuthenticationPrincipal

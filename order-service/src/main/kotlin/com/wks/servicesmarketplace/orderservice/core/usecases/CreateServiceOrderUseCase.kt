@@ -1,7 +1,10 @@
 package com.wks.servicesmarketplace.orderservice.core.usecases
 
+import com.wks.servicemarketplace.common.CountryCode
+import com.wks.servicemarketplace.common.CustomerUUID
+import com.wks.servicemarketplace.common.errors.CoreException
+import com.wks.servicemarketplace.common.errors.ErrorType
 import com.wks.servicesmarketplace.orderservice.core.*
-import com.wks.servicesmarketplace.orderservice.core.exceptions.UserIdMissingException
 import com.wks.servicesmarketplace.orderservice.core.repositories.ServiceOrderRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -15,7 +18,8 @@ class CreateServiceOrderUseCase(private val serviceOrderRepository: ServiceOrder
     override fun execute(request: ServiceOrderRequest): OrderIdResponse {
 
         val orderId = OrderUUID.random()
-        val customerId = CustomerUUID.fromString(request.authentication.user?.id ?: throw UserIdMissingException())
+        val customerId = CustomerUUID.of(request.authentication.userId
+            ?: throw CoreException(ErrorType.AUTHENTICATION, "userId not found"))
         serviceOrderRepository.save(request.let {
             ServiceOrder.create(
                     orderId,

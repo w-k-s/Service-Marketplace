@@ -25,19 +25,6 @@ data class OrderUUID internal constructor(@Convert(converter = UUIDConverter::cl
     override fun toString() = value.toString()
 }
 
-@Embeddable
-data class CustomerUUID internal constructor(@Convert(converter = UUIDConverter::class)
-                                             @JsonValue var value: UUID) : Serializable {
-    companion object {
-        fun of(uuid: UUID) = OrderUUID(uuid)
-
-        @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
-        @JvmStatic
-        fun fromString(uuidString: String) = CustomerUUID(UUID.fromString(uuidString))
-    }
-
-    override fun toString() = value.toString()
-}
 
 @Embeddable
 data class CompanyId internal constructor(private var value: Long) : Serializable {

@@ -1,5 +1,7 @@
 package com.wks.servicesmarketplace.orderservice.core.repositories
 
+import com.wks.servicemarketplace.common.CountryCode
+import com.wks.servicemarketplace.common.CustomerUUID
 import org.javamoney.moneta.FastMoney
 import java.security.Principal
 import java.util.*
@@ -20,7 +22,19 @@ class UUIDConverter : AttributeConverter<UUID, String> {
 }
 
 @Converter
+class CustomerUUIDConverter : AttributeConverter<CustomerUUID, String> {
+    override fun convertToDatabaseColumn(attribute: CustomerUUID?) = attribute?.toString()
+    override fun convertToEntityAttribute(dbData: String?) = dbData?.let { CustomerUUID.fromString(it) }
+}
+
+@Converter
 class PrincipalConverter : AttributeConverter<Principal, String> {
     override fun convertToDatabaseColumn(attribute: Principal?) = attribute?.name
     override fun convertToEntityAttribute(dbData: String?) = Principal { dbData }
+}
+
+@Converter
+class CountryCodeConverter : AttributeConverter<CountryCode, String> {
+    override fun convertToDatabaseColumn(attribute: CountryCode?) = attribute?.toString()
+    override fun convertToEntityAttribute(dbData: String?) = dbData?.let { CountryCode.of(it) }
 }
