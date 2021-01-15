@@ -94,16 +94,16 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.12'
 }
 
-liquibase {
-    // Usage e.g. gradle liquibaseUpdate -Purl=jdbc:postgresql://localhost:5432/account -Pusername= -Ppassword= -PrunList=main
-    activities {
-        main {
-            changeLogFile 'src/main/resources/liquibase/customerService.changelog.xml'
-            url project.ext.mainUrl ?: "localhost:5432"
-            username project.ext.username ?: ""
-            password project.ext.password ?: ""
-        }
-        runList project.ext.runList
-    }
-}
+//liquibase {
+//    // Usage e.g. gradle liquibaseUpdate -Purl=jdbc:postgresql://localhost:5432/customer -Pusername= -Ppassword= -PrunList=main
+//    activities {
+//        main {
+//            changeLogFile 'src/main/resources/liquibase/customerService.changelog.xml'
+//            url project.ext.mainUrl
+//            username project.ext.username
+//            password project.ext.password
+//        }
+//        runList project.ext.runList
+//    }
+//}
 
