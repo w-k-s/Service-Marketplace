@@ -147,12 +147,10 @@ jobs:
             $(aws ecr get-login --no-include-email --region $AWS_REGION)
             docker push $AWS_REPO/<< parameters.package_name >>:latest
             docker push $AWS_REPO/<< parameters.package_name >>:$CIRCLE_BUILD_NUM
+
   deploy:
     executor: aws-eks/python3
-    docker:
-      - image: cimg/openjdk:13.0.2
     working_directory: ~/repo
-
     steps:
       - checkout
       - aws-eks/update-kubeconfig-with-authenticator:
@@ -167,18 +165,19 @@ jobs:
 
 workflows:
   version: 2
-  ci:
-    when: << pipeline.parameters.trigger >>
-    jobs:
-      - trigger-workflows
-    # Workflows defined for each package.
+#  ci:
+#    when: << pipeline.parameters.trigger >>
+#    jobs:
+#      - trigger-workflows
+
+# Workflows defined for each package.
   gateway-service:
     when: << pipeline.parameters.gateway-service >>
     jobs:
       - build:
           name: gateway-build
           package_name: api-gateway
-          image: cimg/openjdk-15.0
+          image: cimg/openjdk-15.0.1
 
   auth-service:
     when: << pipeline.parameters.auth-service >>
@@ -199,7 +198,7 @@ workflows:
 #      - publish_image:
 #          name: publish-api-gateway-image
 #          package_name: api-gateway
-#          image: cimg/openjdk-15.0
+#          image: cimg/openjdk-15.0.1
 #          filters:
 #            branches:
 #              only: master
