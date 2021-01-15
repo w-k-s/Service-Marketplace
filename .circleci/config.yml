@@ -52,9 +52,12 @@ jobs:
     parameters:
       package_name:
         type: string
+      image:
+        type: string
+        default: cimg/openjdk:13.0.2
 
     docker:
-      - image: cimg/openjdk:15.0
+      - image: << parameters.image >>
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
@@ -91,9 +94,12 @@ jobs:
     parameters:
       package_name:
         type: string
+      image:
+        type: string
+        default: cimg/openjdk:13.0.2
 
     docker:
-      - image: cimg/openjdk:15.0
+      - image: << parameters.image >>
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
@@ -144,7 +150,7 @@ jobs:
   deploy:
     executor: aws-eks/python3
     docker:
-      - image: cimg/openjdk:15.0
+      - image: cimg/openjdk:13.0.2
     working_directory: ~/repo
 
     steps:
@@ -172,6 +178,7 @@ workflows:
       - build:
           name: gateway-build
           package_name: api-gateway
+          image: cimg/openjdk-15.0
 
   auth-service:
     when: << pipeline.parameters.auth-service >>
@@ -192,6 +199,7 @@ workflows:
 #      - publish_image:
 #          name: publish-api-gateway-image
 #          package_name: api-gateway
+#          image: cimg/openjdk-15.0
 #          filters:
 #            branches:
 #              only: master
