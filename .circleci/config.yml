@@ -21,15 +21,15 @@ parameters:
   # A parameter per package
   gateway-service:
     type: boolean
-    default: false
+    default: true
 
   auth-service:
     type: boolean
-    default: false
+    default: true
 
   customer-service:
     type: boolean
-    default: false
+    default: true
 
   service-provider-service:
     type: boolean
