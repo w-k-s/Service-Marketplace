@@ -27,6 +27,7 @@ import com.wks.servicemarketplace.customerservice.core.daos.OutboxDao;
 import com.wks.servicemarketplace.customerservice.core.usecase.address.AddAddressUseCase;
 import com.wks.servicemarketplace.customerservice.core.usecase.address.FindAddressByCustomerUuidUseCase;
 import com.wks.servicemarketplace.customerservice.core.usecase.customer.CreateCustomerUseCase;
+import com.wks.servicemarketplace.customerservice.core.usecase.customer.GetCustomerUseCase;
 import org.eclipse.jetty.server.Server;
 import org.glassfish.hk2.api.Immediate;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
@@ -71,6 +72,7 @@ public class CustomerServiceApplication extends ResourceConfig {
                 bind(DefaultCustomerDao.class).to(CustomerDao.class).in(Immediate.class);
                 bind(DefaultOutboxDao.class).to(OutboxDao.class).in(Immediate.class);
                 bind(DefaultEventDao.class).to(EventDao.class).in(Immediate.class);
+                bind(GetCustomerUseCase.class).to(GetCustomerUseCase.class).in(Immediate.class);
                 bind(AddAddressUseCase.class).to(AddAddressUseCase.class).in(Immediate.class);
                 bind(CreateCustomerUseCase.class).to(CreateCustomerUseCase.class).in(Immediate.class);
                 bind(DefaultMessagePublisher.class).to(DefaultMessagePublisher.class).in(Immediate.class);

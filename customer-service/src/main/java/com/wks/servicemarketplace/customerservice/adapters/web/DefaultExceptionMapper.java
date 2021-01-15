@@ -4,6 +4,8 @@ import com.wks.servicemarketplace.common.errors.CoreException;
 import com.wks.servicemarketplace.common.errors.ErrorType;
 import com.wks.servicemarketplace.common.http.ErrorResponse;
 import com.wks.servicemarketplace.common.http.ErrorResponseKt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -12,8 +14,12 @@ import javax.ws.rs.ext.Provider;
 @Provider
 public class DefaultExceptionMapper implements ExceptionMapper<Throwable> {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultExceptionMapper.class);
+
     @Override
     public Response toResponse(Throwable exception) {
+        LOGGER.error("Error Response for Exception", exception);
+
         if (exception instanceof CoreException) {
             return createCoreErrorResponse((CoreException) exception);
         } else {

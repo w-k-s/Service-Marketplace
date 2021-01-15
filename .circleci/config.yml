@@ -171,7 +171,7 @@ workflows:
     jobs:
       - build:
           name: gateway-build
-          package_name: gateway
+          package_name: api-gateway
 
   auth-service:
     when: << pipeline.parameters.auth-service >>
@@ -180,11 +180,30 @@ workflows:
           name: auth-service-build
           package_name: auth-service
 
+  customer-service:
+    when: << pipeline.parameters.customer-service >>
+    jobs:
+      - build:
+          name: customer-service-build
+          package_name: customer-service
+
 #  deploy:
 #    jobs:
 #      - publish_image:
+#          name: publish-api-gateway-image
+#          package_name: api-gateway
+#          filters:
+#            branches:
+#              only: master
+#      - publish_image:
 #          name: publish-auth-service-image
 #          package_name: auth-service
+#          filters:
+#            branches:
+#              only: master
+#      - publish_image:
+#          name: publish-customer-service-image
+#          package_name: customer-service
 #          filters:
 #            branches:
 #              only: master

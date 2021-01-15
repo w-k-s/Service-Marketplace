@@ -9,7 +9,7 @@ spring:
         - id: customer-service
           uri: ${APPLICATION_HOSTS_CUSTOMER_SERVICE:http://localhost:8081}
           predicates:
-              - Path=/api/v1/customers/**
+              - Path=/api/v1/customer/**
 
         - id: auth-service
           uri: ${APPLICATION_HOSTS_AUTH_SERVICE:http://localhost:8082}

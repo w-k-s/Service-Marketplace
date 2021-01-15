@@ -9,6 +9,7 @@ import com.wks.servicemarketplace.customerservice.api.AddressRequest;
 import com.wks.servicemarketplace.customerservice.api.CustomerService;
 import com.wks.servicemarketplace.customerservice.core.usecase.address.AddAddressUseCase;
 import com.wks.servicemarketplace.customerservice.core.usecase.address.FindAddressByCustomerUuidUseCase;
+import com.wks.servicemarketplace.customerservice.core.usecase.customer.GetCustomerUseCase;
 import org.glassfish.jersey.process.internal.RequestScoped;
 
 import javax.inject.Inject;
@@ -27,12 +28,28 @@ import java.util.Optional;
 public class ApiResource {
 
     private final FindAddressByCustomerUuidUseCase findAddressUseCase;
+    private final GetCustomerUseCase getCustomerUseCase;
     private final AddAddressUseCase addAddressUseCase;
 
     @Inject
-    public ApiResource(FindAddressByCustomerUuidUseCase findAddressUseCase, AddAddressUseCase addAddressUseCase) {
+    public ApiResource(GetCustomerUseCase getCustomerUseCase,
+                       FindAddressByCustomerUuidUseCase findAddressUseCase,
+                       AddAddressUseCase addAddressUseCase) {
+        this.getCustomerUseCase = getCustomerUseCase;
         this.addAddressUseCase = addAddressUseCase;
         this.findAddressUseCase = findAddressUseCase;
+    }
+
+    @GET
+    @Path(CustomerService.ENDPOINT_GET_CUSTOMER)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getCustomer(@Context SecurityContext securityContext) {
+        final var authentication = (Authentication) securityContext.getUserPrincipal();
+        final var customerId = Optional.ofNullable(authentication.getUserId())
+                .map(CustomerUUID::of)
+                .orElseThrow(() -> new CoreException(ErrorType.AUTHENTICATION, "token does not contain user id", null, null));
+
+        return Response.ok(getCustomerUseCase.execute(customerId)).build();
     }
 
     @GET

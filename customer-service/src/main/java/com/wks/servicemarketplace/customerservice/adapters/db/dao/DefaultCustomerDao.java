@@ -83,7 +83,7 @@ public class DefaultCustomerDao extends BaseDAO implements CustomerDao {
                             .select(
                                     field("a.external_id")
                             ).from(table("addresses").as("a"))
-                            .where(field("a.customer_external_id").eq(it.getExternalId()))
+                            .where(field("a.customer_external_id").eq(it.getExternalId().getValue()))
                             .fetchInto(Long.class)
                     ).orElseGet(Collections::emptyList)
                             .stream()
@@ -208,7 +208,6 @@ public class DefaultCustomerDao extends BaseDAO implements CustomerDao {
 
     private RecordMapper<Record, Customer.Builder> customerRecordMapper() {
         return record -> Customer.builder()
-                .id(record.get("c.id", Long.class))
                 .externalId(record.get("c.external_id", new CustomerIdConverter()))
                 .uuid(record.get("c.uuid", new CustomerUUIDConverter()))
                 .firstName(record.get("c.first_name", String.class))
