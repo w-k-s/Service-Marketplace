@@ -4,16 +4,15 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.rabbitmq.client.Channel
 import com.rabbitmq.client.Connection
 import com.wks.servicemarketplace.authservice.adapters.web.resources.HealthResource
+import com.wks.servicemarketplace.authservice.api.ClientCredentialsTokenSupplier
 import com.wks.servicemarketplace.common.auth.TokenValidator
 import com.wks.servicemarketplace.serviceproviderservice.adapters.db.dao.*
 import com.wks.servicemarketplace.serviceproviderservice.adapters.events.DefaultEventPublisher
 import com.wks.servicemarketplace.serviceproviderservice.adapters.events.DefaultEventReceiver
+import com.wks.servicemarketplace.serviceproviderservice.adapters.events.TransactionalOutboxJobFactory
 import com.wks.servicemarketplace.serviceproviderservice.adapters.web.resources.ApiResource
 import com.wks.servicemarketplace.serviceproviderservice.config.*
-import com.wks.servicemarketplace.serviceproviderservice.core.AddressDao
-import com.wks.servicemarketplace.serviceproviderservice.core.CompanyDao
-import com.wks.servicemarketplace.serviceproviderservice.core.CompanyRepresentativeDao
-import com.wks.servicemarketplace.serviceproviderservice.core.EmployeeDao
+import com.wks.servicemarketplace.serviceproviderservice.core.*
 import com.wks.servicemarketplace.serviceproviderservice.core.events.EventPublisher
 import com.wks.servicemarketplace.serviceproviderservice.core.usecase.CreateCompanyRepresentativeUseCase
 import com.wks.servicemarketplace.serviceproviderservice.core.usecase.CreateCompanyUseCase
@@ -59,13 +58,16 @@ class ServiceProviderServiceApplication : ResourceConfig() {
                 bindFactory(AmqpChannelFactory::class.java, Immediate::class.java).to(Channel::class.java).`in`(Immediate::class.java)
                 bindFactory(TokenValidatorFactory::class.java, Immediate::class.java).to(TokenValidator::class.java).`in`(Immediate::class.java)
                 bindFactory(DataSourceFactory::class.java, Immediate::class.java).to(DataSource::class.java).`in`(Immediate::class.java)
+                bindFactory(ClientCredentialsTokenSupplierFactory::class.java, Immediate::class.java).to(ClientCredentialsTokenSupplier::class.java).`in`(Immediate::class.java)
 
                 bind(DefaultCompanyDao::class.java).to(CompanyDao::class.java).`in`(Immediate::class.java)
                 bind(DefaultCompanyRepresentativeDao::class.java).to(CompanyRepresentativeDao::class.java).`in`(Immediate::class.java)
                 bind(DefaultEmployeeDao::class.java).to(EmployeeDao::class.java).`in`(Immediate::class.java)
                 bind(DefaultAddressDao::class.java).to(AddressDao::class.java).`in`(Immediate::class.java)
                 bind(DefaultEventPublisher::class.java).to(EventPublisher::class.java).`in`(Immediate::class.java)
-
+                bind(TransactionalOutboxJobFactory::class.java).to(TransactionalOutboxJobFactory::class.java).`in`(Immediate::class.java)
+                bind(DefaultEventDao::class.java).to(EventDao::class.java).`in`(Immediate::class.java)
+                bind(DefaultOutboxDao::class.java).to(OutboxDao::class.java).`in`(Immediate::class.java)
                 bind(DefaultEventReceiver::class.java).to(DefaultEventReceiver::class.java).`in`(Immediate::class.java)
                 bind(CreateCompanyRepresentativeUseCase::class.java).to(CreateCompanyRepresentativeUseCase::class.java)
                 bind(CreateCompanyUseCase::class.java).to(CreateCompanyUseCase::class.java)

@@ -84,6 +84,7 @@ services:
       amqpPort: 5672
       serverHost: http://0.0.0.0
       serverPort: 8084
+      authServiceBaseUrl: http://auth-service:8082
     ports:
       - 8084:8084
     entrypoint: ["./wait-for-it.sh", "rabbitmq:5672","-t","0","--strict","--","java","-jar","/app.jar"]

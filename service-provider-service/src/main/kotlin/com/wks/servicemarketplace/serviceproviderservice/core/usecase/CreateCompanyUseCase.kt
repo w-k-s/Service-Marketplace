@@ -1,16 +1,20 @@
 package com.wks.servicemarketplace.serviceproviderservice.core.usecase
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder
-import com.wks.servicemarketplace.common.Email
-import com.wks.servicemarketplace.common.ModelValidator
-import com.wks.servicemarketplace.common.PhoneNumber
+import com.wks.servicemarketplace.common.*
 import com.wks.servicemarketplace.common.auth.Authentication
 import com.wks.servicemarketplace.common.auth.Permission
 import com.wks.servicemarketplace.common.errors.CoreException
 import com.wks.servicemarketplace.common.errors.ErrorType
+import com.wks.servicemarketplace.common.events.DefaultFailureEvent
+import com.wks.servicemarketplace.common.events.EventEnvelope
+import com.wks.servicemarketplace.common.events.EventType
+import com.wks.servicemarketplace.common.messaging.Message
+import com.wks.servicemarketplace.common.messaging.MessageId
+import com.wks.servicemarketplace.messaging.ServiceProviderMessaging
 import com.wks.servicemarketplace.serviceproviderservice.core.*
-import com.wks.servicemarketplace.serviceproviderservice.core.events.EventPublisher
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.time.OffsetDateTime
@@ -22,7 +26,9 @@ class CreateCompanyUseCase @Inject constructor(
     private val companyDao: CompanyDao,
     private val companyRepresentativeDao: CompanyRepresentativeDao,
     private val employeeDao: EmployeeDao,
-    private val eventsPublisher: EventPublisher
+    private val eventDao: EventDao,
+    private val outboxDao: OutboxDao,
+    private val objectMapper: ObjectMapper
 ) : UseCase<CreateCompanyRequest, CreateCompanyResponse> {
 
     companion object {
@@ -63,11 +69,27 @@ class CreateCompanyUseCase @Inject constructor(
                 companyDao.setAdministrator(it, company, companyRepresentative)
                 companyRepresentativeDao.delete(it, companyRepresentative.externalId)
 
-                it.commit()
+                val payload = objectMapper.writeValueAsString(events.first())
+                eventDao.saveEvent(
+                    it, EventEnvelope(
+                        events.first(),
+                        company.uuid.toString(),
+                        payload
+                    )
+                )
+                outboxDao.saveMessage(
+                    it, Message(
+                        MessageId.random(),
+                        events.first().eventType.toString(),
+                        payload,
+                        ServiceProviderMessaging.Exchange.MAIN.exchangeName,
+                        false,
+                        input.correlationId,
+                        ServiceProviderMessaging.RoutingKey.COMPANY_CREATED.value
+                    )
+                )
 
-                eventsPublisher.companyCreated(
-                    input.authentication.token,
-                    events.first { event -> event is CompanyCreatedEvent } as CompanyCreatedEvent)
+                it.commit()
 
                 return CreateCompanyResponse(
                     company.externalId,
@@ -85,8 +107,37 @@ class CreateCompanyUseCase @Inject constructor(
             } catch (e: Exception) {
                 LOGGER.error("Failed to create company '${e.message}'", e)
                 it.rollback()
+                handleCompanyCreationFailed(e, input)
                 throw e
             }
+        }
+    }
+
+    private fun handleCompanyCreationFailed(e: Exception, input: CreateCompanyRequest) {
+        outboxDao.connection().use { conn ->
+
+            val payload = objectMapper.writeValueAsString(
+                DefaultFailureEvent(
+                    EventType.SERVICE_PROVIDER_PROFILE_CREATION_FAILED,
+                    "ServiceProvider",
+                    when (e) {
+                        is CoreException -> e.errorType
+                        else -> ErrorType.UNKNOWN
+                    },
+                    e.message ?: "Unknown error"
+                )
+            )
+            outboxDao.saveMessage(
+                conn, Message(
+                    MessageId.random(),
+                    EventType.SERVICE_PROVIDER_PROFILE_CREATION_FAILED.toString(),
+                    payload,
+                    ServiceProviderMessaging.Exchange.MAIN.exchangeName,
+                    false,
+                    input.correlationId,
+                    ServiceProviderMessaging.RoutingKey.SERVICE_PROVIDER_PROFILE_CREATION_FAILED.value
+                )
+            )
         }
     }
 }
@@ -98,7 +149,8 @@ data class CreateCompanyRequest(
     val email: Email,
     val logoUrl: String?,
     val services: Services,
-    val authentication: Authentication
+    val authentication: Authentication,
+    val correlationId: String?
 ) {
     @JsonPOJOBuilder(buildMethodName = "build", withPrefix = "")
     class Builder(
@@ -115,7 +167,8 @@ data class CreateCompanyRequest(
         @NotEmpty
         var services: List<String>?,
         @NotNull
-        var authentication: Authentication?
+        var authentication: Authentication?,
+        var correlationId: String?
     ) {
 
         fun build(): CreateCompanyRequest {
@@ -126,7 +179,8 @@ data class CreateCompanyRequest(
                     Email.of(this.email!!),
                     this.logoUrl,
                     Services.of(this.services!!),
-                    this.authentication!!
+                    this.authentication!!,
+                    this.correlationId
                 )
             }
         }

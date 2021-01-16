@@ -113,53 +113,49 @@ public class CreateCustomerUseCase implements UseCase<CustomerRequest, CustomerR
                 payload
         ));
 
-        request.getCorrelationId().ifPresent(correlationId -> {
-            outboxDao.saveMessage(connection, new Message(
-                    MessageId.random(),
-                    event.getEventType().toString(),
-                    payload,
-                    CustomerMessaging.Exchange.MAIN.exchangeName,
-                    false,
-                    correlationId,
-                    CustomerMessaging.RoutingKey.CUSTOMER_PROFILE_CREATED,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null
-            ));
-        });
+        outboxDao.saveMessage(connection, new Message(
+                MessageId.random(),
+                event.getEventType().toString(),
+                payload,
+                CustomerMessaging.Exchange.MAIN.exchangeName,
+                false,
+                request.getCorrelationId().orElse(null),
+                CustomerMessaging.RoutingKey.CUSTOMER_PROFILE_CREATED,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+        ));
     }
 
     private void publishCustomerCreationFailed(Connection connection, CustomerRequest customerRequest, CoreException error) {
-        customerRequest.getCorrelationId().ifPresent(correlationId -> {
-            var profileCreationFailed = new CustomerCreationFailedEvent(error);
+        var profileCreationFailed = new CustomerCreationFailedEvent(error);
 
-            final String payload;
-            try {
-                payload = objectMapper.writeValueAsString(profileCreationFailed);
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
+        final String payload;
+        try {
+            payload = objectMapper.writeValueAsString(profileCreationFailed);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
 
-            outboxDao.saveMessage(connection, new Message(
-                    MessageId.random(),
-                    profileCreationFailed.getEventType().toString(),
-                    payload,
-                    CustomerMessaging.Exchange.MAIN.exchangeName,
-                    false,
-                    correlationId,
-                    CustomerMessaging.RoutingKey.CUSTOMER_PROFILE_CREATION_FAILED,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null
-            ));
-        });
+        outboxDao.saveMessage(connection, new Message(
+                MessageId.random(),
+                profileCreationFailed.getEventType().toString(),
+                payload,
+                CustomerMessaging.Exchange.MAIN.exchangeName,
+                false,
+                customerRequest.getCorrelationId().orElse(null),
+                CustomerMessaging.RoutingKey.CUSTOMER_PROFILE_CREATION_FAILED,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+        ));
     }
 }

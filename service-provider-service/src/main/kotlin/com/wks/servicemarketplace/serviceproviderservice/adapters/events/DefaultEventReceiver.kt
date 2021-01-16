@@ -45,6 +45,7 @@ class DefaultEventReceiver @Inject constructor(
                 val customerRequest =
                     objectMapper.readValue(message.body, CreateCompanyRepresentativeRequest.Builder::class.java).also {
                         it.authentication = tokenValidator.authenticate(message.authorization())
+                        it.correlationId = message.properties.correlationId
                     }.build()
                 createCompanyRepresentativeUseCase.execute(customerRequest)
                 channel.basicAck(message.envelope.deliveryTag, false)

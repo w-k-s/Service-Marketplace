@@ -75,6 +75,25 @@ data class AddressId private constructor(@JsonValue val value: Long) {
     override fun toString() = value.toString()
 }
 
+data class CompanyRepresentativeId(@JsonValue val value: Long)
+data class CompanyRepresentativeUUID(@JsonValue val value: UUID) {
+    companion object {
+        fun random() = CompanyRepresentativeUUID(UUID.randomUUID())
+        fun fromString(uuidString: String) = CompanyRepresentativeUUID(UUID.fromString(uuidString))
+        fun of(userId: UserId) = CompanyRepresentativeUUID(UUID.fromString(userId.toString()))
+    }
+
+    override fun toString() = value.toString()
+}
+
+data class CompanyId(@JsonValue val value: Long)
+data class CompanyUUID(@JsonValue val value: UUID) {
+    companion object {
+        fun random() = CompanyUUID(UUID.randomUUID())
+        fun fromString(uuidString: String) = CompanyUUID(UUID.fromString(uuidString))
+    }
+}
+
 
 @Target(AnnotationTarget.FIELD)
 @MustBeDocumented
@@ -150,4 +169,37 @@ data class CountryCode private constructor(@JsonValue private val code: String) 
     }
 
     override fun toString() = code
+}
+
+enum class Service(val code: String) {
+    HOUSE_KEEPING("CLEAN"),
+    ELECTRICAL("ELCTRC");
+
+    override fun toString() = code
+
+    companion object {
+        fun of(code: String) = values().first { it.code == code }
+    }
+}
+
+class Services(services: List<Service>) : Iterable<Service> {
+    private val services = EnumSet.copyOf(services)
+
+    companion object {
+        fun of(codes: List<String>) = Services(codes.map { Service.of(it) })
+    }
+
+    constructor(vararg services: Service) : this(services.asList())
+
+    override fun iterator() = services.iterator()
+
+    override fun equals(other: Any?): Boolean {
+        return (other as? Services)?.services == services
+    }
+
+    override fun hashCode(): Int {
+        return services?.hashCode() ?: 0
+    }
+
+    override fun toString() = this.services.map { it.code }.joinToString { ", " }
 }

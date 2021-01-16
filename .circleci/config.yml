@@ -81,14 +81,14 @@ jobs:
             # fallback to using the latest cache if no exact match is found
             - v2-<< parameters.package_name >>-dependencies-
 
-      - run: gradle dependencies
+      - run: ./gradlew dependencies
 
       - save_cache:
           paths:
             - ~/.m2
           key: v2-<< parameters.package_name >>-dependencies-{{ checksum "build.gradle" }}
 
-      - run: gradle test
+      - run: ./gradlew test
 
   publish_image:
     parameters:
@@ -123,7 +123,7 @@ jobs:
             # fallback to using the latest cache if no exact match is found
             - v2-<< parameters.package_name >>-dependencies-
 
-      - run: gradle dependencies
+      - run: ./gradlew dependencies
 
       - save_cache:
           paths:
@@ -131,7 +131,7 @@ jobs:
           key: v2-<< parameters.package_name >>-dependencies-{{ checksum "build.gradle" }}
 
       # run tests for PR not every commit!
-      - run: gradle build -x test
+      - run: ./gradlew build -x test
       - setup_remote_docker
       - run:
           name: Build Docker Image
@@ -155,7 +155,7 @@ jobs:
       - checkout
       - aws-eks/update-kubeconfig-with-authenticator:
           cluster-name: service-marketplace
-          aws-region: ap-south-1
+          aws-region: $AWS_REGION
           install-kubectl: true
       - kubernetes/create-or-update-resource:
           resource-file-path: kubernetes-infra/
@@ -175,7 +175,7 @@ workflows:
     when: << pipeline.parameters.gateway-service >>
     jobs:
       - build:
-          name: gateway-build
+          name: build-gateway
           package_name: api-gateway
           image: cimg/openjdk-15.0.1
 
@@ -183,47 +183,60 @@ workflows:
     when: << pipeline.parameters.auth-service >>
     jobs:
       - build:
-          name: auth-service-build
+          name: build-auth-service
           package_name: auth-service
 
   customer-service:
     when: << pipeline.parameters.customer-service >>
     jobs:
       - build:
-          name: customer-service-build
+          name: build-customer-service
           package_name: customer-service
 
-#  deploy:
-#    jobs:
-#      - publish_image:
-#          name: publish-api-gateway-image
-#          package_name: api-gateway
-#          image: cimg/openjdk-15.0.1
-#          filters:
-#            branches:
-#              only: master
-#      - publish_image:
-#          name: publish-auth-service-image
-#          package_name: auth-service
-#          filters:
-#            branches:
-#              only: master
-#      - publish_image:
-#          name: publish-customer-service-image
-#          package_name: customer-service
-#          filters:
-#            branches:
-#              only: master
+  service-provider-service:
+    when: << pipeline.parameters.service-provider-service >>
+    jobs:
+      - build:
+          name: build-service-provider-service
+          package_name: service-provider-service
+
+  deploy:
+    jobs:
+      - publish_image:
+          name: publish-api-gateway-image
+          package_name: api-gateway
+          image: cimg/openjdk-15.0.1
+          filters:
+            branches:
+              only: master
+      - publish_image:
+          name: publish-auth-service-image
+          package_name: auth-service
+          filters:
+            branches:
+              only: master
+      - publish_image:
+          name: publish-customer-service-image
+          package_name: customer-service
+          filters:
+            branches:
+              only: master
+      - publish_image:
+          name: publish-service-provider-service-image
+          package_name: service-provider-service
+          filters:
+            branches:
+              only: master
 #      - deploy:
 #          requires:
 #            - publish-auth-service-image
 #          filters:
 #            branches:
 #              only: master
-#    triggers:
-#      - schedule:
-#          cron: "0 0 * * *"
-#          filters:
-#            branches:
-#              only:
-#                - master
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - master

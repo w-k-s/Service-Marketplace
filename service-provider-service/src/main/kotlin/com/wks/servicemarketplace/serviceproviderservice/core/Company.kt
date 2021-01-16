@@ -1,21 +1,10 @@
 package com.wks.servicemarketplace.serviceproviderservice.core
 
-import com.fasterxml.jackson.annotation.JsonValue
-import com.wks.servicemarketplace.common.Email
-import com.wks.servicemarketplace.common.PhoneNumber
+import com.wks.servicemarketplace.common.*
 import com.wks.servicemarketplace.common.events.DomainEvent
-import com.wks.servicemarketplace.common.events.EventType
+import com.wks.servicemarketplace.messaging.CompanyCreatedEvent
 import java.time.Clock
 import java.time.OffsetDateTime
-import java.util.*
-
-data class CompanyId(@JsonValue val value: Long)
-data class CompanyUUID(@JsonValue val value: UUID) {
-    companion object {
-        fun random() = CompanyUUID(UUID.randomUUID())
-        fun fromString(uuidString: String) = CompanyUUID(UUID.fromString(uuidString))
-    }
-}
 
 data class Company(
     val id: Long = 0L,
@@ -69,19 +58,4 @@ data class Company(
             return ResultWithEvents(result, listOf(event))
         }
     }
-}
-
-class CompanyCreatedEvent internal constructor(
-    val externalId: CompanyId,
-    val uuid: CompanyUUID,
-    val name: String,
-    val phone: PhoneNumber,
-    val email: Email,
-    val services: Services,
-    val createdBy: CompanyRepresentativeUUID,
-    val createdDate: OffsetDateTime,
-    val version: Long = 0L,
-) : DomainEvent {
-    override val eventType = EventType.COMPANY_CREATED
-    override val entityType = "Company"
 }

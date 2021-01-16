@@ -16,24 +16,29 @@ interface FailureEvent : DomainEvent {
     val description: String?
 }
 
-open class DefaultFailureEvent @JsonCreator constructor(@JsonProperty("eventType")
-                                                        override val eventType: EventType,
-                                                        @JsonProperty("entityType")
-                                                        override val entityType: String,
-                                                        coreException: CoreException) : FailureEvent {
+open class DefaultFailureEvent @JsonCreator constructor(
+    @JsonProperty("eventType")
+    override val eventType: EventType,
+    @JsonProperty("entityType")
+    override val entityType: String,
     @JsonProperty("errorType")
-    override val errorType = coreException.errorType
-
+    override val errorType: ErrorType,
     @JsonProperty("description")
-    override val description = coreException.message
+    override val description: String
+) : FailureEvent {
+    companion object {
+        fun fromCoreException(eventType: EventType, entityType: String, exception: CoreException) : FailureEvent{
+            return DefaultFailureEvent(eventType, entityType, exception.errorType, exception.message ?:"")
+        }
+    }
 }
 
 data class EventEnvelope(
-        val eventId: EventId,
-        val eventType: EventType,
-        val eventBody: String,
-        val entityId: String,
-        val entityType: String
+    val eventId: EventId,
+    val eventType: EventType,
+    val eventBody: String,
+    val entityId: String,
+    val entityType: String
 ) {
     constructor(event: DomainEvent, entityId: String, eventBody: String)
             : this(EventId.random(), event.eventType, eventBody, entityId, event.entityType)
@@ -60,5 +65,7 @@ enum class EventType {
     ADDRESS_ADDED,
     CUSTOMER_PROFILE_CREATED,
     CUSTOMER_PROFILE_CREATION_FAILED,
+    SERVICE_PROVIDER_PROFILE_CREATED,
+    SERVICE_PROVIDER_PROFILE_CREATION_FAILED,
     COMPANY_CREATED
 }

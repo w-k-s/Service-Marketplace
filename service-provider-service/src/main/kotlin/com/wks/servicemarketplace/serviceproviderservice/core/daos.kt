@@ -1,6 +1,12 @@
 package com.wks.servicemarketplace.serviceproviderservice.core
 
 import com.wks.servicemarketplace.common.AddressId
+import com.wks.servicemarketplace.common.CompanyId
+import com.wks.servicemarketplace.common.CompanyRepresentativeId
+import com.wks.servicemarketplace.common.CompanyRepresentativeUUID
+import com.wks.servicemarketplace.common.events.EventEnvelope
+import com.wks.servicemarketplace.common.messaging.Message
+import com.wks.servicemarketplace.common.messaging.MessageId
 import java.sql.Connection
 import java.sql.SQLException
 import kotlin.jvm.Throws
@@ -35,3 +41,14 @@ interface AddressDao : Dao {
     fun findById(connection: Connection, id: AddressId): Address
     fun findByCompany(connection: Connection, id: CompanyId): List<Address>
 }
+
+interface EventDao : Dao {
+    fun saveEvent(connection: Connection, event: EventEnvelope): Boolean
+}
+
+interface OutboxDao : Dao {
+    fun saveMessage(connection: Connection, message: Message): Boolean
+    fun fetchUnpublishedMessages(connection: Connection): List<Message>
+    fun setMessagePublished(connection: Connection, messageId: MessageId): Boolean
+}
+
