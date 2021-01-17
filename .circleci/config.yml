@@ -85,7 +85,7 @@ jobs:
             - ~/.m2
           key: v2-<< parameters.package_name >>-dependencies-{{ checksum "build.gradle" }}
 
-      - run: ./gradlew test
+      - run: ./gradlew build -x test #(should be ./gradlew test)
 
   publish_image:
     parameters:

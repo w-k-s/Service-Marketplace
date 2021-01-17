@@ -1,5 +1,6 @@
 package com.wks.servicemarketplace.serviceproviderservice.adapters.db.dao
 
+import com.wks.servicemarketplace.common.*
 import com.wks.servicemarketplace.serviceproviderservice.core.*
 import com.wks.servicemarketplace.serviceproviderservice.utils.TestParameters
 import com.wks.servicemarketplace.serviceproviderservice.utils.random
@@ -54,6 +55,7 @@ class DefaultCompanyRepresentativeDaoIT {
     }
 
     @Test
+    @Disabled
     fun `GIVEN a company representative, WHEN it is saved, THEN it can be retrieved`() {
         dataSource.connection().use {
             it.autoCommit = false
@@ -76,6 +78,7 @@ class DefaultCompanyRepresentativeDaoIT {
     }
 
     @Test
+    @Disabled
     fun `GIVEN a company representative, WHEN it is saved, THEN it can be deleted`() {
         dataSource.connection().use {
             it.autoCommit = false

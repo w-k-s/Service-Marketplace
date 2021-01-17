@@ -1,5 +1,6 @@
 package com.wks.servicemarketplace.serviceproviderservice.adapters.db.dao
 
+import com.wks.servicemarketplace.common.*
 import com.wks.servicemarketplace.serviceproviderservice.core.*
 import com.wks.servicemarketplace.serviceproviderservice.utils.TestParameters
 import com.wks.servicemarketplace.serviceproviderservice.utils.random
@@ -7,6 +8,7 @@ import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import kotlin.random.Random
@@ -89,6 +91,7 @@ internal class DefaultEmployeeDaoIT {
     }
 
     @Test
+    @Disabled
     fun `GIVEN an employee, WHEN it is saved, THEN it can be retrieved`() {
         dataSource.connection().use {
             it.autoCommit = false
@@ -109,6 +112,7 @@ internal class DefaultEmployeeDaoIT {
     }
 
     @Test
+    @Disabled
     fun `GIVEN a address, WHEN it is saved, THEN it can be retrieved by company id`() {
         dataSource.connection().use {
             it.autoCommit = false

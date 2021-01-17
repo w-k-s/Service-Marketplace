@@ -1,7 +1,7 @@
 package com.wks.servicemarketplace.serviceproviderservice.utils
 
-import com.wks.servicemarketplace.serviceproviderservice.core.Email
-import com.wks.servicemarketplace.serviceproviderservice.core.PhoneNumber
+import com.wks.servicemarketplace.common.Email
+import com.wks.servicemarketplace.common.PhoneNumber
 import java.util.*
 import kotlin.random.Random
 

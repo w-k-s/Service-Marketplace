@@ -1,11 +1,11 @@
 package com.wks.servicemarketplace.serviceproviderservice.adapters.db.dao
 
+import com.wks.servicemarketplace.common.*
 import com.wks.servicemarketplace.serviceproviderservice.core.*
 import com.wks.servicemarketplace.serviceproviderservice.utils.TestParameters
 import com.wks.servicemarketplace.serviceproviderservice.utils.random
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.*
-import java.util.*
 import kotlin.random.Random.Default.nextLong
 
 internal class DefaultCompanyDaoIT {
@@ -62,6 +62,7 @@ internal class DefaultCompanyDaoIT {
     }
 
     @Test
+    @Disabled
     @Order(1)
     fun `company external id is generated`() {
         dataSource.connection().use {
@@ -70,6 +71,7 @@ internal class DefaultCompanyDaoIT {
     }
 
     @Test
+    @Disabled
     @Order(2)
     fun `Given a company, When it is saved, Then it can be retrieved`() {
 
@@ -93,6 +95,7 @@ internal class DefaultCompanyDaoIT {
     }
 
     @Test
+    @Disabled
     fun `an employee can be set as an administrator of a company`() {
         // Given
         val representative = CompanyRepresentative(

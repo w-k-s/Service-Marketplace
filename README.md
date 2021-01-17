@@ -8,7 +8,7 @@ A Service Marketplace backend to implement the practices described in 'Microserv
 - [x] Login
 - [x] Register
 - [x] Customer posts job
-- [ ] Service Provider completes company profile
+- [x] Service Provider completes company profile
 - [ ] Service provider can see potential jobs for his category
 - [ ] service provider bids on job; bid: amount + message
 - [ ] Customer can view bids
@@ -16,11 +16,11 @@ A Service Marketplace backend to implement the practices described in 'Microserv
 - [ ] Customer opts service provider
 - [ ] (Optional) Customer Mark’s job as completed cancelled or no show.
 - [ ] Service provider can see assigned jobs
+- [x] Use Transactional-outbox pattern
 
 ### Later
 
-- [ ] Use Transactional-outbox pattern
-- [ ] 
+- [ ] Load Public/Private Key on start-up
 
 ## Useful Resources
 
