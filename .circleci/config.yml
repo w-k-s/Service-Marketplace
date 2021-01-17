@@ -33,11 +33,11 @@ parameters:
 
   service-provider-service:
     type: boolean
-    default: false
+    default: true
 
   order-service:
     type: boolean
-    default: false
+    default: true
 
 jobs:
   trigger-workflows:
@@ -52,12 +52,9 @@ jobs:
     parameters:
       package_name:
         type: string
-      image:
-        type: string
-        default: cimg/openjdk:13.0.2
 
     docker:
-      - image: << parameters.image >>
+      - image: cimg/openjdk:13.0.2
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
@@ -94,12 +91,9 @@ jobs:
     parameters:
       package_name:
         type: string
-      image:
-        type: string
-        default: cimg/openjdk:13.0.2
 
     docker:
-      - image: << parameters.image >>
+      - image: cimg/openjdk:13.0.2
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
@@ -175,9 +169,11 @@ workflows:
     when: << pipeline.parameters.gateway-service >>
     jobs:
       - build:
-          name: build-gateway
+          name: build-api-gateway
           package_name: api-gateway
-          image: cimg/openjdk-15.0.1
+          filters:
+            branches:
+              ignore: master
 
   auth-service:
     when: << pipeline.parameters.auth-service >>
@@ -185,6 +181,9 @@ workflows:
       - build:
           name: build-auth-service
           package_name: auth-service
+          filters:
+            branches:
+              ignore: master
 
   customer-service:
     when: << pipeline.parameters.customer-service >>
@@ -192,6 +191,9 @@ workflows:
       - build:
           name: build-customer-service
           package_name: customer-service
+          filters:
+            branches:
+              ignore: master
 
   service-provider-service:
     when: << pipeline.parameters.service-provider-service >>
@@ -199,44 +201,99 @@ workflows:
       - build:
           name: build-service-provider-service
           package_name: service-provider-service
+          filters:
+            branches:
+              ignore: master
+
+  order-service:
+    when: << pipeline.parameters.order-service >>
+    jobs:
+      - build:
+          name: build-order-service
+          package_name: order-service
+          filters:
+            branches:
+              ignore: master
 
   deploy:
     jobs:
+      - build:
+          name: build-api-gateway
+          package_name: api-gateway
+          filters:
+            branches:
+              only: master
+      - build:
+          name: build-auth-service
+          package_name: auth-service
+          filters:
+            branches:
+              only: master
+      - build:
+          name: build-customer-service
+          package_name: customer-service
+          filters:
+            branches:
+              only: master
+      - build:
+          name: build-service-provider-service
+          package_name: service-provider-service
+          filters:
+            branches:
+              only: master
+      - build:
+          name: build-order-service
+          package_name: order-service
+          filters:
+            branches:
+              only: master
       - publish_image:
           name: publish-api-gateway-image
+          requires:
+            - build-api-gateway
           package_name: api-gateway
-          image: cimg/openjdk-15.0.1
           filters:
             branches:
               only: master
       - publish_image:
           name: publish-auth-service-image
+          requires:
+            - build-auth-service
           package_name: auth-service
           filters:
             branches:
               only: master
       - publish_image:
           name: publish-customer-service-image
+          requires:
+            - build-customer-service
           package_name: customer-service
           filters:
             branches:
               only: master
       - publish_image:
           name: publish-service-provider-service-image
+          requires:
+            - build-service-provider-service
           package_name: service-provider-service
+          filters:
+            branches:
+              only: master
+      - publish_image:
+          name: publish-order-service-image
+          requires:
+            - build-order-service
+          package_name: order-service
           filters:
             branches:
               only: master
 #      - deploy:
 #          requires:
+#            - publish-api-gateway-image
 #            - publish-auth-service-image
+#            - publish-customer-service-image
+#            - publish-service-provider-service-image
+#            - publish-order-service-image
 #          filters:
 #            branches:
 #              only: master
-    triggers:
-      - schedule:
-          cron: "0 0 * * *"
-          filters:
-            branches:
-              only:
-                - master
