@@ -1,5 +1,6 @@
 package com.wks.servicemarketplace.serviceproviderservice.adapters.db.dao
 
+import com.wks.servicemarketplace.common.CompanyId
 import com.wks.servicemarketplace.common.Email
 import com.wks.servicemarketplace.common.Name
 import com.wks.servicemarketplace.common.PhoneNumber

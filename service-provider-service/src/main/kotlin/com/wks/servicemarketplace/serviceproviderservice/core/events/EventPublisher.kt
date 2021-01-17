@@ -1,6 +1,6 @@
 package com.wks.servicemarketplace.serviceproviderservice.core.events
 
-import com.wks.servicemarketplace.serviceproviderservice.core.CompanyCreatedEvent
+import com.wks.servicemarketplace.messaging.CompanyCreatedEvent
 import java.io.IOException
 
 interface EventPublisher {

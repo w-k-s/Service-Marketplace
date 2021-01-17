@@ -2,6 +2,7 @@ package com.wks.servicemarketplace.serviceproviderservice.adapters.db.dao
 
 import com.wks.servicemarketplace.common.AddressId
 import com.wks.servicemarketplace.common.AddressUUID
+import com.wks.servicemarketplace.common.CompanyId
 import com.wks.servicemarketplace.common.CountryCode
 import com.wks.servicemarketplace.serviceproviderservice.core.*
 import org.jooq.Record

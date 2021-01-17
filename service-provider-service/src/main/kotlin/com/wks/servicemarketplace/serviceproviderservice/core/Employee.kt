@@ -1,6 +1,7 @@
 package com.wks.servicemarketplace.serviceproviderservice.core
 
 import com.fasterxml.jackson.annotation.JsonValue
+import com.wks.servicemarketplace.common.CompanyId
 import com.wks.servicemarketplace.common.Email
 import com.wks.servicemarketplace.common.Name
 import com.wks.servicemarketplace.common.PhoneNumber

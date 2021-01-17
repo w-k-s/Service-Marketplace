@@ -11,7 +11,7 @@ import java.time.OffsetDateTime
  * Once company is created, this user is converted to a admin employee of company.
  * After this, company representative is deleted.
  */
-data class CompanyRepresentative private constructor(
+data class CompanyRepresentative(
     val id: Long,
     val externalId: CompanyRepresentativeId,
     val uuid: CompanyRepresentativeUUID,

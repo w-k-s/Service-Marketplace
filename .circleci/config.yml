@@ -251,6 +251,10 @@ workflows:
           name: publish-api-gateway-image
           requires:
             - build-api-gateway
+            - build-auth-service
+            - build-customer-service
+            - build-service-provider-service
+            - build-order-service
           package_name: api-gateway
           filters:
             branches:
@@ -258,7 +262,11 @@ workflows:
       - publish_image:
           name: publish-auth-service-image
           requires:
+            - build-api-gateway
             - build-auth-service
+            - build-customer-service
+            - build-service-provider-service
+            - build-order-service
           package_name: auth-service
           filters:
             branches:
@@ -266,7 +274,11 @@ workflows:
       - publish_image:
           name: publish-customer-service-image
           requires:
+            - build-api-gateway
+            - build-auth-service
             - build-customer-service
+            - build-service-provider-service
+            - build-order-service
           package_name: customer-service
           filters:
             branches:
@@ -274,7 +286,11 @@ workflows:
       - publish_image:
           name: publish-service-provider-service-image
           requires:
+            - build-api-gateway
+            - build-auth-service
+            - build-customer-service
             - build-service-provider-service
+            - build-order-service
           package_name: service-provider-service
           filters:
             branches:
@@ -282,6 +298,10 @@ workflows:
       - publish_image:
           name: publish-order-service-image
           requires:
+            - build-api-gateway
+            - build-auth-service
+            - build-customer-service
+            - build-service-provider-service
             - build-order-service
           package_name: order-service
           filters:

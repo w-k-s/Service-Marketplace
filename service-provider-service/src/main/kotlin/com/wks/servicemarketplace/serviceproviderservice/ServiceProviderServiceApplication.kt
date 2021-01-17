@@ -7,7 +7,6 @@ import com.wks.servicemarketplace.authservice.adapters.web.resources.HealthResou
 import com.wks.servicemarketplace.authservice.api.ClientCredentialsTokenSupplier
 import com.wks.servicemarketplace.common.auth.TokenValidator
 import com.wks.servicemarketplace.serviceproviderservice.adapters.db.dao.*
-import com.wks.servicemarketplace.serviceproviderservice.adapters.events.DefaultEventPublisher
 import com.wks.servicemarketplace.serviceproviderservice.adapters.events.DefaultEventReceiver
 import com.wks.servicemarketplace.serviceproviderservice.adapters.events.TransactionalOutboxJobFactory
 import com.wks.servicemarketplace.serviceproviderservice.adapters.web.resources.ApiResource
@@ -64,7 +63,6 @@ class ServiceProviderServiceApplication : ResourceConfig() {
                 bind(DefaultCompanyRepresentativeDao::class.java).to(CompanyRepresentativeDao::class.java).`in`(Immediate::class.java)
                 bind(DefaultEmployeeDao::class.java).to(EmployeeDao::class.java).`in`(Immediate::class.java)
                 bind(DefaultAddressDao::class.java).to(AddressDao::class.java).`in`(Immediate::class.java)
-                bind(DefaultEventPublisher::class.java).to(EventPublisher::class.java).`in`(Immediate::class.java)
                 bind(TransactionalOutboxJobFactory::class.java).to(TransactionalOutboxJobFactory::class.java).`in`(Immediate::class.java)
                 bind(DefaultEventDao::class.java).to(EventDao::class.java).`in`(Immediate::class.java)
                 bind(DefaultOutboxDao::class.java).to(OutboxDao::class.java).`in`(Immediate::class.java)
