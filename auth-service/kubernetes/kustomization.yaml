@@ -1,0 +1,9 @@
+secretGenerator:
+- name: fusionauth.servicesmarketplace.w-k-s.io
+  namespace: services-marketplace
+  files:
+  - DATABASE_URL.txt
+  - DATABASE_ROOT_USER.txt
+  - DATABASE_ROOT_PASSWORD.txt
+  - DATABASE_USER.txt
+  - DATABASE_PASSWORD.txt

@@ -1,8 +1,0 @@
-auth:
-  username: guest
-  password: guest
-service:
-  type: NodePort
-  managerNodePort: 30672
-persistence:
-  enabled: false

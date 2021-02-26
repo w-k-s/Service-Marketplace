@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: services-marketplace
+  name: fusionauth
+spec:
+  selector:
+    matchLabels:
+      app: fusionauth
+  template:
+    metadata:
+      labels:
+        app: fusionauth
+    spec:
+      containers:
+        - name: keycloak
+          image: fusionauth/fusionauth-app:1.24.0
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: fusionauth.servicesmarketplace.w-k-s.io
+                  key: DATABASE_URL
+            - name: DATABASE_ROOT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: fusionauth.servicesmarketplace.w-k-s.io
+                  key: DATABASE_ROOT_USER
+            - name: DATABASE_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: fusionauth.servicesmarketplace.w-k-s.io
+                  key: DATABASE_ROOT_PASSWORD
+            - name: DATABASE_USER
+              valueFrom:
+                secretKeyRef:
+                  name: fusionauth.servicesmarketplace.w-k-s.io
+                  key: DATABASE_USER
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: fusionauth.servicesmarketplace.w-k-s.io
+                  key: DATABASE_PASSWORD
+            - name: FUSIONAUTH_MEMORY
+              value: 512M
+            - name: FUSIONAUTH_SEARCH_ENGINE_TYPE
+              value: database
+          ports:
+            - containerPort: 9011
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 9011
+            initialDelaySeconds: 3
+            periodSeconds: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 9011
+            initialDelaySeconds: 3
+            periodSeconds: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: services-marketplace
+  name: fusionauth
+spec:
+  selector:
+    app: fusionauth
+  ports:
+    - port: 8080
+      targetPort: 9011
+  type: LoadBalancer
