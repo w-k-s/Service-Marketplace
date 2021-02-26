@@ -1,0 +1,12 @@
+name: Deploy
+on:
+  workflow_dispatch:
+    branches:
+      - master
+
+jobs:
+  eks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Test
+        run: echo 'Hello World!'
