@@ -7,3 +7,6 @@ secretGenerator:
   - DATABASE_ROOT_PASSWORD.txt
   - DATABASE_USER.txt
   - DATABASE_PASSWORD.txt
+
+resources:
+  - manifest.yml
