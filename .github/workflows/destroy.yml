@@ -7,6 +7,17 @@ on:
 jobs:
   terraform:
     runs-on: ubuntu-latest
+    environment: dev
+    env:
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      TF_VAR_notification_email: ${{ secrets.NOTIFICATION_EMAIL }}
+      TF_VAR_cloudamqp_customer_api_key: ${{ secrets.CLOUD_AMQP_CUSTOMER_API_KEY }}
+      TF_VAR_cloudamqp_region: ${{ secrets.CLOUD_AMQP_REGION }}
+      TF_VAR_aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      TF_VAR_aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     defaults:
       run:
         working-directory: ./terraform

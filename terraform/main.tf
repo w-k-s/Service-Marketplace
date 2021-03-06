@@ -4,6 +4,10 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 3.27"
     }
+    cloudamqp = {
+      source  = "cloudamqp/cloudamqp"
+      version = "~> 1.9.1"
+    }
   }
 
   backend "s3" {
