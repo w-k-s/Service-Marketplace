@@ -8,6 +8,25 @@ terraform {
       source  = "cloudamqp/cloudamqp"
       version = "~> 1.9.1"
     }
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = ">= 2.0.1"
+    }
+
+    local = {
+      source  = "hashicorp/local"
+      version = "2.0.0"
+    }
+
+    null = {
+      source  = "hashicorp/null"
+      version = "3.0.0"
+    }
+
+    template = {
+      source  = "hashicorp/template"
+      version = "2.2.0"
+    }
   }
 
   backend "s3" {
@@ -16,6 +35,8 @@ terraform {
     key    = "services-marketplace.state.json"
     region = "ap-south-1"
   }
+
+  required_version = "~> 0.14"
 }
 
 provider "aws" {

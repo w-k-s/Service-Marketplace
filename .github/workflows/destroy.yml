@@ -18,6 +18,8 @@ jobs:
       TF_VAR_cloudamqp_region: ${{ secrets.CLOUD_AMQP_REGION }}
       TF_VAR_aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
       TF_VAR_aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      TF_VAR_vpc_id: ${{ secrets.VPC_ID }}
+      TF_VAR_private_subnet_ids : ${{ secrets.PRIVATE_SUBNET_IDS }}
     defaults:
       run:
         working-directory: ./terraform
@@ -28,7 +30,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
         with:
-          terraform_version: 0.13.0
+          terraform_version: 0.14.0
 
       - name: Terraform Init
         id: init

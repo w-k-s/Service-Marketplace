@@ -13,20 +13,28 @@ variable "cloudamqp_region" {
   type        = string
 }
 
-# variable "vpc_id" {
-#   description = "VPC ID"
-#   type        = string
-# }
+variable "vpc_id" {
+  description = "VPC ID (VPC must have NAT gateway)"
+  type        = string
+}
 
-# variable "public_subnet_ids" {
-#   description = "VPC Public Subnet IDs"
-#   type        = list(string)
-# }
+variable "public_subnet_ids" {
+  description = "VPC Public Subnet IDs e.g. [\"public-subnet-1\",\"public-subnet-2\"]"
+  type        = list(string)
+  default     = []
+}
 
-# variable "private_subnet_ids" {
-#   description = "VPC Private Subnet IDs"
-#   type        = list(string)
-# }
+variable "private_subnet_ids" {
+  description = "VPC Private Subnet IDs e.g. [\"private-subnet-1\",\"private-subnet-2\"]"
+  type        = list(string)
+  default     = []
+}
+
+variable "security_group_ids" {
+  description = "Worker group security group ids e.g. [\"security-group1\",\"security-group-2\"]"
+  type        = list(string)
+  default     = []
+}
 
 variable "cloudamqp_customer_api_key" {
   description = "CloudAMQP Customer API Key"
