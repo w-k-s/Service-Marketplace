@@ -2,15 +2,15 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 3.27"
+      version = "3.27"
     }
     cloudamqp = {
       source  = "cloudamqp/cloudamqp"
-      version = "~> 1.9.1"
+      version = "1.9.1"
     }
     kubernetes = {
       source  = "hashicorp/kubernetes"
-      version = ">= 2.0.1"
+      version = "2.0.1"
     }
 
     local = {

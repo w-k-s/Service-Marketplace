@@ -16,30 +16,10 @@ resource "cloudamqp_instance" "instance" {
   no_default_alarms = true
 }
 
-data "cloudamqp_credentials" "credentials" {
-  instance_id = cloudamqp_instance.instance.id
-}
-
-data "cloudamqp_instance" "instance" {
-  instance_id = cloudamqp_instance.instance.id
-}
-
 ## Output
-
-output "cloudamqp_username" {
-  description = "CloudAMQP Username"
-  sensitive   = true
-  value       = data.cloudamqp_credentials.credentials.username
-}
-
-output "cloudamqp_password" {
-  description = "CloudAMQP Password"
-  sensitive   = true
-  value       = data.cloudamqp_credentials.credentials.password
-}
 
 output "cloudamqp_url" {
   description = "CloudAMQP URL"
+  value       = cloudamqp_instance.instance.url
   sensitive   = true
-  value       = data.cloudamqp_instance.instance.url
 }

@@ -14,7 +14,7 @@ variable "cloudamqp_region" {
 }
 
 variable "vpc_id" {
-  description = "VPC ID (VPC must have NAT gateway)"
+  description = "VPC ID (VPC must have NAT gateway available)"
   type        = string
 }
 

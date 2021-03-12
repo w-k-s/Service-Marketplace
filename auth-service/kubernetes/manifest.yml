@@ -13,7 +13,7 @@ spec:
         app: fusionauth
     spec:
       containers:
-        - name: keycloak
+        - name: fusionauth
           image: fusionauth/fusionauth-app:1.24.0
           env:
             - name: DATABASE_URL
