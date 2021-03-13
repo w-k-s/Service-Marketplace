@@ -144,3 +144,7 @@
     ]
 }
 ```
+
+## Useful Resources 
+
+- [How to add tags to existing VPC](https://stackoverflow.com/a/64938829/821110)
