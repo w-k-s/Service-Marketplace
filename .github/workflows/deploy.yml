@@ -50,9 +50,13 @@ jobs:
         run: terraform apply -auto-approve
 
       - name: Configure Kubectl
+        # The command `aws eks --region "$AWS_DEFAULT_REGION" update-kubeconfig --name $(terraform output -raw cluster_name)`
+        # did not work. Unknwown options: output, -raw, cluster_name
+        # works locally though
         run: |
           export CLUSTER_NAME=$(terraform output -raw cluster_name)
-          aws eks --region "$AWS_DEFAULT_REGION" update-kubeconfig --name "$CLUSTER_NAME"
+          echo "Cluster Name: $CLUSTER_NAME"
+          aws eks --region "$AWS_DEFAULT_REGION" update-kubeconfig --name ServicesMarketplace-eks
 
       - name: Deploy Kubernetes Dashboard
         run: |
