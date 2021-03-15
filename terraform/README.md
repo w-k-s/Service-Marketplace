@@ -148,3 +148,4 @@
 ## Useful Resources 
 
 - [How to add tags to existing VPC](https://stackoverflow.com/a/64938829/821110)
+- [Setting up AWS EKS cluster entirely with Terraform](https://medium.com/@alex.veprik/setting-up-aws-eks-cluster-entirely-with-terraform-e90f50ab7387)
