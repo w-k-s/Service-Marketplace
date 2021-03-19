@@ -79,6 +79,7 @@ class AuthServiceApplication(private val parameters : ApplicationParameters = Ap
                 bind(DefaultMessagePublisher::class.java).to(DefaultMessagePublisher::class.java).`in`(Immediate::class.java)
                 bind(CreateProfileSaga::class.java).to(CreateProfileSaga::class.java).`in`(Immediate::class.java)
                 bind(AssignGroupRetrier::class.java).to(AssignGroupRetrier::class.java).`in`(Immediate::class.java)
+                bind(DatabaseMigration::class.java).to(DatabaseMigration::class.java).`in`(Immediate::class.java)
             }
         })
         register(DefaultExceptionMapper::class.java)

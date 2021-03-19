@@ -65,11 +65,7 @@ dependencies {
     implementation("com.rabbitmq:amqp-client:5.9.0")
 
     // Liquibase
-    liquibaseRuntime("org.liquibase:liquibase-core:3.8.1")
-    liquibaseRuntime("javax.xml.bind:jaxb-api:2.3.1")
-    liquibaseRuntime("org.postgresql:postgresql:42.2.12")
-    liquibaseRuntime("ch.qos.logback:logback-core:1.2.3")
-    liquibaseRuntime("ch.qos.logback:logback-classic:1.2.3")
+    implementation("org.liquibase:liquibase-core:3.8.1")
 
     //Retrofit
     implementation("com.squareup.retrofit2:converter-jackson:2.9.0")

@@ -82,8 +82,8 @@ class FusionAuthAdapter @Inject constructor(
 
         LOGGER.info(
                 "Login: Username: {}. Status: {}. Error: {}. Exception: {}",
-                response.status,
                 username,
+                response.status,
                 response.errorResponse,
                 response.exception
         )
@@ -174,7 +174,7 @@ class FusionAuthAdapter @Inject constructor(
         )
 
         if (!response.wasSuccessful()) {
-            throw CoreException(ErrorType.UNKNOWN, message = "Failed to retrieve groups")
+            throw CoreException(ErrorType.EXTERNAL_SYSTEM, message = "Failed to retrieve groups")
         }
         return response.successResponse.groups
     }
