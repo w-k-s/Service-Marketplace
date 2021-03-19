@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.rabbitmq.client.Channel
 import com.rabbitmq.client.Delivery
 import com.wks.servicemarketplace.authservice.core.sagas.CreateProfileSaga
-import com.wks.servicemarketplace.authservice.messaging.AuthMessaging
+import com.wks.servicemarketplace.authservice.api.AuthMessaging
 import com.wks.servicemarketplace.common.auth.TokenValidator
 import com.wks.servicemarketplace.customerservice.messaging.CustomerCreatedEvent
 import com.wks.servicemarketplace.customerservice.messaging.CustomerCreationFailedEvent

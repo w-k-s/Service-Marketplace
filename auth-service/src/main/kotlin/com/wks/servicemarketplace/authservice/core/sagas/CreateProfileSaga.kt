@@ -5,8 +5,8 @@ import com.wks.servicemarketplace.authservice.adapters.db.dao.DataSource
 import com.wks.servicemarketplace.authservice.core.EventDao
 import com.wks.servicemarketplace.authservice.core.OutboxDao
 import com.wks.servicemarketplace.authservice.core.SagaDao
-import com.wks.servicemarketplace.authservice.messaging.AccountCreatedEvent
-import com.wks.servicemarketplace.authservice.messaging.AuthMessaging
+import com.wks.servicemarketplace.authservice.api.AccountCreatedEvent
+import com.wks.servicemarketplace.authservice.api.AuthMessaging
 import com.wks.servicemarketplace.common.auth.UserType
 import com.wks.servicemarketplace.common.events.EventEnvelope
 import com.wks.servicemarketplace.common.events.EventId

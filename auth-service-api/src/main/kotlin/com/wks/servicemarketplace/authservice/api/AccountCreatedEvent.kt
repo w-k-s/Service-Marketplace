@@ -1,4 +1,4 @@
-package com.wks.servicemarketplace.authservice.messaging
+package com.wks.servicemarketplace.authservice.api
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty

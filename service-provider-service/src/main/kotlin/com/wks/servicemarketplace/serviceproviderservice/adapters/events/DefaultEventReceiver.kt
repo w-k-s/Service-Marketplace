@@ -3,7 +3,7 @@ package com.wks.servicemarketplace.serviceproviderservice.adapters.events
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.rabbitmq.client.Channel
 import com.rabbitmq.client.Delivery
-import com.wks.servicemarketplace.authservice.messaging.AuthMessaging
+import com.wks.servicemarketplace.authservice.api.AuthMessaging
 import com.wks.servicemarketplace.common.auth.TokenValidator
 import com.wks.servicemarketplace.common.errors.CoreException
 import com.wks.servicemarketplace.serviceproviderservice.core.usecase.CreateCompanyRepresentativeRequest

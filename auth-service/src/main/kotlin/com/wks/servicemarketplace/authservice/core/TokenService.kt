@@ -4,7 +4,7 @@ import com.wks.servicemarketplace.authservice.api.ClientCredentials
 import com.wks.servicemarketplace.authservice.api.Credentials
 import com.wks.servicemarketplace.authservice.api.Registration
 import com.wks.servicemarketplace.authservice.core.sagas.CreateProfileSaga
-import com.wks.servicemarketplace.authservice.messaging.AccountCreatedEvent
+import com.wks.servicemarketplace.authservice.api.AccountCreatedEvent
 import com.wks.servicemarketplace.common.auth.StandardToken
 import com.wks.servicemarketplace.common.auth.Token
 import com.wks.servicemarketplace.common.auth.User

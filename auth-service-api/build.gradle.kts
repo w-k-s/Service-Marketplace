@@ -26,6 +26,9 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-jackson:2.9.0")
 
+    // RabbitMQ
+    implementation("com.rabbitmq:amqp-client:5.9.0")
+
     testImplementation(kotlin("test-junit5"))
 }
 tasks.withType<KotlinCompile>() {

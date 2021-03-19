@@ -2,8 +2,8 @@ package com.wks.servicemarketplace.customerservice.adapters.events;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.Channel;
-import com.wks.servicemarketplace.authservice.messaging.AccountCreatedEvent;
-import com.wks.servicemarketplace.authservice.messaging.AuthMessaging;
+import com.wks.servicemarketplace.authservice.api.AccountCreatedEvent;
+import com.wks.servicemarketplace.authservice.api.AuthMessaging;
 import com.wks.servicemarketplace.common.auth.TokenValidator;
 import com.wks.servicemarketplace.customerservice.api.CustomerRequest;
 import com.wks.servicemarketplace.customerservice.core.usecase.customer.CreateCustomerUseCase;

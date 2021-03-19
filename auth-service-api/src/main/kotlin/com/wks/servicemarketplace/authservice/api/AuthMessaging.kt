@@ -1,4 +1,4 @@
-package com.wks.servicemarketplace.authservice.messaging
+package com.wks.servicemarketplace.authservice.api
 
 import com.rabbitmq.client.BuiltinExchangeType
 import com.rabbitmq.client.Channel
