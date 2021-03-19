@@ -31,7 +31,7 @@ import java.security.PrivateKey
 import java.security.PublicKey
 import javax.ws.rs.core.UriBuilder
 
-class AuthServiceApplication : ResourceConfig() {
+class AuthServiceApplication(private val parameters : ApplicationParameters = ApplicationParameters.load()) : ResourceConfig() {
 
     companion object {
         val LOGGER = LoggerFactory.getLogger(AuthServiceApplication::class.java)
@@ -57,7 +57,6 @@ class AuthServiceApplication : ResourceConfig() {
         register(ImmediateFeature::class.java)
         register(object : AbstractBinder() {
             override fun configure() {
-                bindFactory(ApplicationParametersFactory::class.java, Immediate::class.java).to(ApplicationParameters::class.java).`in`(Immediate::class.java)
                 bindFactory(FusionAuthConfigurationFactory::class.java, Immediate::class.java).to(FusionAuthConfiguration::class.java).`in`(Immediate::class.java)
                 bindFactory(ObjectMapperFactory::class.java, Immediate::class.java).to(ObjectMapper::class.java).`in`(Immediate::class.java)
                 bindFactory(PrivateKeyFactory::class.java, Immediate::class.java).to(PrivateKey::class.java).`in`(Immediate::class.java)
@@ -69,6 +68,7 @@ class AuthServiceApplication : ResourceConfig() {
                 bindFactory(ClientCredentialsTokenSupplierFactory::class.java, Immediate::class.java).to(ClientCredentialsTokenSupplier::class.java).`in`(Immediate::class.java)
                 bindFactory(TokenValidatorFactory::class.java, Immediate::class.java).to(TokenValidator::class.java).`in`(Immediate::class.java)
 
+                bind(parameters).to(ApplicationParameters::class.java)
                 bind(TransactionalOutboxJobFactory::class.java).to(TransactionalOutboxJobFactory::class.java).`in`(Immediate::class.java)
                 bind(DefaultEventDao::class.java).to(EventDao::class.java).`in`(Immediate::class.java)
                 bind(DefaultOutboxDao::class.java).to(OutboxDao::class.java).`in`(Immediate::class.java)
@@ -90,8 +90,8 @@ class AuthServiceApplication : ResourceConfig() {
 
     fun run() {
         val uri = UriBuilder
-                .fromUri(System.getenv("serverHost"))
-                .port(Integer.parseInt(System.getenv("serverPort")))
+                .fromUri(parameters.serverHost)
+                .port(parameters.serverPort)
                 .build()
 
         val server = JettyHttpContainerFactory.createServer(uri, this)

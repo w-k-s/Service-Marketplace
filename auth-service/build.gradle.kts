@@ -31,6 +31,9 @@ dependencies {
     implementation("org.glassfish.jersey.inject:jersey-hk2:2.31")
     implementation("javax.xml.bind:jaxb-api:2.3.1")
 
+    // Config
+    implementation("com.ufoscout.properlty:properlty-kotlin:1.8.1")
+
     // Logging
     implementation("ch.qos.logback:logback-classic:1.2.3")
     implementation("ch.qos.logback:logback-core:1.2.3")

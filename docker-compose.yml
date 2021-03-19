@@ -38,8 +38,7 @@ services:
       authServiceBaseUrl: http://localhost:8082
       serverHost: http://0.0.0.0
       serverPort: 8082
-      amqpHost: rabbitmq
-      amqpPort: 5672
+      amqpUri: amqp://rabbitmq:5672
       jdbcUrl: jdbc:postgresql://docker.for.mac.host.internal:5432/auth
       jdbcUsername: waqqassheikh
       jdbcPassword: 7713659
