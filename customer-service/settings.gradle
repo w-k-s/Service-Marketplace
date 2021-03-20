@@ -2,6 +2,5 @@ rootProject.name = 'customer-service'
 
 includeBuild '../common'
 includeBuild '../customer-services-api'
-includeBuild '../auth-service-messages'
 includeBuild '../auth-service-api'
 includeBuild '../customer-service-messaging'

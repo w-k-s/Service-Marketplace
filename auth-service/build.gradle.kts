@@ -78,16 +78,3 @@ tasks {
         kotlinOptions.jvmTarget = "13"
     }
 }
-
-liquibase {
-    activities.register("main") {
-        this.arguments = mapOf(
-                "logLevel" to "info",
-                "changeLogFile" to "src/main/resources/liquibase/authService.changelog.xml",
-                "url" to project.extra.properties["mainUrl"],
-                "username" to project.extra.properties["username"],
-                "password" to project.extra.properties["password"]
-        )
-    }
-    runList = "main"
-}

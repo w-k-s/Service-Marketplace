@@ -28,7 +28,6 @@ jar {
 dependencies {
     implementation 'com.wks.servicemarketplace:common:1.0-SNAPSHOT'
     implementation 'com.wks.servicemarketplace:customer-services-api:1.0-SNAPSHOT'
-    implementation 'com.wks.servicemarketplace:auth-service-messages:1.0-SNAPSHOT'
     implementation 'com.wks.servicemarketplace:auth-service-api:1.0-SNAPSHOT'
     implementation 'com.wks.servicemarketplace:customer-service-messaging:1.0-SNAPSHOT'
 
