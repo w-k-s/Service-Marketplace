@@ -35,7 +35,6 @@ dependencies {
 
 	implementation("com.wks.servicemarketplace:common:1.0-SNAPSHOT")
 	implementation("com.wks.servicemarketplace:auth-service-api:1.0-SNAPSHOT")
-	implementation("com.wks.servicemarketplace:auth-service-messages:1.0-SNAPSHOT")
 
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310") // adds support for java.time on Jacksom
