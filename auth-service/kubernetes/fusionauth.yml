@@ -47,18 +47,20 @@ spec:
               value: database
           ports:
             - containerPort: 9011
-          livenessProbe:
-            httpGet:
-              path: /
-              port: 9011
-            initialDelaySeconds: 3
-            periodSeconds: 3
-          readinessProbe:
-            httpGet:
-              path: /
-              port: 9011
-            initialDelaySeconds: 3
-            periodSeconds: 3
+          # This f***ing doesn't work
+          # Readiness probe failed: Get http://172.31.56.94:9011/api/status: net/http: request canceled (Client.Timeout exceeded while awaiting headers)
+          # livenessProbe:
+          #   httpGet:
+          #     path: /api/status
+          #     port: 9011
+          #   initialDelaySeconds: 3
+          #   periodSeconds: 3
+          # readinessProbe:
+          #   httpGet:
+          #     path: /api/status
+          #     port: 9011
+          #   initialDelaySeconds: 3
+          #   periodSeconds: 3
 ---
 apiVersion: v1
 kind: Service
