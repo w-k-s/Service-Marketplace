@@ -1,6 +1,6 @@
 # Useful Resources
 
-## Jersey
+## Jersey
 
 - [A minimal REST API in Java](https://notes.eatonphil.com/a-minimal-rest-api-in-java.html)
 
@@ -20,7 +20,7 @@
 
 - [Implementing Custom Injection Provider](https://eclipse-ee4j.github.io/jersey.github.io/documentation/latest/ioc.html#d0e17204)
 
-### Scopes
+### Scopes
 
 > proxy cause a dynamic proxy to be created. So every time you access the service, it will be a proxy.
 > the proxyForSameScope just says that if the parent is in the same scope, i.e a request scope, don't make it a proxy, just use the real object. For instance, now it will be a proxy object, but if you try to inject it into a resource class (which is request scope by default), it will the the actual instance.
@@ -80,7 +80,7 @@
 
 - [5 Laws for Date and Times in REST APIs](http://apiux.com/2013/03/20/5-laws-api-dates-and-times/)
 
-## Multiple Databases
+## Multiple Databases
 
 - [Multiple Databases (Baeldung)](https://www.baeldung.com/spring-data-jpa-multiple-databases)
 
@@ -101,16 +101,14 @@
 
 - [Saga Configuration and Run Problem](https://groups.google.com/forum/#!topic/axonframework/EaHY4PgGQo8)
 - [GenericJPARepository and EventStore at the same time](https://groups.google.com/forum/#!topic/axonframework/IX560dZx77U) (uses a serializer and ContainerManagedEntityManagerProvider)
-
--[Axon JpaEventStore with PostgreSQL configuration](https://groups.google.com/forum/#!topic/axonframework/R-QoZMlj2mM)
-
+- [Axon JpaEventStore with PostgreSQL configuration](https://groups.google.com/forum/#!topic/axonframework/R-QoZMlj2mM)
 - [Exploring CQRS with Axon Framework](https://www.geekabyte.io/2015/10/exploring-cqrs-with-axon-framework_13.html)
-
-- [https://sgitario.github.io/axon-by-example/](https://sgitario.github.io/axon-by-example/)
+- [Axon by Example](https://sgitario.github.io/axon-by-example/)
 
 ## GraphQL / Apollo Federation
 
 - [Apollo Federation with Spring](https://github.com/apollographql/federation-jvm/tree/master/spring-example)
+- [Create a Single Microservices Endpoint With GraphQL, Kotlin, and Micronaut ](https://dzone.com/articles/how-to-graphql-in-kotlin-and-micronaut)
 
 ## POSTGIS
 
@@ -125,3 +123,7 @@
 - [4.2.2. When to use Geography Data type over Geometry data type](https://postgis.net/docs/manual-2.1/using_postgis_dbmanagement.html#PostGIS_GeographyVSGeometry)
 
   I went with option number 3 since learning about projections wasn't my main focus when working on this side-project.
+
+## RabbitMQ
+
+- [When to use RabbitMQ or ApacheKafka](https://www.cloudamqp.com/blog/2019-12-12-when-to-use-rabbitmq-or-apache-kafka.html)
