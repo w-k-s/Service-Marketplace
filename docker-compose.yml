@@ -44,7 +44,6 @@ services:
       jdbcPassword: 7713659
     ports:
       - 8082:8082
-    entrypoint: ["./wait-for-it.sh", "fusionauth:9011","-t","0","--strict","--","java","-jar","/app.jar"]
 
   customer-service:
     build:
@@ -65,7 +64,6 @@ services:
       serverHost: http://0.0.0.0
       serverPort: 8081
       authServiceBaseUrl: http://auth-service:8082
-    entrypoint: ["./wait-for-it.sh", "rabbitmq:5672","-t","0","--strict","--","java","-jar","/app.jar"]
 
   service-provider-service:
     build:
@@ -86,7 +84,6 @@ services:
       authServiceBaseUrl: http://auth-service:8082
     ports:
       - 8084:8084
-    entrypoint: ["./wait-for-it.sh", "rabbitmq:5672","-t","0","--strict","--","java","-jar","/app.jar"]
 
   order-service:
     build:
@@ -103,7 +100,6 @@ services:
       SPRING_DATASOURCE_PASSWORD: 7713659
       SPRING_RABBITMQ_HOST: rabbitmq
       SPRING_RABBITMQ_PORT: 5672
-    entrypoint: ["./wait-for-it.sh", "keycloak:8080","-t","0","--strict","--","java","-jar","/app.jar"]
 
   api-gateway:
     build:
@@ -119,4 +115,3 @@ services:
       APPLICATION_HOSTS_AUTH_SERVICE: http://auth-service:8082
       APPLICATION_HOSTS_ORDER_SERVICE: http://order-service:8083
       APPLICATION_HOSTS_SERVICE_PROVIDER_SERVICE: http://service-provider-service:8084
-    entrypoint: ["java","-jar","/app.jar"]
