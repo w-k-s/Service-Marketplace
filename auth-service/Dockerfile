@@ -1,4 +1,4 @@
-FROM  adoptopenjdk/openjdk13:jdk-13.0.2_8-alpine-slim
+FROM  adoptopenjdk/openjdk13:alpine-jre
 
 RUN apk update
 RUN apk upgrade

@@ -68,22 +68,28 @@ jobs:
       - name: Create Kubernetes secrets (deprecated)
         # This will be replaced with ExternalSecrets and AWS Secrets/Hashicorp Vault
         run: |
-          kubectl create ns services-marketplace;
+          kubectl create ns app;
 
-          kubectl -n services-marketplace create secret generic fusionauth.servicesmarketplace.w-k-s.io \
+          kubectl -n app create secret generic fusionauth.servicesmarketplace.w-k-s.io \
           --from-literal=DATABASE_URL="$DB_INSTANCE_URL/fusionauth" \
           --from-literal=DATABASE_ROOT_USER="$DATABASE_USERNAME" \
           --from-literal=DATABASE_ROOT_PASSWORD="$DATABASE_PASSWORD" \
           --from-literal=DATABASE_USER="$DATABASE_USERNAME" \
           --from-literal=DATABASE_PASSWORD="$DATABASE_PASSWORD";
 
-          kubectl -n services-marketplace create secret generic authservice.servicesmarketplace.w-k-s.io \
+          kubectl -n app create secret generic authservice.servicesmarketplace.w-k-s.io \
           --from-literal=FUSIONAUTH_APPLICATION_ID="$FUSIONAUTH_APPLICATION_ID" \
           --from-literal=FUSIONAUTH_TENANT_ID="$FUSIONAUTH_TENANT_ID" \
           --from-literal=FUSIONAUTH_API_KEY="$FUSIONAUTH_API_KEY" \
           --from-literal=AUTHSERVICE_CLIENT_ID="$AUTHSERVICE_CLIENT_ID" \
           --from-literal=AUTHSERVICE_CLIENT_SECRET="$AUTHSERVICE_CLIENT_SECRET" \
           --from-literal=JDBC_URL="$DB_INSTANCE_URL/sm-auth" \
+          --from-literal=JDBC_USERNAME="$DATABASE_USERNAME" \
+          --from-literal=JDBC_PASSWORD="$DATABASE_PASSWORD" \
+          --from-literal=AMQP_URI="$(terraform output cloudamqp_url)";
+
+          kubectl -n app create secret generic orderservice.servicesmarketplace.w-k-s.io \
+          --from-literal=JDBC_URL="$DB_INSTANCE_URL/sm-order" \
           --from-literal=JDBC_USERNAME="$DATABASE_USERNAME" \
           --from-literal=JDBC_PASSWORD="$DATABASE_PASSWORD" \
           --from-literal=AMQP_URI="$(terraform output cloudamqp_url)";

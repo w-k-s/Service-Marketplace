@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: app
+  name: api-gateway
+spec:
+  selector:
+    matchLabels:
+      app: api-gateway
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+    spec:
+      containers:
+        - name: api-gateway
+          image: 838107339577.dkr.ecr.ap-south-1.amazonaws.com/w-k-s/services-marketplace/api-gateway:470
+          env:
+            - name: APPLICATION_HOSTS_CUSTOMER_SERVICE
+              value: http://customer-service
+            - name: APPLICATION_HOSTS_AUTH_SERVICE
+              value: http://auth-service
+            - name: APPLICATION_HOSTS_ORDER_SERVICE
+              value: http://order-service
+            - name: APPLICATION_HOSTS_SERVICE_PROVIDER_SERVICE
+              value: http://service-provider-service
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: app
+  name: api-gateway
+spec:
+  selector:
+    app: api-gateway
+  ports:
+    - port: 80
+      targetPort: 8080
+  type: LoadBalancer

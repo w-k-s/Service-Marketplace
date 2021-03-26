@@ -1,0 +1,319 @@
+# Java Gradle CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-java/ for more details
+#
+version: 2.1
+#orbs:
+#  aws-eks: circleci/aws-eks@0.2.3
+#  kubernetes: circleci/kubernetes@0.4.0
+
+executors:
+  openjdk:
+    docker:
+      - image: cimg/openjdk:13.0.2
+
+parameters:
+  # This parameter is used to trigger the main workflow
+  trigger:
+    type: boolean
+    default: true
+
+  # A parameter per package
+  gateway-service:
+    type: boolean
+    default: true
+
+  auth-service:
+    type: boolean
+    default: true
+
+  customer-service:
+    type: boolean
+    default: true
+
+  service-provider-service:
+    type: boolean
+    default: true
+
+  order-service:
+    type: boolean
+    default: true
+
+jobs:
+  trigger-workflows:
+    executor: openjdk
+    steps:
+      - checkout
+      - run:
+          name: Trigger workflows
+          command: chmod +x .circleci/circle_trigger.sh && .circleci/circle_trigger.sh
+
+  build:
+    parameters:
+      package_name:
+        type: string
+
+    docker:
+      - image: cimg/openjdk:13.0.2
+
+      # Specify service dependencies here if necessary
+      # CircleCI maintains a library of pre-built images
+      # documented at https://circleci.com/docs/2.0/circleci-images/
+      # - image: circleci/postgres:9.4
+
+    working_directory: ~/repo/<< parameters.package_name >>
+
+    environment:
+      # Customize the JVM maximum heap limit
+      JVM_OPTS: -Xmx3200m
+
+    steps:
+      - checkout:
+          path: ~/repo
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - v2-<< parameters.package_name >>-dependencies-{{ checksum "build.gradle" }}
+            # fallback to using the latest cache if no exact match is found
+            - v2-<< parameters.package_name >>-dependencies-
+
+      - run: ./gradlew dependencies
+
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: v2-<< parameters.package_name >>-dependencies-{{ checksum "build.gradle" }}
+
+      - run: ./gradlew build -x test #(should be ./gradlew test)
+
+  publish_image:
+    parameters:
+      package_name:
+        type: string
+
+    docker:
+      - image: cimg/openjdk:13.0.2
+
+      # Specify service dependencies here if necessary
+      # CircleCI maintains a library of pre-built images
+      # documented at https://circleci.com/docs/2.0/circleci-images/
+      # - image: circleci/postgres:9.4
+
+    working_directory: ~/repo/<< parameters.package_name >>
+
+    environment:
+      # Customize the JVM maximum heap limit
+      JVM_OPTS: -Xmx3200m
+
+    steps:
+      - checkout:
+          path: ~/repo
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - v2-<< parameters.package_name >>-dependencies-{{ checksum "build.gradle" }}
+            # fallback to using the latest cache if no exact match is found
+            - v2-<< parameters.package_name >>-dependencies-
+
+      - run: ./gradlew dependencies
+
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: v2-<< parameters.package_name >>-dependencies-{{ checksum "build.gradle" }}
+
+      # run tests for PR not every commit!
+      - run: ./gradlew build -x test
+      - setup_remote_docker
+      - run:
+          name: Build Docker Image
+          command: |
+            docker build -t "$AWS_REPO/<< parameters.package_name >>:$CIRCLE_BUILD_NUM" \
+            -t "$AWS_REPO/<< parameters.package_name >>:latest" \
+            .
+      - run:
+          name: Push Image to ECR
+          command: |
+            sudo apt-get -y -qq update
+            sudo apt-get -y -qq install awscli
+            $(aws ecr get-login --no-include-email --region $AWS_REGION)
+            docker push $AWS_REPO/<< parameters.package_name >>:latest
+            docker push $AWS_REPO/<< parameters.package_name >>:$CIRCLE_BUILD_NUM
+
+  deploy:
+    executor: aws-eks/python3
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - aws-eks/update-kubeconfig-with-authenticator:
+          cluster-name: service-marketplace
+          aws-region: $AWS_REGION
+          install-kubectl: true
+      - kubernetes/create-or-update-resource:
+          resource-file-path: kubernetes-infra/
+      - run:
+          name: Restart the pods
+          command: kubectl delete pods --all
+
+workflows:
+  version: 2
+#  ci:
+#    when: << pipeline.parameters.trigger >>
+#    jobs:
+#      - trigger-workflows
+
+# Workflows defined for each package.
+  gateway-service:
+    when: << pipeline.parameters.gateway-service >>
+    jobs:
+      - build:
+          name: build-api-gateway
+          package_name: api-gateway
+          filters:
+            branches:
+              ignore: master
+
+  auth-service:
+    when: << pipeline.parameters.auth-service >>
+    jobs:
+      - build:
+          name: build-auth-service
+          package_name: auth-service
+          filters:
+            branches:
+              ignore: master
+
+  customer-service:
+    when: << pipeline.parameters.customer-service >>
+    jobs:
+      - build:
+          name: build-customer-service
+          package_name: customer-service
+          filters:
+            branches:
+              ignore: master
+
+  service-provider-service:
+    when: << pipeline.parameters.service-provider-service >>
+    jobs:
+      - build:
+          name: build-service-provider-service
+          package_name: service-provider-service
+          filters:
+            branches:
+              ignore: master
+
+  order-service:
+    when: << pipeline.parameters.order-service >>
+    jobs:
+      - build:
+          name: build-order-service
+          package_name: order-service
+          filters:
+            branches:
+              ignore: master
+
+  deploy:
+    jobs:
+      - build:
+          name: build-api-gateway
+          package_name: api-gateway
+          filters:
+            branches:
+              only: master
+      - build:
+          name: build-auth-service
+          package_name: auth-service
+          filters:
+            branches:
+              only: master
+      - build:
+          name: build-customer-service
+          package_name: customer-service
+          filters:
+            branches:
+              only: master
+      - build:
+          name: build-service-provider-service
+          package_name: service-provider-service
+          filters:
+            branches:
+              only: master
+      - build:
+          name: build-order-service
+          package_name: order-service
+          filters:
+            branches:
+              only: master
+      - publish_image:
+          name: publish-api-gateway-image
+          requires:
+            - build-api-gateway
+            - build-auth-service
+            - build-customer-service
+            - build-service-provider-service
+            - build-order-service
+          package_name: api-gateway
+          filters:
+            branches:
+              only: master
+      - publish_image:
+          name: publish-auth-service-image
+          requires:
+            - build-api-gateway
+            - build-auth-service
+            - build-customer-service
+            - build-service-provider-service
+            - build-order-service
+          package_name: auth-service
+          filters:
+            branches:
+              only: master
+      - publish_image:
+          name: publish-customer-service-image
+          requires:
+            - build-api-gateway
+            - build-auth-service
+            - build-customer-service
+            - build-service-provider-service
+            - build-order-service
+          package_name: customer-service
+          filters:
+            branches:
+              only: master
+      - publish_image:
+          name: publish-service-provider-service-image
+          requires:
+            - build-api-gateway
+            - build-auth-service
+            - build-customer-service
+            - build-service-provider-service
+            - build-order-service
+          package_name: service-provider-service
+          filters:
+            branches:
+              only: master
+      - publish_image:
+          name: publish-order-service-image
+          requires:
+            - build-api-gateway
+            - build-auth-service
+            - build-customer-service
+            - build-service-provider-service
+            - build-order-service
+          package_name: order-service
+          filters:
+            branches:
+              only: master
+#      - deploy:
+#          requires:
+#            - publish-api-gateway-image
+#            - publish-auth-service-image
+#            - publish-customer-service-image
+#            - publish-service-provider-service-image
+#            - publish-order-service-image
+#          filters:
+#            branches:
+#              only: master

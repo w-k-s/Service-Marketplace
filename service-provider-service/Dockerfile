@@ -1,4 +1,4 @@
-FROM openjdk:16-jdk-alpine
+FROM adoptopenjdk/openjdk13:alpine-jre
 
 RUN apk update
 RUN apk upgrade
