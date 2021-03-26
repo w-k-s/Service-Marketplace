@@ -4,6 +4,11 @@ metadata:
   namespace: app
   name: order-service
 spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
   selector:
     matchLabels:
       app: order-service
@@ -14,7 +19,8 @@ spec:
     spec:
       containers:
         - name: order-service
-          image: 838107339577.dkr.ecr.ap-south-1.amazonaws.com/w-k-s/services-marketplace/order-service:469
+          image: 838107339577.dkr.ecr.ap-south-1.amazonaws.com/w-k-s/services-marketplace/order-service:494
+          imagePullPolicy: Always
           env:
             - name: SPRING_DATASOURCE_URL
               valueFrom:
@@ -31,7 +37,7 @@ spec:
                 secretKeyRef:
                   name: orderservice.servicesmarketplace.w-k-s.io
                   key: JDBC_PASSWORD
-            - name: AMQP_URI
+            - name: SPRING_RABBITMQ_HOST
               valueFrom:
                 secretKeyRef:
                   name: orderservice.servicesmarketplace.w-k-s.io
@@ -42,13 +48,13 @@ spec:
             httpGet:
               path: /actuator/health
               port: 8083
-            initialDelaySeconds: 3
+            initialDelaySeconds: 10
             periodSeconds: 3
           readinessProbe:
             httpGet:
               path: /actuator/health
               port: 8083
-            initialDelaySeconds: 3
+            initialDelaySeconds: 10
             periodSeconds: 3
 ---
 apiVersion: v1

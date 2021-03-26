@@ -4,6 +4,11 @@ metadata:
   namespace: app
   name: api-gateway
 spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
   selector:
     matchLabels:
       app: api-gateway
@@ -14,7 +19,8 @@ spec:
     spec:
       containers:
         - name: api-gateway
-          image: 838107339577.dkr.ecr.ap-south-1.amazonaws.com/w-k-s/services-marketplace/api-gateway:470
+          image: 838107339577.dkr.ecr.ap-south-1.amazonaws.com/w-k-s/services-marketplace/api-gateway:492
+          imagePullPolicy: Always
           env:
             - name: APPLICATION_HOSTS_CUSTOMER_SERVICE
               value: http://customer-service

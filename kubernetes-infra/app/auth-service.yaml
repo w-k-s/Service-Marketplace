@@ -4,6 +4,11 @@ metadata:
   namespace: app
   name: auth-service
 spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
   selector:
     matchLabels:
       app: auth-service
@@ -14,7 +19,8 @@ spec:
     spec:
       containers:
         - name: auth-service
-          image: 838107339577.dkr.ecr.ap-south-1.amazonaws.com/w-k-s/services-marketplace/auth-service:417
+          image: 838107339577.dkr.ecr.ap-south-1.amazonaws.com/w-k-s/services-marketplace/auth-service:493
+          imagePullPolicy: Always
           env:
             - name: FUSIONAUTH_APPLICATION_ID
               valueFrom:
@@ -31,16 +37,6 @@ spec:
                 secretKeyRef:
                   name: authservice.servicesmarketplace.w-k-s.io
                   key: FUSIONAUTH_API_KEY
-            - name: AUTHSERVICE_CLIENT_ID
-              valueFrom:
-                secretKeyRef:
-                  name: authservice.servicesmarketplace.w-k-s.io
-                  key: AUTHSERVICE_CLIENT_ID
-            - name: AUTHSERVICE_CLIENT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: authservice.servicesmarketplace.w-k-s.io
-                  key: AUTHSERVICE_CLIENT_SECRET
             - name: JDBC_URL
               valueFrom:
                 secretKeyRef:
@@ -61,30 +57,33 @@ spec:
                 secretKeyRef:
                   name: authservice.servicesmarketplace.w-k-s.io
                   key: AMQP_URI
+            - name: AUTHSERVICE_CLIENT_ID
+              value: auth-service
+            - name: AUTHSERVICE_CLIENT_SECRET
+              # TODO: Put in Hashicorp Vault and change credentials
+              value: Password@1
             - name: FUSIONAUTH_SERVER_URL
               value: http://fusionauth
             - name: AUTH_SERVICE_HOST_URL
-              value: "http://localhost:8082"
-            - name: SERVER_HOST
-              value: "0.0.0.0"
+              value: http://localhost:8082
             - name: SERVER_HOST
               value: "0.0.0.0"
             - name: SERVER_PORT
               value: "8082"
           ports:
             - containerPort: 8082
-          # livenessProbe:
-          #   httpGet:
-          #     path: /health
-          #     port: 8082
-          #   initialDelaySeconds: 3
-          #   periodSeconds: 3
-          # readinessProbe:
-          #   httpGet:
-          #     path: /health
-          #     port: 8082
-          #   initialDelaySeconds: 3
-          #   periodSeconds: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8082
+            initialDelaySeconds: 10
+            periodSeconds: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8082
+            initialDelaySeconds: 10
+            periodSeconds: 3
 ---
 apiVersion: v1
 kind: Service
