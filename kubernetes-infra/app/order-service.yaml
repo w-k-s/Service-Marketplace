@@ -37,7 +37,7 @@ spec:
                 secretKeyRef:
                   name: orderservice.servicesmarketplace.w-k-s.io
                   key: JDBC_PASSWORD
-            - name: SPRING_RABBITMQ_HOST
+            - name: SPRING_RABBITMQ_ADDRESSES
               valueFrom:
                 secretKeyRef:
                   name: orderservice.servicesmarketplace.w-k-s.io

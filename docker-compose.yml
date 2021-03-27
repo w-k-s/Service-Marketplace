@@ -98,8 +98,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://docker.for.mac.host.internal:5432/service_order
       SPRING_DATASOURCE_USERNAME: waqqassheikh
       SPRING_DATASOURCE_PASSWORD: 7713659
-      SPRING_RABBITMQ_HOST: rabbitmq
-      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_ADDRESSES: amqp://rabbitmq:5672
 
   api-gateway:
     build:
