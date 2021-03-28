@@ -37,7 +37,7 @@ dependencies {
 
     implementation("com.wks.servicemarketplace:common:1.0-SNAPSHOT")
     implementation("com.wks.servicemarketplace:auth-service-api:1.0-SNAPSHOT")
-    implementation("com.wks.servicemarketplace:service-provider-messaging:1.0-SNAPSHOT")
+    implementation("com.wks.servicemarketplace:service-provider-api:1.0-SNAPSHOT")
     implementation("org.glassfish.jersey.containers:jersey-container-jetty-http:2.31")
     implementation("org.glassfish.jersey.inject:jersey-hk2:2.31")
     implementation("javax.xml.bind:jaxb-api:2.3.1")

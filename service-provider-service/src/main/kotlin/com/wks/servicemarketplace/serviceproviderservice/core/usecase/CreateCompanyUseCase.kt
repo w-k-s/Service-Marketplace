@@ -13,7 +13,7 @@ import com.wks.servicemarketplace.common.events.EventEnvelope
 import com.wks.servicemarketplace.common.events.EventType
 import com.wks.servicemarketplace.common.messaging.Message
 import com.wks.servicemarketplace.common.messaging.MessageId
-import com.wks.servicemarketplace.messaging.ServiceProviderMessaging
+import com.wks.servicemarketplace.api.ServiceProviderMessaging
 import com.wks.servicemarketplace.serviceproviderservice.core.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory

@@ -3,7 +3,7 @@ package com.wks.servicemarketplace.serviceproviderservice.adapters.events
 import com.rabbitmq.client.Channel
 import com.rabbitmq.client.MessageProperties
 import com.wks.servicemarketplace.common.messaging.Message
-import com.wks.servicemarketplace.messaging.ServiceProviderMessaging
+import com.wks.servicemarketplace.api.ServiceProviderMessaging
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import javax.inject.Inject

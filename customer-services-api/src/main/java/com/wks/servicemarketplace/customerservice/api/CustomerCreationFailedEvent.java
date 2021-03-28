@@ -1,4 +1,4 @@
-package com.wks.servicemarketplace.customerservice.messaging;
+package com.wks.servicemarketplace.customerservice.api;
 
 import com.wks.servicemarketplace.common.errors.CoreException;
 import com.wks.servicemarketplace.common.events.DefaultFailureEvent;

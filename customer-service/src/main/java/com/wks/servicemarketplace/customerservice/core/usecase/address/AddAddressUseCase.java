@@ -5,7 +5,6 @@ import com.wks.servicemarketplace.common.CountryCode;
 import com.wks.servicemarketplace.common.CustomerUUID;
 import com.wks.servicemarketplace.common.auth.Authentication;
 import com.wks.servicemarketplace.common.auth.Permission;
-import com.wks.servicemarketplace.common.auth.User;
 import com.wks.servicemarketplace.common.errors.CoreException;
 import com.wks.servicemarketplace.common.errors.ErrorType;
 import com.wks.servicemarketplace.common.events.EventEnvelope;
@@ -20,7 +19,7 @@ import com.wks.servicemarketplace.customerservice.core.usecase.UseCase;
 import com.wks.servicemarketplace.customerservice.core.usecase.customer.CreateCustomerUseCase;
 import com.wks.servicemarketplace.customerservice.core.usecase.customer.Customer;
 import com.wks.servicemarketplace.customerservice.core.utils.CloseableUtils;
-import com.wks.servicemarketplace.customerservice.messaging.AddressAddedEvent;
+import com.wks.servicemarketplace.customerservice.api.AddressAddedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,4 +1,4 @@
-package com.wks.servicemarketplace.customerservice.messaging;
+package com.wks.servicemarketplace.customerservice.api;
 
 import com.google.common.base.Preconditions;
 import com.rabbitmq.client.BuiltinExchangeType;

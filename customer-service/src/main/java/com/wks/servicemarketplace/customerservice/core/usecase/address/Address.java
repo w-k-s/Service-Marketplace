@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 import com.wks.servicemarketplace.common.*;
 import com.wks.servicemarketplace.customerservice.core.usecase.ResultWithEvents;
 import com.wks.servicemarketplace.customerservice.core.usecase.customer.Customer;
-import com.wks.servicemarketplace.customerservice.messaging.AddressAddedEvent;
+import com.wks.servicemarketplace.customerservice.api.AddressAddedEvent;
 import lombok.NonNull;
 import lombok.Value;
 

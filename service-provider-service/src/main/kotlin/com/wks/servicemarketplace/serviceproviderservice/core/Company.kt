@@ -2,7 +2,7 @@ package com.wks.servicemarketplace.serviceproviderservice.core
 
 import com.wks.servicemarketplace.common.*
 import com.wks.servicemarketplace.common.events.DomainEvent
-import com.wks.servicemarketplace.messaging.CompanyCreatedEvent
+import com.wks.servicemarketplace.api.CompanyCreatedEvent
 import java.time.Clock
 import java.time.OffsetDateTime
 

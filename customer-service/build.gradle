@@ -29,7 +29,6 @@ dependencies {
     implementation 'com.wks.servicemarketplace:common:1.0-SNAPSHOT'
     implementation 'com.wks.servicemarketplace:customer-services-api:1.0-SNAPSHOT'
     implementation 'com.wks.servicemarketplace:auth-service-api:1.0-SNAPSHOT'
-    implementation 'com.wks.servicemarketplace:customer-service-messaging:1.0-SNAPSHOT'
 
     // Jersey
     implementation group: 'org.glassfish.jersey.containers', name: 'jersey-container-jetty-http', version: '2.31'

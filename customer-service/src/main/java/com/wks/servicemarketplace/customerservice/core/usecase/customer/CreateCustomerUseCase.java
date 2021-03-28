@@ -20,9 +20,9 @@ import com.wks.servicemarketplace.customerservice.core.daos.TransactionUtils;
 import com.wks.servicemarketplace.customerservice.core.usecase.ResultWithEvents;
 import com.wks.servicemarketplace.customerservice.core.usecase.UseCase;
 import com.wks.servicemarketplace.customerservice.core.utils.CloseableUtils;
-import com.wks.servicemarketplace.customerservice.messaging.CustomerCreatedEvent;
-import com.wks.servicemarketplace.customerservice.messaging.CustomerCreationFailedEvent;
-import com.wks.servicemarketplace.customerservice.messaging.CustomerMessaging;
+import com.wks.servicemarketplace.customerservice.api.CustomerCreatedEvent;
+import com.wks.servicemarketplace.customerservice.api.CustomerCreationFailedEvent;
+import com.wks.servicemarketplace.customerservice.api.CustomerMessaging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

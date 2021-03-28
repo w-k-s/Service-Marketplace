@@ -3,4 +3,4 @@ rootProject.name = "service-provider-service"
 
 includeBuild("../common")
 includeBuild("../auth-service-api")
-includeBuild("../service-provider-messaging")
+includeBuild("../service-provider-api")

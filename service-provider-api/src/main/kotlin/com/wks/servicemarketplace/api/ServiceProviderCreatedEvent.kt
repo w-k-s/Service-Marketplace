@@ -1,4 +1,4 @@
-package com.wks.servicemarketplace.messaging
+package com.wks.servicemarketplace.api
 
 import com.wks.servicemarketplace.common.*
 import com.wks.servicemarketplace.common.events.DomainEvent

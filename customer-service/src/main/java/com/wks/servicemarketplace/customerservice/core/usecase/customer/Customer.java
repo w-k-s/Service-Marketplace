@@ -2,7 +2,7 @@ package com.wks.servicemarketplace.customerservice.core.usecase.customer;
 
 import com.wks.servicemarketplace.common.*;
 import com.wks.servicemarketplace.customerservice.core.usecase.ResultWithEvents;
-import com.wks.servicemarketplace.customerservice.messaging.CustomerCreatedEvent;
+import com.wks.servicemarketplace.customerservice.api.CustomerCreatedEvent;
 import lombok.NonNull;
 import lombok.Value;
 

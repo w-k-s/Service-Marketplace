@@ -1,4 +1,4 @@
-package com.wks.servicemarketplace.customerservice.messaging;
+package com.wks.servicemarketplace.customerservice.api;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

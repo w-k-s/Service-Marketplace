@@ -15,8 +15,8 @@ import com.wks.servicemarketplace.common.messaging.MessageId
 import com.wks.servicemarketplace.common.sagas.DeadlineAfter
 import com.wks.servicemarketplace.common.sagas.Saga
 import com.wks.servicemarketplace.common.sagas.TransactionId
-import com.wks.servicemarketplace.customerservice.messaging.CustomerCreatedEvent
-import com.wks.servicemarketplace.customerservice.messaging.CustomerCreationFailedEvent
+import com.wks.servicemarketplace.customerservice.api.CustomerCreatedEvent
+import com.wks.servicemarketplace.customerservice.api.CustomerCreationFailedEvent
 import org.slf4j.LoggerFactory
 import java.time.Duration
 import javax.inject.Inject

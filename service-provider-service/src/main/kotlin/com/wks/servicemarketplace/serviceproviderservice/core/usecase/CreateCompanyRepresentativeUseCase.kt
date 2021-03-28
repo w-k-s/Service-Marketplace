@@ -11,8 +11,8 @@ import com.wks.servicemarketplace.common.errors.ErrorType
 import com.wks.servicemarketplace.common.events.EventEnvelope
 import com.wks.servicemarketplace.common.messaging.Message
 import com.wks.servicemarketplace.common.messaging.MessageId
-import com.wks.servicemarketplace.messaging.ServiceProviderCreationFailedEvent
-import com.wks.servicemarketplace.messaging.ServiceProviderMessaging
+import com.wks.servicemarketplace.api.ServiceProviderCreationFailedEvent
+import com.wks.servicemarketplace.api.ServiceProviderMessaging
 import com.wks.servicemarketplace.serviceproviderservice.core.CompanyRepresentative
 import com.wks.servicemarketplace.serviceproviderservice.core.CompanyRepresentativeDao
 import com.wks.servicemarketplace.serviceproviderservice.core.EventDao

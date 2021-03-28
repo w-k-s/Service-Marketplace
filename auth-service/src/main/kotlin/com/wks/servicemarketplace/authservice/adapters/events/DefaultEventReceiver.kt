@@ -6,9 +6,9 @@ import com.rabbitmq.client.Delivery
 import com.wks.servicemarketplace.authservice.core.sagas.CreateProfileSaga
 import com.wks.servicemarketplace.authservice.api.AuthMessaging
 import com.wks.servicemarketplace.common.auth.TokenValidator
-import com.wks.servicemarketplace.customerservice.messaging.CustomerCreatedEvent
-import com.wks.servicemarketplace.customerservice.messaging.CustomerCreationFailedEvent
-import com.wks.servicemarketplace.customerservice.messaging.CustomerMessaging
+import com.wks.servicemarketplace.customerservice.api.CustomerCreatedEvent
+import com.wks.servicemarketplace.customerservice.api.CustomerCreationFailedEvent
+import com.wks.servicemarketplace.customerservice.api.CustomerMessaging
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import javax.inject.Inject

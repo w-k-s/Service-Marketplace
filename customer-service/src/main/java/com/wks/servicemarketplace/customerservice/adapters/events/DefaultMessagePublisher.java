@@ -6,7 +6,7 @@ import com.google.common.collect.ImmutableMap;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.MessageProperties;
 import com.wks.servicemarketplace.common.messaging.Message;
-import com.wks.servicemarketplace.customerservice.messaging.CustomerMessaging;
+import com.wks.servicemarketplace.customerservice.api.CustomerMessaging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
