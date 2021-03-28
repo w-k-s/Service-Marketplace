@@ -12,17 +12,20 @@ jobs:
       AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      
       PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      
       DB_INSTANCE_URL: ${{ secrets.DB_INSTANCE_URL }} # should not end with '/'
       DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }} 
       DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD}}
+      
       HOSTED_ZONE_ID: ${{ secrets.HOSTED_ZONE_ID }}
+
       FUSIONAUTH_URL: ${{ secrets.FUSIONAUTH_URL }}
       FUSIONAUTH_APPLICATION_ID: ${{ secrets.FUSIONAUTH_APPLICATION_ID }}
       FUSIONAUTH_TENANT_ID: ${{ secrets.FUSIONAUTH_TENANT_ID }}
       FUSIONAUTH_API_KEY: ${{ secrets.FUSIONAUTH_API_KEY }}
-      AUTHSERVICE_CLIENT_ID: ${{ secrets.AUTHSERVICE_CLIENT_ID }}
-      AUTHSERVICE_CLIENT_SECRET: ${{ secrets.AUTHSERVICE_CLIENT_SECRET }}
+  
       TF_VAR_notification_email: ${{ secrets.NOTIFICATION_EMAIL }}
       TF_VAR_cloudamqp_customer_api_key: ${{ secrets.CLOUD_AMQP_CUSTOMER_API_KEY }}
       TF_VAR_cloudamqp_region: ${{ secrets.CLOUD_AMQP_REGION }}

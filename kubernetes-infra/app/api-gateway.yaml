@@ -44,4 +44,22 @@ spec:
   ports:
     - port: 80
       targetPort: 8080
-  type: LoadBalancer
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: bfs-ingress
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/healthcheck-path: /actuator/health
+    alb.ingress.kubernetes.io/scheme: internet-facing
+spec:
+  rules:
+    - host: servicesmarketplace.w-k-s.io
+      http:
+        paths:
+          - path: /*
+            backend:
+              serviceName: api-gateway
+              servicePort: 80

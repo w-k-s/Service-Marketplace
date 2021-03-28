@@ -8,7 +8,7 @@ resource "aws_ec2_tag" "vpc_tag" {
 resource "aws_ec2_tag" "private_subnet_tag" {
   for_each    = toset(var.private_subnet_ids)
   resource_id = each.value
-  key         = "kubernetes.io/role/elb"
+  key         = "kubernetes.io/role/internal-elb"
   value       = "1"
 }
 
