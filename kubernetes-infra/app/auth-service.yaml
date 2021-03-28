@@ -64,7 +64,7 @@ spec:
               value: Password@1
             - name: FUSIONAUTH_SERVER_URL
               value: http://fusionauth
-            - name: AUTH_SERVICE_HOST_URL
+            - name: AUTHSERVICE_HOST_URL
               value: http://localhost:8082
             - name: SERVER_HOST
               value: "0.0.0.0"
