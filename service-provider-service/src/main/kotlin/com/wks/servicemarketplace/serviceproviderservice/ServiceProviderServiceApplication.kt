@@ -12,20 +12,16 @@ import com.wks.servicemarketplace.serviceproviderservice.adapters.events.Transac
 import com.wks.servicemarketplace.serviceproviderservice.adapters.web.resources.ApiResource
 import com.wks.servicemarketplace.serviceproviderservice.config.*
 import com.wks.servicemarketplace.serviceproviderservice.core.*
-import com.wks.servicemarketplace.serviceproviderservice.core.events.EventPublisher
 import com.wks.servicemarketplace.serviceproviderservice.core.usecase.CreateCompanyRepresentativeUseCase
 import com.wks.servicemarketplace.serviceproviderservice.core.usecase.CreateCompanyUseCase
 import org.glassfish.hk2.api.Immediate
-import org.glassfish.hk2.api.TypeLiteral
 import org.glassfish.hk2.utilities.binding.AbstractBinder
 import org.glassfish.jersey.jetty.JettyHttpContainerFactory
 import org.glassfish.jersey.server.ResourceConfig
 import org.slf4j.LoggerFactory
-import java.util.concurrent.CompletableFuture
-import java.util.function.Supplier
 import javax.ws.rs.core.UriBuilder
 
-class ServiceProviderServiceApplication : ResourceConfig() {
+class ServiceProviderServiceApplication(private val parameters: ApplicationParameters) : ResourceConfig() {
 
     companion object {
         val LOGGER = LoggerFactory.getLogger(ServiceProviderServiceApplication::class.java)
@@ -33,7 +29,7 @@ class ServiceProviderServiceApplication : ResourceConfig() {
         @JvmStatic
         fun main(args: Array<String>) {
             try {
-                ServiceProviderServiceApplication().run()
+                ServiceProviderServiceApplication(ApplicationParameters.load()).run()
             } catch (e: Exception) {
                 LOGGER.error("Application execution failed", e)
                 throw e
@@ -51,7 +47,6 @@ class ServiceProviderServiceApplication : ResourceConfig() {
         register(AuthenticationFilter::class.java)
         register(object : AbstractBinder() {
             override fun configure() {
-                bindFactory(ApplicationParametersFactory::class.java, Immediate::class.java).to(ApplicationParameters::class.java).`in`(Immediate::class.java)
                 bindFactory(ObjectMapperFactory::class.java, Immediate::class.java).to(ObjectMapper::class.java).`in`(Immediate::class.java)
                 bindFactory(AmqpConnectionFactory::class.java, Immediate::class.java).to(Connection::class.java).`in`(Immediate::class.java)
                 bindFactory(AmqpChannelFactory::class.java, Immediate::class.java).to(Channel::class.java).`in`(Immediate::class.java)
@@ -59,6 +54,8 @@ class ServiceProviderServiceApplication : ResourceConfig() {
                 bindFactory(DataSourceFactory::class.java, Immediate::class.java).to(DataSource::class.java).`in`(Immediate::class.java)
                 bindFactory(ClientCredentialsTokenSupplierFactory::class.java, Immediate::class.java).to(ClientCredentialsTokenSupplier::class.java).`in`(Immediate::class.java)
 
+                bind(parameters).to(ApplicationParameters::class.java)
+                bind(DatabaseMigration::class.java).to(DatabaseMigration::class.java).`in`(Immediate::class.java)
                 bind(DefaultCompanyDao::class.java).to(CompanyDao::class.java).`in`(Immediate::class.java)
                 bind(DefaultCompanyRepresentativeDao::class.java).to(CompanyRepresentativeDao::class.java).`in`(Immediate::class.java)
                 bind(DefaultEmployeeDao::class.java).to(EmployeeDao::class.java).`in`(Immediate::class.java)
@@ -69,7 +66,6 @@ class ServiceProviderServiceApplication : ResourceConfig() {
                 bind(DefaultEventReceiver::class.java).to(DefaultEventReceiver::class.java).`in`(Immediate::class.java)
                 bind(CreateCompanyRepresentativeUseCase::class.java).to(CreateCompanyRepresentativeUseCase::class.java)
                 bind(CreateCompanyUseCase::class.java).to(CreateCompanyUseCase::class.java)
-
             }
         })
         register(HealthResource::class.java)
@@ -78,8 +74,8 @@ class ServiceProviderServiceApplication : ResourceConfig() {
 
     fun run() {
         val server = UriBuilder
-                .fromUri(System.getenv("serverHost"))
-                .port(Integer.parseInt(System.getenv("serverPort")))
+                .fromUri(this.parameters.serverHost)
+                .port(this.parameters.serverPort)
                 .build()
                 .let { JettyHttpContainerFactory.createServer(it, this) }
                 .also { LOGGER.info("Started listening on {}:{}", it.uri.host, it.uri.port) }

@@ -8,8 +8,7 @@ import javax.inject.Inject
 class AmqpConnectionFactory @Inject constructor(applicationParameters: ApplicationParameters) : Factory<Connection> {
 
     private val connection: Connection = ConnectionFactory().also {
-        it.host = applicationParameters.amqpHost
-        it.port = applicationParameters.amqpPort
+        it.setUri(applicationParameters.amqpUri)
     }.newConnection()
 
     override fun provide() = connection

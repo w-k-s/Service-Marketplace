@@ -45,6 +45,9 @@ dependencies {
     // Quartz
     implementation("org.quartz-scheduler:quartz:2.3.0")
 
+    // Config
+    implementation("com.ufoscout.properlty:properlty-kotlin:1.8.1")
+
     // Logging
     implementation("ch.qos.logback:logback-classic:1.2.3")
     implementation("ch.qos.logback:logback-core:1.2.3")
@@ -78,11 +81,7 @@ dependencies {
     implementation("org.jooq:jooq-meta:3.12.3")
 
     // Liquibase
-    liquibaseRuntime("org.liquibase:liquibase-core:3.8.1")
-    liquibaseRuntime("javax.xml.bind:jaxb-api:2.3.1")
-    liquibaseRuntime("org.postgresql:postgresql:42.2.12")
-    liquibaseRuntime("ch.qos.logback:logback-core:1.2.3")
-    liquibaseRuntime("ch.qos.logback:logback-classic:1.2.3")
+    implementation("org.liquibase:liquibase-core:3.8.1")
 
     // JWT
     implementation("org.bitbucket.b_c:jose4j:0.7.2")
@@ -93,17 +92,4 @@ dependencies {
     testImplementation(platform("org.junit:junit-bom:5.7.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.assertj:assertj-core:3.6.1")
-}
-
-liquibase {
-    activities.register("main") {
-        this.arguments = mapOf(
-                "logLevel" to "info",
-                "changeLogFile" to "src/main/resources/liquibase/serviceProviderService.changelog.xml",
-                "url" to project.extra.properties["mainUrl"],
-                "username" to project.extra.properties["username"],
-                "password" to project.extra.properties["password"]
-        )
-    }
-    runList = "main"
 }

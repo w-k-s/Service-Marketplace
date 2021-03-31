@@ -54,16 +54,15 @@ services:
     ports:
       - 8081:8081
     environment:
-      clientId: customer-service
-      clientSecret: Password@1
-      jdbcUrl: jdbc:postgresql://docker.for.mac.host.internal:5432/customer
-      jdbcUsername: waqqassheikh
-      jdbcPassword: 7713659
-      amqpHost: rabbitmq
-      amqpPort: 5672
-      serverHost: http://0.0.0.0
-      serverPort: 8081
-      authServiceBaseUrl: http://auth-service:8082
+      AUTHSERVICE_CLIENT_ID: customer-service
+      AUTHSERVICE_CLIENT_SECRET: Password@1
+      AUTHSERVICE_BASE_RUL: http://auth-service:8082
+      JDBC_URL: jdbc:postgresql://docker.for.mac.host.internal:5432/customer
+      JDBC_USERNAME: waqqassheikh
+      JDBC_PASSWORD: 7713659
+      AMQP_URI: amqp://rabbitmq:5672
+      SERVER_HOST: http://0.0.0.0
+      SERVER_PORT: 8081
 
   service-provider-service:
     build:
@@ -72,16 +71,15 @@ services:
     image: wkas/sm-sp-service
     restart: always
     environment:
-      clientId: service-provider-service
-      clientSecret: Password@1
-      jdbcUrl: jdbc:postgresql://docker.for.mac.host.internal:5432/provider
-      jdbcUsername: waqqassheikh
-      jdbcPassword: 7713659
-      amqpHost: rabbitmq
-      amqpPort: 5672
-      serverHost: http://0.0.0.0
-      serverPort: 8084
-      authServiceBaseUrl: http://auth-service:8082
+      AUTHSERVICE_CLIENT_ID: service-provider-service
+      AUTHSERVICE_CLIENT_SECRET: Password@1
+      AUTHSERVICE_BASE_URL: http://auth-service:8082
+      JDBC_URL: jdbc:postgresql://docker.for.mac.host.internal:5432/provider
+      JDBC_USERNAME: waqqassheikh
+      JDBC_PASSWORD: 7713659
+      AMQP_URI: amqp://rabbitmq:5672
+      SERVER_HOST: http://0.0.0.0
+      SERVER_PORT: 8084
     ports:
       - 8084:8084
 
