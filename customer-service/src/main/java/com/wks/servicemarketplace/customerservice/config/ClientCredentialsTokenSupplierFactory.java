@@ -15,8 +15,8 @@ public class ClientCredentialsTokenSupplierFactory implements Factory<ClientCred
     @Inject
     public ClientCredentialsTokenSupplierFactory(ApplicationParameters applicationParameters, ObjectMapper objectMapper){
         clientCredentialsTokenSupplier = new ClientCredentialsTokenSupplier(
-                new ClientCredentialsRequest(applicationParameters.getClientId(), applicationParameters.getClientSecret()),
-                applicationParameters.getAuthServiceBaseUrl(),
+                new ClientCredentialsRequest(applicationParameters.clientId(), applicationParameters.clientSecret()),
+                applicationParameters.authServiceBaseUrl(),
                 objectMapper
         );
     }

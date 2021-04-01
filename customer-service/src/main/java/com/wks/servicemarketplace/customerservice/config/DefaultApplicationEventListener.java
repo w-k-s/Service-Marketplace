@@ -11,15 +11,26 @@ import javax.inject.Inject;
 public class DefaultApplicationEventListener implements ApplicationEventListener {
 
     private final Schedulers schedulers;
+    private final DatabaseMigration migration;
 
     @Inject
-    public DefaultApplicationEventListener(Schedulers schedulers) {
+    public DefaultApplicationEventListener(
+            DatabaseMigration migrations,
+            Schedulers schedulers
+    ) {
+        this.migration = migrations;
         this.schedulers = schedulers;
     }
 
     @Override
     public void onEvent(ApplicationEvent event) {
         switch (event.getType()) {
+            case INITIALIZATION_START:
+                this.migration.migrate()
+                        .ifErr(e -> {
+                           throw new RuntimeException("Failed to migrate", e);
+                        });
+                break;
             case INITIALIZATION_FINISHED:
                 this.schedulers.start();
                 break;

@@ -26,7 +26,7 @@ public class TransactionalOutboxJobScheduler {
             var trigger = TriggerBuilder.newTrigger()
                     .withIdentity("transactionalOutboxTrigger", "transactionalOutbox")
                     .withSchedule(SimpleScheduleBuilder.simpleSchedule()
-                            .withIntervalInMilliseconds(applicationParameters.getOutboxIntervalMillis()).repeatForever()
+                            .withIntervalInMilliseconds(applicationParameters.outboxIntervalMillis()).repeatForever()
                     )
                     .build();
 

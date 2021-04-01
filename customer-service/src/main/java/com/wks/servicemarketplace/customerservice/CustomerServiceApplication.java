@@ -12,7 +12,6 @@ import com.wks.servicemarketplace.customerservice.adapters.db.dao.DefaultEventDa
 import com.wks.servicemarketplace.customerservice.adapters.db.dao.DefaultOutboxDao;
 import com.wks.servicemarketplace.customerservice.adapters.events.DefaultCustomerEventsReceiver;
 import com.wks.servicemarketplace.customerservice.adapters.events.DefaultMessagePublisher;
-import com.wks.servicemarketplace.customerservice.adapters.events.TransactionalOutboxJob;
 import com.wks.servicemarketplace.customerservice.adapters.events.TransactionalOutboxJobFactory;
 import com.wks.servicemarketplace.customerservice.adapters.web.ApiResource;
 import com.wks.servicemarketplace.customerservice.adapters.web.DefaultExceptionMapper;
@@ -42,8 +41,10 @@ import java.net.URI;
 public class CustomerServiceApplication extends ResourceConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CustomerServiceApplication.class.getSimpleName());
+    private final ApplicationParameters parameters;
 
-    public CustomerServiceApplication() {
+    public CustomerServiceApplication(ApplicationParameters applicationParameters) {
+        parameters = applicationParameters;
         registerResources();
     }
 
@@ -58,7 +59,6 @@ public class CustomerServiceApplication extends ResourceConfig {
         register(new AbstractBinder() {
             @Override
             protected void configure() {
-                bindFactory(ApplicationParametersFactory.class, Immediate.class).to(ApplicationParameters.class).in(Immediate.class);
                 bindFactory(ObjectMapperFactory.class, Immediate.class).to(ObjectMapper.class).in(Immediate.class);
                 bindFactory(DataSourceFactory.class, Immediate.class).to(DataSource.class).in(Immediate.class);
                 bindFactory(AmqpConnectionFactory.class, Immediate.class).to(Connection.class).in(Immediate.class);
@@ -69,9 +69,11 @@ public class CustomerServiceApplication extends ResourceConfig {
                 bindFactory(ClientCredentialsTokenSupplierFactory.class, Immediate.class).to(ClientCredentialsTokenSupplier.class).in(Immediate.class);
                 bindFactory(SchedulersFactory.class, Immediate.class).to(Schedulers.class).in(Immediate.class);
 
+                bind(parameters).to(ApplicationParameters.class);
                 bind(DefaultCustomerDao.class).to(CustomerDao.class).in(Immediate.class);
                 bind(DefaultOutboxDao.class).to(OutboxDao.class).in(Immediate.class);
                 bind(DefaultEventDao.class).to(EventDao.class).in(Immediate.class);
+                bind(DatabaseMigration.class).to(DatabaseMigration.class).in(Immediate.class);
                 bind(GetCustomerUseCase.class).to(GetCustomerUseCase.class).in(Immediate.class);
                 bind(AddAddressUseCase.class).to(AddAddressUseCase.class).in(Immediate.class);
                 bind(CreateCustomerUseCase.class).to(CreateCustomerUseCase.class).in(Immediate.class);
@@ -85,8 +87,8 @@ public class CustomerServiceApplication extends ResourceConfig {
 
     public void run() throws Exception {
         final URI uri = UriBuilder
-                .fromUri(System.getenv("serverHost"))
-                .port(Integer.parseInt(System.getenv("serverPort")))
+                .fromUri(parameters.serverHost())
+                .port(parameters.serverPort())
                 .build();
 
         final Server server = JettyHttpContainerFactory.createServer(uri, this, false);
@@ -102,7 +104,7 @@ public class CustomerServiceApplication extends ResourceConfig {
 
     public static void main(String[] args) {
         try {
-            CustomerServiceApplication application = new CustomerServiceApplication();
+            final var application = new CustomerServiceApplication(ApplicationParameters.load());
             application.run();
         } catch (Exception e) {
             LOGGER.error("Application execution failed", e);

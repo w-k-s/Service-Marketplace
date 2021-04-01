@@ -10,6 +10,9 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.net.ConnectException;
+import java.net.URISyntaxException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.TimeoutException;
 
 public class AmqpConnectionFactory implements Factory<Connection> {
@@ -19,10 +22,9 @@ public class AmqpConnectionFactory implements Factory<Connection> {
     private Connection connection;
 
     @Inject
-    public AmqpConnectionFactory(ApplicationParameters applicationParameters) throws IOException, TimeoutException {
-        ConnectionFactory connectionFactory = new ConnectionFactory();
-        connectionFactory.setHost(applicationParameters.getAmqpHost());
-        connectionFactory.setPort(applicationParameters.getAmqpPort());
+    public AmqpConnectionFactory(ApplicationParameters applicationParameters) throws IOException, TimeoutException, NoSuchAlgorithmException, KeyManagementException, URISyntaxException {
+        final var connectionFactory = new ConnectionFactory();
+        connectionFactory.setUri(applicationParameters.amqpUri());
         this.connection = connectionFactory.newConnection();
     }
 

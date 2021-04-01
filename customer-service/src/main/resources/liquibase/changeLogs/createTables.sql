@@ -1,4 +1,4 @@
-CREATE SEQUENCE customer_external_id;
+CREATE SEQUENCE IF NOT EXISTS customer_external_id;
 
 CREATE TABLE IF NOT EXISTS customers(
 	id BIGSERIAL PRIMARY KEY NOT NULL,
@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS customers(
 	version INT NOT NULL DEFAULT 0
 );
 
-CREATE SEQUENCE address_external_id;
+CREATE SEQUENCE IF NOT EXISTS address_external_id;
 
 CREATE TABLE IF NOT EXISTS addresses(
 	id BIGSERIAL PRIMARY KEY NOT NULL,

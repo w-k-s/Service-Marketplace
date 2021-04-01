@@ -39,6 +39,8 @@ public class DefaultCustomerEventsReceiver {
 
     private void consumeCustomerCreated(CreateCustomerUseCase createCustomerUseCase) {
         try {
+            AuthMessaging.Exchange.MAIN.declare(channel);
+
             String queueName = channel.queueDeclare(QUEUE_CUSTOMER_CREATED,true, false, false, Collections.emptyMap()).getQueue();
             channel.queueBind(queueName, AuthMessaging.Exchange.MAIN.getExchangeName(), AuthMessaging.RoutingKey.CUSTOMER_ACCOUNT_CREATED);
             channel.basicConsume(queueName, false, (consumerTag, message) -> {

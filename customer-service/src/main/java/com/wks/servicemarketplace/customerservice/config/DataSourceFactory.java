@@ -16,9 +16,9 @@ public class DataSourceFactory implements Factory<DataSource> {
     @Inject
     public DataSourceFactory(ApplicationParameters applicationParameters) {
         this.dataSource = new DataSource(
-                applicationParameters.getJdbcUrl(),
-                applicationParameters.getJdbcUsername(),
-                applicationParameters.getJdbcPassword()
+                applicationParameters.jdbcUrl(),
+                applicationParameters.jdbcUsername(),
+                applicationParameters.jdbcPassword()
         );
     }
 
