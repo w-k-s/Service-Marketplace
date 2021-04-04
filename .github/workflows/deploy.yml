@@ -80,7 +80,7 @@ jobs:
           --from-literal=DATABASE_USER="$DATABASE_USERNAME" \
           --from-literal=DATABASE_PASSWORD="$DATABASE_PASSWORD";
 
-          kubectl -n app create secret generic authservice.servicesmarketplace.w-k-s.io \
+          kubectl -n app create secret generic auth-service.servicesmarketplace.w-k-s.io \
           --from-literal=FUSIONAUTH_APPLICATION_ID="$FUSIONAUTH_APPLICATION_ID" \
           --from-literal=FUSIONAUTH_TENANT_ID="$FUSIONAUTH_TENANT_ID" \
           --from-literal=FUSIONAUTH_API_KEY="$FUSIONAUTH_API_KEY" \
@@ -91,8 +91,20 @@ jobs:
           --from-literal=JDBC_PASSWORD="$DATABASE_PASSWORD" \
           --from-literal=AMQP_URI="$(terraform output cloudamqp_url)";
 
-          kubectl -n app create secret generic orderservice.servicesmarketplace.w-k-s.io \
-          --from-literal=JDBC_URL="$DB_INSTANCE_URL/sm-order" \
+          kubectl -n app create secret generic order-service.servicesmarketplace.w-k-s.io \
+          --from-literal=JDBC_URL="$DB_INSTANCE_URL/sm-orders" \
+          --from-literal=JDBC_USERNAME="$DATABASE_USERNAME" \
+          --from-literal=JDBC_PASSWORD="$DATABASE_PASSWORD" \
+          --from-literal=AMQP_URI="$(terraform output cloudamqp_url)";
+
+          kubectl -n app create secret generic customer-service.servicesmarketplace.w-k-s.io \
+          --from-literal=JDBC_URL="$DB_INSTANCE_URL/sm-customers?currentSchema=public&user=$DATABASE_USERNAME&password=$DATABASE_PASSWORD" \
+          --from-literal=JDBC_USERNAME="$DATABASE_USERNAME" \
+          --from-literal=JDBC_PASSWORD="$DATABASE_PASSWORD" \
+          --from-literal=AMQP_URI="$(terraform output cloudamqp_url)";
+
+          kubectl -n app create secret generic service-provider-service.servicesmarketplace.w-k-s.io \
+          --from-literal=JDBC_URL="$DB_INSTANCE_URL/sm-providers?currentSchema=public&user=$DATABASE_USERNAME&password=$DATABASE_PASSWORD" \
           --from-literal=JDBC_USERNAME="$DATABASE_USERNAME" \
           --from-literal=JDBC_PASSWORD="$DATABASE_PASSWORD" \
           --from-literal=AMQP_URI="$(terraform output cloudamqp_url)";
@@ -101,9 +113,3 @@ jobs:
         working-directory: ./kubernetes-infra/app
         run: |
           kubectl apply -f .
-          export RECORD_SET_DOMAIN_NAME="$FUSIONAUTH_URL"
-          export RECORD_SET_TYPE="CNAME"
-          sleep 120          
-          export RECORD_SET_VALUE=$(kubectl -n app get svc fusionauth -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
-          envsubst < ../../.github/workflows/change-resource-record-sets.tmpl > change-resource-record-sets.json
-          aws route53 change-resource-record-sets --hosted-zone-id "$HOSTED_ZONE_ID" --change-batch file://change-resource-record-sets.json

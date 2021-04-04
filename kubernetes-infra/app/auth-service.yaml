@@ -25,37 +25,37 @@ spec:
             - name: FUSIONAUTH_APPLICATION_ID
               valueFrom:
                 secretKeyRef:
-                  name: authservice.servicesmarketplace.w-k-s.io
+                  name: auth-service.servicesmarketplace.w-k-s.io
                   key: FUSIONAUTH_APPLICATION_ID
             - name: FUSIONAUTH_TENANT_ID
               valueFrom:
                 secretKeyRef:
-                  name: authservice.servicesmarketplace.w-k-s.io
+                  name: auth-service.servicesmarketplace.w-k-s.io
                   key: FUSIONAUTH_TENANT_ID
             - name: FUSIONAUTH_API_KEY
               valueFrom:
                 secretKeyRef:
-                  name: authservice.servicesmarketplace.w-k-s.io
+                  name: auth-service.servicesmarketplace.w-k-s.io
                   key: FUSIONAUTH_API_KEY
             - name: JDBC_URL
               valueFrom:
                 secretKeyRef:
-                  name: authservice.servicesmarketplace.w-k-s.io
+                  name: auth-service.servicesmarketplace.w-k-s.io
                   key: JDBC_URL
             - name: JDBC_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: authservice.servicesmarketplace.w-k-s.io
+                  name: auth-service.servicesmarketplace.w-k-s.io
                   key: JDBC_USERNAME
             - name: JDBC_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: authservice.servicesmarketplace.w-k-s.io
+                  name: auth-service.servicesmarketplace.w-k-s.io
                   key: JDBC_PASSWORD
             - name: AMQP_URI
               valueFrom:
                 secretKeyRef:
-                  name: authservice.servicesmarketplace.w-k-s.io
+                  name: auth-service.servicesmarketplace.w-k-s.io
                   key: AMQP_URI
             - name: AUTHSERVICE_CLIENT_ID
               value: auth-service

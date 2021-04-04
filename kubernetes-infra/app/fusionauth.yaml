@@ -78,4 +78,22 @@ spec:
   ports:
     - port: 80
       targetPort: 9011
-  type: LoadBalancer
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: fusionauth-ingress
+  namespace: app
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/healthcheck-path: /api/status
+    alb.ingress.kubernetes.io/scheme: internet-facing
+spec:
+  rules:
+    - host: fusionauth.servicesmarketplace.w-k-s.io
+      http:
+        paths:
+          - path: /*
+            backend:
+              serviceName: fusionauth
+              servicePort: 80
