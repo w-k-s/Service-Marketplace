@@ -14,30 +14,6 @@ import java.sql.SQLException;
 
 public class DatabaseMigration {
 
-    enum ErrorType{
-        CONNECTION,
-        SQL_SYNTAX,
-        MIGRATION
-    }
-
-    static class MigrationError{
-        public final ErrorType type;
-        public final String message;
-
-        private MigrationError(ErrorType type, String message){
-            this.type = type;
-            this.message = message;
-        }
-
-        @Override
-        public String toString() {
-            return "MigrationError{" +
-                    "type=" + type +
-                    ", message='" + message + '\'' +
-                    '}';
-        }
-    }
-
     private final DataSource dataSource;
 
     @Inject
@@ -45,18 +21,13 @@ public class DatabaseMigration {
         this.dataSource = dataSource;
     }
 
-    public Result<Void, MigrationError> migrate() {
+    public void migrate() {
         try {
             var database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(dataSource.getConnection()));
             var liquibase = new Liquibase("liquibase/customerService.changelog.xml", new ClassLoaderResourceAccessor(), database);
             liquibase.update("Migration at ${OffsetDateTime.now(Clock.systemUTC())}");
-            return Result.ok(null);
-        } catch (DatabaseException e) {
-            return Result.err(new MigrationError(ErrorType.CONNECTION, e.getMessage()));
-        } catch (SQLException e) {
-            return Result.err(new MigrationError(ErrorType.SQL_SYNTAX, e.getMessage()));
-        } catch (LiquibaseException e) {
-            return Result.err(new MigrationError(ErrorType.MIGRATION, e.getMessage()));
+        } catch (Exception e) {
+            throw new RuntimeException("Migration Failed", e);
         }
     }
 }

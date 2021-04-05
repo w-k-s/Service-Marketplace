@@ -29,12 +29,7 @@ public class DefaultApplicationEventListener implements ApplicationEventListener
     public void onEvent(ApplicationEvent event) {
         switch (event.getType()) {
             case INITIALIZATION_START:
-                this.migration.migrate()
-                        .mapErr(e -> {
-                            LOGGER.error(e.toString());
-                            return e;
-                        })
-                        .expect("Migration Failed");
+                this.migration.migrate();
                 break;
             case INITIALIZATION_FINISHED:
                 this.schedulers.start();
