@@ -2,81 +2,60 @@ package com.wks.servicemarketplace.serviceproviderservice.adapters.events
 
 import com.wks.servicemarketplace.authservice.api.ClientCredentialsTokenSupplier
 import com.wks.servicemarketplace.serviceproviderservice.core.OutboxDao
+import org.quartz.Job
+import org.quartz.JobExecutionContext
+import org.quartz.Scheduler
+import org.quartz.simpl.SimpleJobFactory
+import org.quartz.spi.TriggerFiredBundle
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
 
-class TransactionOutboxRunnable(
-    private val outboxDao: OutboxDao,
-    private val messagePublisher: DefaultMessagePublisher,
-    private val clientCredentialsTokenSupplier: ClientCredentialsTokenSupplier
-) : Runnable {
+class TransactionalOutboxJob : Job {
 
     companion object {
-        private val LOGGER: Logger = LoggerFactory.getLogger(TransactionOutboxRunnable::class.java)
+        private val LOGGER: Logger = LoggerFactory.getLogger(TransactionalOutboxJob::class.java)
     }
 
-    override fun run() {
-        outboxDao.connection().use { conn ->
+    lateinit var outboxDao: OutboxDao
+    lateinit var messagePublisher: DefaultMessagePublisher
+    lateinit var clientCredentialsTokenSupplier: ClientCredentialsTokenSupplier
 
-            val (token, messages) = clientCredentialsTokenSupplier.get()
-                .thenCombine(CompletableFuture.supplyAsync { outboxDao.fetchUnpublishedMessages(conn) }) { token, events ->
-                    Pair(
-                        token,
-                        events
-                    )
-                }
-                .get()
+    override fun execute(context: JobExecutionContext?) {
+        LOGGER.info("PING!")
+        Executors.newCachedThreadPool().submit {
+            outboxDao.connection().use { conn ->
 
-            messages.forEach { message ->
-                try {
-                    conn.autoCommit = false
-                    messagePublisher.publish(token.accessToken, message)
-                    outboxDao.setMessagePublished(conn, message.id)
-                    conn.commit()
-                } catch (e: Exception) {
-                    LOGGER.error("Failed to publish message '{}'. ", message, e)
-                    conn.rollback()
+                val (token, messages) = clientCredentialsTokenSupplier.get()
+                    .thenCombine(CompletableFuture.supplyAsync { outboxDao.fetchUnpublishedMessages(conn) }) { token, events -> Pair(token, events) }
+                    .get()
+
+                messages.forEach { message ->
+                    try {
+                        conn.autoCommit = false
+                        messagePublisher.publish(token.accessToken, message)
+                        outboxDao.setMessagePublished(conn, message.id)
+                        conn.commit()
+                    } catch (e: Exception) {
+                        LOGGER.error("Failed to publish message '{}'. ", message, e)
+                        conn.rollback()
+                    }
                 }
             }
         }
     }
 }
 
-class TransactionalOutboxScheduler(
-    outboxDao: OutboxDao,
-    messagePublisher: DefaultMessagePublisher,
-    clientCredentialsTokenSupplier: ClientCredentialsTokenSupplier
-) {
+class TransactionalOutboxJobFactory constructor(private val outboxDao: OutboxDao,
+                                                        private val messagePublisher: DefaultMessagePublisher,
+                                                        private val clientCredentialsTokenSupplier: ClientCredentialsTokenSupplier) : SimpleJobFactory() {
 
-    companion object {
-        private val LOGGER: Logger = LoggerFactory.getLogger(TransactionalOutboxScheduler::class.java)
-    }
-
-    private val executor = Executors.newScheduledThreadPool(1)
-    private val task = TransactionOutboxRunnable(
-        outboxDao,
-        messagePublisher,
-        clientCredentialsTokenSupplier
-    )
-
-    fun scheduleExecution(delayMillis: Long) {
-        val taskWrapper = Runnable {
-            LOGGER.info("PING!")
-            task.run()
-        }
-        executor.scheduleWithFixedDelay(taskWrapper, delayMillis, delayMillis, TimeUnit.MILLISECONDS)
-    }
-
-
-    fun stop() {
-        executor.shutdown()
-        try {
-            executor.awaitTermination(5, TimeUnit.MINUTES)
-        } catch (e: InterruptedException) {
-            LOGGER.error(e.message, e)
+    override fun newJob(bundle: TriggerFiredBundle?, scheduler: Scheduler?): Job {
+        return (super.newJob(bundle, scheduler) as TransactionalOutboxJob).also {
+            it.outboxDao = outboxDao
+            it.messagePublisher = messagePublisher
+            it.clientCredentialsTokenSupplier = clientCredentialsTokenSupplier
         }
     }
 }

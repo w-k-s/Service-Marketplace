@@ -16,7 +16,7 @@ import com.wks.servicemarketplace.common.readPublicKey
 import com.wks.servicemarketplace.serviceproviderservice.adapters.db.dao.*
 import com.wks.servicemarketplace.serviceproviderservice.adapters.events.DefaultEventReceiver
 import com.wks.servicemarketplace.serviceproviderservice.adapters.events.DefaultMessagePublisher
-import com.wks.servicemarketplace.serviceproviderservice.adapters.events.TransactionalOutboxScheduler
+import com.wks.servicemarketplace.serviceproviderservice.adapters.events.TransactionalOutboxJobFactory
 import com.wks.servicemarketplace.serviceproviderservice.core.*
 import com.wks.servicemarketplace.serviceproviderservice.core.usecase.CreateCompanyRepresentativeUseCase
 import com.wks.servicemarketplace.serviceproviderservice.core.usecase.CreateCompanyUseCase
@@ -99,8 +99,8 @@ val appModule = module {
             objectMapper = get()
         )
     }
-    single(createdAtStart = true){
-        TransactionalOutboxScheduler(
+    single{
+        TransactionalOutboxJobFactory(
             outboxDao = get(),
             messagePublisher = get(),
             clientCredentialsTokenSupplier = get()

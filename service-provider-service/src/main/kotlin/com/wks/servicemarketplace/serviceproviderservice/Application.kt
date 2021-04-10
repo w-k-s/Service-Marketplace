@@ -11,7 +11,8 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.wks.servicemarketplace.common.UserId
 import com.wks.servicemarketplace.common.auth.DefaultAuthentication
 import com.wks.servicemarketplace.common.auth.StandardTokenValidator
-import com.wks.servicemarketplace.serviceproviderservice.adapters.events.TransactionalOutboxScheduler
+import com.wks.servicemarketplace.serviceproviderservice.adapters.events.TransactionalOutboxJob
+import com.wks.servicemarketplace.serviceproviderservice.adapters.events.TransactionalOutboxJobFactory
 import com.wks.servicemarketplace.serviceproviderservice.adapters.web.resources.healthCheckRouting
 import com.wks.servicemarketplace.serviceproviderservice.adapters.web.resources.serviceProviderRouting
 import com.wks.servicemarketplace.serviceproviderservice.config.ApplicationParameters
@@ -27,6 +28,8 @@ import io.ktor.routing.*
 import org.koin.ktor.ext.Koin
 import org.koin.ktor.ext.inject
 import org.koin.logger.slf4jLogger
+import org.quartz.*
+import org.quartz.impl.StdSchedulerFactory
 import org.slf4j.LoggerFactory
 
 private val LOGGER = LoggerFactory.getLogger("Application")
@@ -94,6 +97,39 @@ fun Application.routing(){
     }
 }
 
+lateinit var scheduler: Scheduler
+
+fun Application.startOutboxScheduler(){
+    val parameters by inject<ApplicationParameters>()
+    val transactionalOutboxJobFactory by inject<TransactionalOutboxJobFactory>()
+
+    scheduler = StdSchedulerFactory.getDefaultScheduler()
+    scheduler.setJobFactory(transactionalOutboxJobFactory)
+    val transactionalOutboxJob = JobBuilder.newJob(TransactionalOutboxJob::class.java)
+        .withIdentity("transactionalOutboxJob", "transactionalOutbox")
+        .build()
+
+    val trigger: Trigger = TriggerBuilder.newTrigger()
+        .withIdentity("transactionalOutboxTrigger", "transactionalOutbox")
+        .withSchedule(
+            SimpleScheduleBuilder.simpleSchedule()
+            .withIntervalInMilliseconds(parameters.outboxIntervalMillis).repeatForever()
+        )
+        .build()
+
+    scheduler.scheduleJob(transactionalOutboxJob, trigger)
+    scheduler.start()
+}
+
+fun Application.stopOutboxScheduler(){
+    scheduler.shutdown()
+}
+
+fun Application.migration(){
+    val migration by inject<DatabaseMigration>()
+    migration.migrate()
+}
+
 fun Application.events(){
     environment.monitor.subscribe(ApplicationStarting) {
         LOGGER.info("Application Starting")
@@ -101,22 +137,17 @@ fun Application.events(){
 
     environment.monitor.subscribe(ApplicationStarted) {
         LOGGER.info("Application Started")
-        val migration by inject<DatabaseMigration>()
-        migration.migrate()
-
-        val transactionalOutbox by inject<TransactionalOutboxScheduler>()
-        val parameters by inject<ApplicationParameters>()
-        transactionalOutbox.scheduleExecution(parameters.outboxIntervalMillis)
+        it.migration()
+        it.startOutboxScheduler()
     }
 
     environment.monitor.subscribe(ApplicationStopPreparing) {
         LOGGER.info("Application Stop Preparing")
-        val transactionalOutbox by inject<TransactionalOutboxScheduler>()
-        transactionalOutbox.stop()
     }
 
     environment.monitor.subscribe(ApplicationStopping) {
         LOGGER.info("Application Stopping")
+        it.stopOutboxScheduler()
     }
 
     environment.monitor.subscribe(ApplicationStopped) {
