@@ -1,19 +1,25 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+val kotlinVersion : String by project
+val ktorVersion : String by project
+val quartzVersion: String by project
+val properltyVersion: String by project
+val koinVersion: String by project
+
 plugins {
-    kotlin("jvm") version "1.4.10"
-    id("org.liquibase.gradle") version "2.0.3"
+    kotlin("jvm")
 }
 group = "com.wks.servicemarketplace"
 version = "1.0-SNAPSHOT"
 
 repositories {
+    jcenter()
     mavenCentral()
 }
 
 tasks.withType<Jar> {
     manifest {
-        attributes["Main-Class"] = "com.wks.servicemarketplace.serviceproviderservice.ServiceProviderServiceApplication"
+        attributes["Main-Class"] = "com.wks.servicemarketplace.serviceproviderservice.Application"
     }
     from(sourceSets.main.get().output)
     dependsOn(configurations.runtimeClasspath)
@@ -33,25 +39,28 @@ tasks.test {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.4.10")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
 
     implementation("com.wks.servicemarketplace:common:1.0-SNAPSHOT")
     implementation("com.wks.servicemarketplace:auth-service-api:1.0-SNAPSHOT")
     implementation("com.wks.servicemarketplace:service-provider-api:1.0-SNAPSHOT")
-    implementation("org.glassfish.jersey.containers:jersey-container-jetty-http:2.31")
-    implementation("org.glassfish.jersey.inject:jersey-hk2:2.31")
-    implementation("javax.xml.bind:jaxb-api:2.3.1")
+
+    implementation("io.ktor:ktor-server-core:$ktorVersion")
+    implementation("io.ktor:ktor-server-netty:$ktorVersion")
+    implementation("io.ktor:ktor-locations:$ktorVersion")
+    implementation("io.ktor:ktor-jackson:$ktorVersion")
+    implementation("io.ktor:ktor-auth:$ktorVersion")
+    implementation("io.ktor:ktor-auth-jwt:$ktorVersion")
 
     // Quartz
-    implementation("org.quartz-scheduler:quartz:2.3.0")
+    implementation("org.quartz-scheduler:quartz:$quartzVersion")
 
     // Config
-    implementation("com.ufoscout.properlty:properlty-kotlin:1.8.1")
+    implementation("com.ufoscout.properlty:properlty-kotlin:$properltyVersion")
 
-    // Logging
-    implementation("ch.qos.logback:logback-classic:1.2.3")
-    implementation("ch.qos.logback:logback-core:1.2.3")
-    implementation("org.slf4j:slf4j-log4j12:1.7.30")
+    // DI
+    implementation("org.koin:koin-ktor:$koinVersion")
+    implementation("org.koin:koin-logger-slf4j:$koinVersion")
 
     // Validation
     implementation("org.glassfish:javax.el:3.0.0")
@@ -62,13 +71,9 @@ dependencies {
     implementation("com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.1") // Jackson Provider for Jax-RS
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.0") // Support for java 8's time API
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.11.1")
-    implementation("javax.activation:activation:1.1.1") // Needed by jackson-jaxrs-json-provider
 
     // RabbitMQ
     implementation("com.rabbitmq:amqp-client:5.9.0")
-
-    // FusionAuth
-    implementation("io.fusionauth:fusionauth-java-client:1.20.0")
 
     // PostgreSQL
     runtimeOnly("org.postgresql:postgresql:42.2.12")
@@ -83,8 +88,8 @@ dependencies {
     // Liquibase
     implementation("org.liquibase:liquibase-core:3.8.1")
 
-    // JWT
-    implementation("org.bitbucket.b_c:jose4j:0.7.2")
+    // Result Type
+    implementation("com.michael-bull.kotlin-result:kotlin-result:1.1.11")
 
     // Country Codes
     implementation("com.neovisionaries:nv-i18n:1.27")
@@ -92,4 +97,5 @@ dependencies {
     testImplementation(platform("org.junit:junit-bom:5.7.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.assertj:assertj-core:3.6.1")
+
 }

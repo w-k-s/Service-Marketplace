@@ -10,9 +10,8 @@ import com.wks.servicemarketplace.serviceproviderservice.core.usecase.CreateComp
 import com.wks.servicemarketplace.serviceproviderservice.core.usecase.CreateCompanyRepresentativeUseCase
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import javax.inject.Inject
 
-class DefaultEventReceiver @Inject constructor(
+class DefaultEventReceiver constructor(
     private val tokenValidator: TokenValidator,
     createCompanyRepresentativeUseCase: CreateCompanyRepresentativeUseCase,
     objectMapper: ObjectMapper,

@@ -9,6 +9,7 @@ version = "1.0-SNAPSHOT"
 repositories {
     mavenCentral()
 }
+
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
 
@@ -26,6 +27,9 @@ dependencies {
 
     // Country Codes
     implementation("com.neovisionaries:nv-i18n:1.27")
+
+    // Result Type
+    implementation("com.michael-bull.kotlin-result:kotlin-result:1.1.11")
 
     testImplementation(kotlin("test-junit5"))
 }

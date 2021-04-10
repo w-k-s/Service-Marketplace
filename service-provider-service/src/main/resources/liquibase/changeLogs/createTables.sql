@@ -2,7 +2,7 @@
 
 -- Company
 
-CREATE SEQUENCE company_external_id;
+CREATE SEQUENCE IF NOT EXISTS company_external_id;
 CREATE TABLE IF NOT EXISTS company(
     id BIGSERIAL PRIMARY KEY NOT NULL,
 	external_id BIGSERIAL NOT NULL UNIQUE,
@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS company(
 
 -- Company Representative (User that will create company)
 
-CREATE SEQUENCE company_representative_external_id;
+CREATE SEQUENCE IF NOT EXISTS company_representative_external_id;
 CREATE TABLE IF NOT EXISTS company_representative(
 	id BIGSERIAL PRIMARY KEY NOT NULL,
 	external_id BIGSERIAL NOT NULL UNIQUE,
@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS company_representative(
 
 -- Employee
 
-CREATE SEQUENCE employee_external_id;
+CREATE SEQUENCE IF NOT EXISTS employee_external_id;
 CREATE TABLE IF NOT EXISTS employee(
 	id BIGSERIAL PRIMARY KEY NOT NULL,
 	external_id BIGSERIAL NOT NULL UNIQUE,
@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS employee(
 
 -- Address
 
-CREATE SEQUENCE address_external_id;
+CREATE SEQUENCE IF NOT EXISTS address_external_id;
 CREATE TABLE IF NOT EXISTS address(
 	id BIGSERIAL PRIMARY KEY NOT NULL,
 	external_id BIGSERIAL NOT NULL UNIQUE,

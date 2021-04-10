@@ -20,10 +20,9 @@ import com.wks.servicemarketplace.serviceproviderservice.core.OutboxDao
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.*
-import javax.inject.Inject
 import javax.validation.constraints.NotNull
 
-class CreateCompanyRepresentativeUseCase @Inject constructor(
+class CreateCompanyRepresentativeUseCase constructor(
     private val companyRepresentativeDao: CompanyRepresentativeDao,
     private val eventDao: EventDao,
     private val outboxDao: OutboxDao,

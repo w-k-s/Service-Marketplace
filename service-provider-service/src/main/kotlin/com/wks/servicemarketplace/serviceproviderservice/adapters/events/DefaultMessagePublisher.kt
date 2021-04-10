@@ -6,9 +6,8 @@ import com.wks.servicemarketplace.common.messaging.Message
 import com.wks.servicemarketplace.api.ServiceProviderMessaging
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import javax.inject.Inject
 
-data class DefaultMessagePublisher @Inject constructor(private val channel: Channel) {
+data class DefaultMessagePublisher constructor(private val channel: Channel) {
 
     companion object {
         private val LOGGER: Logger = LoggerFactory.getLogger(DefaultMessagePublisher::class.java)

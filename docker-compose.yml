@@ -29,19 +29,19 @@ services:
     env_file:
       - docker-infra/auth-service.env
     environment:
-      clientId: auth-service
-      clientSecret: Password@1
-      fusionServerUrl: http://fusionauth:9011
-      fusionApplicationId: d64656ea-4f62-4127-b312-91afeeca96f9
-      fusionTenantId: a84b174a-965c-44fe-807d-623efc3bff9c
-      fusionApiKey: 9Am1DMurFnQo6B_Zae3qLdSqd2mOk7w4APyPoCTnLHw
-      authServiceBaseUrl: http://localhost:8082
-      serverHost: http://0.0.0.0
-      serverPort: 8082
-      amqpUri: amqp://rabbitmq:5672
-      jdbcUrl: jdbc:postgresql://docker.for.mac.host.internal:5432/auth
-      jdbcUsername: waqqassheikh
-      jdbcPassword: 7713659
+      AUTHSERVICE_CLIENT_ID: auth-service
+      AUTHSERVICE_CLIENT_SECRET: Password@1
+      FUSIONAUTH_SERVER_URL: http://fusionauth:9011
+      FUSIONAUTH_APPLICATION_ID: d64656ea-4f62-4127-b312-91afeeca96f9
+      FUSIONAUTH_TENANT_ID: a84b174a-965c-44fe-807d-623efc3bff9c
+      FUSIONAUTH_API_KEY: 9Am1DMurFnQo6B_Zae3qLdSqd2mOk7w4APyPoCTnLHw
+      AUTHSERVICE_HOST_URL: http://localhost:8082
+      SERVER_HOST: http://0.0.0.0
+      SERVER_PORT: 8082
+      AMQP_URI: amqp://rabbitmq:5672
+      JDBC_URL: jdbc:postgresql://docker.for.mac.host.internal:5432/auth
+      JDBC_USERNAME: waqqassheikh
+      JDBC_PASSWORD: 7713659
     ports:
       - 8082:8082
 

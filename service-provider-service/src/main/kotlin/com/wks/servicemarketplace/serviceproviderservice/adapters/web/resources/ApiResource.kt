@@ -1,30 +1,32 @@
 package com.wks.servicemarketplace.serviceproviderservice.adapters.web.resources
 
-import com.wks.servicemarketplace.common.auth.Authentication
+import com.wks.servicemarketplace.serviceproviderservice.DefaultPrincipal
 import com.wks.servicemarketplace.serviceproviderservice.core.usecase.CreateCompanyRequest
-import com.wks.servicemarketplace.serviceproviderservice.core.usecase.CreateCompanyResponse
 import com.wks.servicemarketplace.serviceproviderservice.core.usecase.CreateCompanyUseCase
-import javax.annotation.security.RolesAllowed
-import javax.inject.Inject
-import javax.ws.rs.POST
-import javax.ws.rs.Path
-import javax.ws.rs.Produces
-import javax.ws.rs.core.Context
-import javax.ws.rs.core.MediaType
-import javax.ws.rs.core.SecurityContext
+import io.ktor.application.*
+import io.ktor.auth.*
+import io.ktor.locations.*
+import io.ktor.request.*
+import io.ktor.response.*
+import io.ktor.routing.*
+import org.koin.ktor.ext.inject
 
-@Path("/api/v1/serviceproviders")
-class ApiResource @Inject constructor(private val createCompanyUseCase: CreateCompanyUseCase) {
+@Location("/api/v1/serviceproviders")
+class ServiceProvidersEndpoint {
 
-    @POST
-    @Path("/company")
-    @RolesAllowed("company.create")
-    @Produces(MediaType.APPLICATION_JSON)
-    fun createCompany(request: CreateCompanyRequest.Builder, @Context context: SecurityContext): CreateCompanyResponse {
-        return createCompanyUseCase.execute(
-            request.also {
-                it.authentication = context.userPrincipal as? Authentication
-            }.build()
-        )
+    @Location("/company")
+    class Company(val parent: ServiceProvidersEndpoint)
+}
+
+fun Route.serviceProviderRouting() {
+
+    authenticate("standardJwtToken") {
+        val createCompanyUseCase by inject<CreateCompanyUseCase>()
+        post<ServiceProvidersEndpoint.Company> {
+            val request = call.receive<CreateCompanyRequest.Builder>()
+            call.respond(createCompanyUseCase.execute(request.also {
+                it.authentication = (call.authentication.principal as DefaultPrincipal).value
+            }.build()))
+        }
     }
 }

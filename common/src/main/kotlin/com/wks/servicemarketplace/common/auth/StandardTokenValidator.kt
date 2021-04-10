@@ -1,6 +1,7 @@
 package com.wks.servicemarketplace.common.auth
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.github.michaelbull.result.Result
 import com.wks.servicemarketplace.common.UserId
 import com.wks.servicemarketplace.common.errors.CoreException
 import com.wks.servicemarketplace.common.errors.ErrorType
@@ -34,7 +35,6 @@ class StandardTokenValidator(publicKey: PublicKey, private val objectMapper: Obj
             return consumer.processToClaims(token).let {
                 DefaultAuthentication(
                         it.getStringClaimValue("userId")?.let { uuidString -> UserId.fromString(uuidString) },
-                        token,
                         it.subject,
                         it.getStringListClaimValue("permissions")
                 )

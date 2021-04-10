@@ -18,11 +18,10 @@ import com.wks.servicemarketplace.serviceproviderservice.core.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.time.OffsetDateTime
-import javax.inject.Inject
 import javax.validation.constraints.NotEmpty
 import javax.validation.constraints.NotNull
 
-class CreateCompanyUseCase @Inject constructor(
+class CreateCompanyUseCase constructor(
     private val companyDao: CompanyDao,
     private val companyRepresentativeDao: CompanyRepresentativeDao,
     private val employeeDao: EmployeeDao,

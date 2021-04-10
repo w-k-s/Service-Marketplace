@@ -1,15 +1,17 @@
-package com.wks.servicemarketplace.authservice.adapters.web.resources
+package com.wks.servicemarketplace.serviceproviderservice.adapters.web.resources
 
-import javax.ws.rs.GET
-import javax.ws.rs.Path
-import javax.ws.rs.core.Response
+import io.ktor.application.*
+import io.ktor.http.*
+import io.ktor.locations.*
+import io.ktor.response.*
+import io.ktor.routing.*
 
-@Path("/")
-class HealthResource {
+@Location("/health")
+class HealthCheckEndpoint
 
-    @GET
-    @Path("/health")
-    fun healthCheck(): Response {
-        return Response.ok().build()
+fun Route.healthCheckRouting() {
+
+    get<HealthCheckEndpoint> {
+        call.respond(status = HttpStatusCode.OK, message = "")
     }
 }

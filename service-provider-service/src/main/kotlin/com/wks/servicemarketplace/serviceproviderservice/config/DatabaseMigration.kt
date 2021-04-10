@@ -7,9 +7,8 @@ import liquibase.database.jvm.JdbcConnection
 import liquibase.resource.ClassLoaderResourceAccessor
 import java.time.Clock
 import java.time.OffsetDateTime
-import javax.inject.Inject
 
-class DatabaseMigration @Inject constructor(private val dataSource: DataSource) {
+class DatabaseMigration constructor(private val dataSource: DataSource) {
 
     fun migrate() {
         val database =
