@@ -23,7 +23,6 @@ class TransactionalOutboxJob : Job {
     lateinit var clientCredentialsTokenSupplier: ClientCredentialsTokenSupplier
 
     override fun execute(context: JobExecutionContext?) {
-        LOGGER.info("PING!")
         Executors.newCachedThreadPool().submit {
             outboxDao.connection().use { conn ->
 

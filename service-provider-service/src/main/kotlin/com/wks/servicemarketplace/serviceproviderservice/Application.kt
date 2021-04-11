@@ -11,6 +11,7 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.wks.servicemarketplace.common.UserId
 import com.wks.servicemarketplace.common.auth.DefaultAuthentication
 import com.wks.servicemarketplace.common.auth.StandardTokenValidator
+import com.wks.servicemarketplace.common.auth.TokenValidator
 import com.wks.servicemarketplace.serviceproviderservice.adapters.events.TransactionalOutboxJob
 import com.wks.servicemarketplace.serviceproviderservice.adapters.events.TransactionalOutboxJobFactory
 import com.wks.servicemarketplace.serviceproviderservice.adapters.web.resources.healthCheckRouting
@@ -62,13 +63,13 @@ fun Application.authentication(){
             }
             verifier(object: JWTVerifier{
                 override fun verify(token: String): DecodedJWT {
-                    val validator by inject<StandardTokenValidator>()
+                    val validator by inject<TokenValidator>()
                     validator.authenticate(token)
                     return JWT.decode(token)
                 }
 
                 override fun verify(jwt: DecodedJWT): DecodedJWT {
-                    val validator by inject<StandardTokenValidator>()
+                    val validator by inject<TokenValidator>()
                     validator.authenticate(jwt.token)
                     return jwt
                 }
