@@ -5,9 +5,8 @@ import com.wks.servicemarketplace.serviceproviderservice.core.*
 import org.jooq.impl.DSL
 import org.jooq.impl.DSL.*
 import java.sql.Connection
-import javax.inject.Inject
 
-class DefaultCompanyRepresentativeDao @Inject constructor(dataSource: DataSource) : BaseDao(dataSource), CompanyRepresentativeDao {
+class DefaultCompanyRepresentativeDao constructor(dataSource: DataSource) : BaseDao(dataSource), CompanyRepresentativeDao {
 
     override fun newCompanyRepresentativeId(connection: Connection): CompanyRepresentativeId {
         return CompanyRepresentativeId(

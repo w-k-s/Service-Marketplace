@@ -5,6 +5,13 @@ val ktorVersion : String by project
 val quartzVersion: String by project
 val properltyVersion: String by project
 val koinVersion: String by project
+val jacksonVersion: String by project
+val amqpVersion: String by project
+val postgresqlVersion: String by project
+val hikariVersion: String by project
+val jooqVersion: String by project
+val liquibaseVersion: String by project
+val countryCodesVersion: String by project
 
 plugins {
     kotlin("jvm")
@@ -19,7 +26,7 @@ repositories {
 
 tasks.withType<Jar> {
     manifest {
-        attributes["Main-Class"] = "com.wks.servicemarketplace.serviceproviderservice.Application"
+        attributes["Main-Class"] = "com.wks.servicemarketplace.serviceproviderservice.ApplicationKt"
     }
     from(sourceSets.main.get().output)
     dependsOn(configurations.runtimeClasspath)
@@ -27,6 +34,7 @@ tasks.withType<Jar> {
         configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
     })
 }
+
 tasks.withType<KotlinCompile>() {
     kotlinOptions.jvmTarget = "13"
 }
@@ -68,34 +76,32 @@ dependencies {
     implementation("org.hibernate:hibernate-validator:6.1.5.Final")
 
     // Jackson
-    implementation("com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.1") // Jackson Provider for Jax-RS
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.0") // Support for java 8's time API
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.11.1")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion") // Support for java 8's time API
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
 
     // RabbitMQ
-    implementation("com.rabbitmq:amqp-client:5.9.0")
+    implementation("com.rabbitmq:amqp-client:$amqpVersion")
 
     // PostgreSQL
-    runtimeOnly("org.postgresql:postgresql:42.2.12")
+    runtimeOnly("org.postgresql:postgresql:$postgresqlVersion")
 
     // Hikari
-    implementation("com.zaxxer:HikariCP:3.4.5")
+    implementation("com.zaxxer:HikariCP:$hikariVersion")
 
     // JOOQ
-    implementation("org.jooq:jooq:3.12.3")
-    implementation("org.jooq:jooq-meta:3.12.3")
+    implementation("org.jooq:jooq:$jooqVersion")
+    implementation("org.jooq:jooq-meta:$jooqVersion")
 
     // Liquibase
-    implementation("org.liquibase:liquibase-core:3.8.1")
+    implementation("org.liquibase:liquibase-core:$liquibaseVersion")
 
     // Result Type
     implementation("com.michael-bull.kotlin-result:kotlin-result:1.1.11")
 
     // Country Codes
-    implementation("com.neovisionaries:nv-i18n:1.27")
+    implementation("com.neovisionaries:nv-i18n:$countryCodesVersion")
 
     testImplementation(platform("org.junit:junit-bom:5.7.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.assertj:assertj-core:3.6.1")
-
 }

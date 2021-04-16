@@ -11,9 +11,8 @@ import org.jooq.impl.DSL.field
 import org.jooq.impl.DSL.table
 import java.math.BigDecimal
 import java.sql.Connection
-import javax.inject.Inject
 
-class DefaultAddressDao @Inject constructor(dataSource: DataSource) : BaseDao(dataSource), AddressDao {
+class DefaultAddressDao constructor(dataSource: DataSource) : BaseDao(dataSource), AddressDao {
 
     private val addressMapper = RecordMapper<Record, Address> { record ->
         record?.let {

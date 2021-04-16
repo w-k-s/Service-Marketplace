@@ -37,7 +37,7 @@ class DefaultEventReceiver constructor(
         channel.queueBind(QUEUE_SERVICE_PROVIDER_CREATED, AuthMessaging.Exchange.MAIN.exchangeName, AuthMessaging.RoutingKey.SERVICE_PROVIDER_ACCOUNT_CREATED)
         LOGGER.info("Queue '${QUEUE_SERVICE_PROVIDER_CREATED}' listening to routing key ${AuthMessaging.RoutingKey.SERVICE_PROVIDER_ACCOUNT_CREATED}")
 
-        channel.basicConsume(QUEUE_SERVICE_PROVIDER_CREATED, false, { consumerTag: String, message: Delivery ->
+        channel.basicConsume(QUEUE_SERVICE_PROVIDER_CREATED, false, { _: String, message: Delivery ->
             try {
                 LOGGER.info("Service Provider Created Event")
 

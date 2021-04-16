@@ -1,16 +1,12 @@
 package com.wks.servicemarketplace.customerservice.config;
 
-import com.hubspot.algebra.Result;
 import com.wks.servicemarketplace.customerservice.adapters.db.dao.DataSource;
 import liquibase.Liquibase;
 import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
-import liquibase.exception.DatabaseException;
-import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
 
 import javax.inject.Inject;
-import java.sql.SQLException;
 
 public class DatabaseMigration {
 

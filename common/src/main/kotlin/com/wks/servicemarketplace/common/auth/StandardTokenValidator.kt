@@ -1,7 +1,6 @@
 package com.wks.servicemarketplace.common.auth
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.github.michaelbull.result.Result
 import com.wks.servicemarketplace.common.UserId
 import com.wks.servicemarketplace.common.errors.CoreException
 import com.wks.servicemarketplace.common.errors.ErrorType

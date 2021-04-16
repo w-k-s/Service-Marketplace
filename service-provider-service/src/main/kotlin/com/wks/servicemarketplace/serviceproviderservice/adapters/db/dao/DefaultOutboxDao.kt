@@ -7,9 +7,8 @@ import org.jooq.JSON
 import org.jooq.impl.DSL.field
 import org.jooq.impl.DSL.table
 import java.sql.Connection
-import javax.inject.Inject
 
-class DefaultOutboxDao @Inject constructor(dataSource: DataSource) : BaseDao(dataSource), OutboxDao {
+class DefaultOutboxDao constructor(dataSource: DataSource) : BaseDao(dataSource), OutboxDao {
 
     override fun saveMessage(connection: Connection, message: Message): Boolean {
         return create(connection).insertInto(

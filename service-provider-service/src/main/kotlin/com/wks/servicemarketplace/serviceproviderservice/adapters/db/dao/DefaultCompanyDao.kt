@@ -4,9 +4,8 @@ import com.wks.servicemarketplace.common.*
 import com.wks.servicemarketplace.serviceproviderservice.core.*
 import org.jooq.impl.DSL.*
 import java.sql.Connection
-import javax.inject.Inject
 
-class DefaultCompanyDao @Inject constructor(dataSource: DataSource) : BaseDao(dataSource), CompanyDao {
+class DefaultCompanyDao constructor(dataSource: DataSource) : BaseDao(dataSource), CompanyDao {
 
     override fun newCompanyId(connection: Connection): CompanyId {
         return CompanyId(

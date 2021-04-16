@@ -10,9 +10,8 @@ import org.jooq.RecordMapper
 import org.jooq.impl.DSL.field
 import org.jooq.impl.DSL.table
 import java.sql.Connection
-import javax.inject.Inject
 
-class DefaultEmployeeDao @Inject constructor(dataSource: DataSource) : BaseDao(dataSource), EmployeeDao {
+class DefaultEmployeeDao constructor(dataSource: DataSource) : BaseDao(dataSource), EmployeeDao {
 
     private val employeeMapper = RecordMapper<Record, Employee> { record ->
         record?.let {

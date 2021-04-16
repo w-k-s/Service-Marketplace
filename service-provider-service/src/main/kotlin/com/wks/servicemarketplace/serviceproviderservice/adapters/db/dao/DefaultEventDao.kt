@@ -5,9 +5,8 @@ import com.wks.servicemarketplace.serviceproviderservice.core.EventDao
 import org.jooq.JSON
 import org.jooq.impl.DSL.*
 import java.sql.Connection
-import javax.inject.Inject
 
-class DefaultEventDao @Inject constructor(dataSource: DataSource) : BaseDao(dataSource), EventDao {
+class DefaultEventDao constructor(dataSource: DataSource) : BaseDao(dataSource), EventDao {
     override fun saveEvent(connection: Connection, event: EventEnvelope): Boolean {
         return create(connection).insertInto(table("events"),
                 field("event_uuid"),

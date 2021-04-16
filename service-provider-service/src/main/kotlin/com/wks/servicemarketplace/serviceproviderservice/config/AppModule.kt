@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.github.michaelbull.result.expect
 import com.rabbitmq.client.ConnectionFactory
 import com.wks.servicemarketplace.authservice.api.ClientCredentialsRequest
 import com.wks.servicemarketplace.authservice.api.ClientCredentialsTokenSupplier
@@ -22,16 +21,7 @@ import com.wks.servicemarketplace.serviceproviderservice.core.usecase.CreateComp
 import com.wks.servicemarketplace.serviceproviderservice.core.usecase.CreateCompanyUseCase
 import org.koin.dsl.module
 import org.koin.experimental.builder.singleBy
-import java.io.BufferedReader
-import java.io.IOException
-import java.io.InputStreamReader
-import java.security.KeyFactory
-import java.security.NoSuchAlgorithmException
-import java.security.PublicKey
-import java.security.spec.InvalidKeySpecException
-import java.security.spec.X509EncodedKeySpec
-import java.util.*
-import java.util.stream.Collectors
+import java.io.FileNotFoundException
 
 val appModule = module {
     val applicationParameters = ApplicationParameters.load()
@@ -55,8 +45,8 @@ val appModule = module {
         DefaultEventReceiver(get(),get(),get(),get())
     }
     single(createdAtStart = true){
-        this.javaClass.classLoader.getResourceAsStream("publicKey.pem").readPublicKey()
-            .expect { "Failed to read public key" }
+        this.javaClass.classLoader.getResourceAsStream("publicKey.pem")?.readPublicKey()
+            ?: throw FileNotFoundException("Public Key not found")
     }
     single<TokenValidator>{
         StandardTokenValidator(
