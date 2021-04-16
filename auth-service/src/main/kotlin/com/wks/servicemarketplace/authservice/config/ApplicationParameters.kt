@@ -77,7 +77,9 @@ private class DefaultApplicationParameters(private val provider: Properlty) : Ap
         get() = provider["jdbc.password"]!!
 
     override val amqpUri: String
-        get() = provider["amqp.uri"]!!
+        get() = provider["amqp.uri"]!!.let {
+            it.replace("\u0020","")
+        }
 
     override val amqpPrefetchCount: Int
         get() = provider.getInt("amqp.prefetchCount", 10)

@@ -35,7 +35,7 @@ public interface ApplicationParameters extends Config {
     String jdbcUsername();
 
     @Key("AMQP_URI")
-    URI amqpUri();
+    String amqpUri();
 
     @Key("AUTHSERVICE_BASE_URL")
     String authServiceBaseUrl();

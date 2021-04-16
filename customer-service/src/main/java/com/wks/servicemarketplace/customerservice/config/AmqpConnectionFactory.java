@@ -24,7 +24,7 @@ public class AmqpConnectionFactory implements Factory<Connection> {
     @Inject
     public AmqpConnectionFactory(ApplicationParameters applicationParameters) throws IOException, TimeoutException, NoSuchAlgorithmException, KeyManagementException, URISyntaxException {
         final var connectionFactory = new ConnectionFactory();
-        connectionFactory.setUri(applicationParameters.amqpUri());
+        connectionFactory.setUri(applicationParameters.amqpUri().replace("\u0020",""));
         this.connection = connectionFactory.newConnection();
     }
 

@@ -8,6 +8,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.github.michaelbull.result.expect
+import com.github.michaelbull.result.onFailure
 import com.wks.servicemarketplace.common.UserId
 import com.wks.servicemarketplace.common.auth.DefaultAuthentication
 import com.wks.servicemarketplace.common.auth.StandardTokenValidator
@@ -129,6 +131,9 @@ fun Application.stopOutboxScheduler(){
 fun Application.migration(){
     val migration by inject<DatabaseMigration>()
     migration.migrate()
+        .onFailure {
+            LOGGER.error("Migration Failed: ${it.message}")
+        }
 }
 
 fun Application.events(){

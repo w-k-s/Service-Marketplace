@@ -62,7 +62,9 @@ private data class DefaultApplicationParameters(private val provider: Properlty)
         get() = provider["jdbc.password"]!!
 
     override val amqpUri: String
-        get() = provider["amqp.uri"]!!
+        get() = provider["amqp.uri"]!!.let {
+            it.replace("\u0020","")
+        }
 
     override val outboxIntervalMillis: Long
         get() = provider.getLong("app.outbox.intervalMillis", 500)
