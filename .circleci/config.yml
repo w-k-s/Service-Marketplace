@@ -127,16 +127,13 @@ jobs:
       - run:
           name: Build Docker Image
           command: |
-            docker build -t "$AWS_REPO/<< parameters.package_name >>:$CIRCLE_SHA1" \
-            -t "$AWS_REPO/<< parameters.package_name >>:latest" \
-            .
+            docker build -t "$AWS_REPO/<< parameters.package_name >>:$CIRCLE_SHA1" .
       - run:
           name: Push Image to ECR
           command: |
             sudo apt-get -y -qq update
             sudo apt-get -y -qq install awscli
             $(aws ecr get-login --no-include-email --region $AWS_REGION)
-            docker push $AWS_REPO/<< parameters.package_name >>:latest
             docker push $AWS_REPO/<< parameters.package_name >>:$CIRCLE_SHA1
 
   deploy:
