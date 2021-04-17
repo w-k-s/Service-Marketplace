@@ -37,7 +37,7 @@ public interface ApplicationParameters extends Config {
     @Key("AMQP_URI")
     String amqpUri();
 
-    @Key("AUTHSERVICE_BASE_URL")
+    @Key("AUTHSERVICE_HOST_URL")
     String authServiceBaseUrl();
 
     @Key("AUTHSERVICE_CLIENT_ID")

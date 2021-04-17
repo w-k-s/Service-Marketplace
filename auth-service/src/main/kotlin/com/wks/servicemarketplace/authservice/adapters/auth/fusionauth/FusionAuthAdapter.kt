@@ -24,6 +24,7 @@ import io.fusionauth.domain.api.user.RegistrationRequest
 import io.fusionauth.domain.api.user.RegistrationResponse
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.lang.IllegalStateException
 import java.util.*
 import javax.inject.Inject
 
@@ -174,7 +175,7 @@ class FusionAuthAdapter @Inject constructor(
         )
 
         if (!response.wasSuccessful()) {
-            throw CoreException(ErrorType.EXTERNAL_SYSTEM, message = "Failed to retrieve groups")
+            throw IllegalStateException("Failed to retrieve groups. Status: ${response.status}. Error: ${response.errorResponse}. Exception: ${response.exception}")
         }
         return response.successResponse.groups
     }
