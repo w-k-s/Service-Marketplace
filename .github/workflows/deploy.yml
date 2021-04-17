@@ -61,7 +61,8 @@ jobs:
       - name: Configure Kubectl
         # TODO: Get cluster_name from terraform output
         run: |
-          aws eks --region "$AWS_DEFAULT_REGION" update-kubeconfig --name $(terraform output cluster_name)
+          echo $(terraform output cluster_name)
+          aws eks --region "$AWS_DEFAULT_REGION" update-kubeconfig --name ServicesMarketplace-eks
 
       - name: Deploy Kubernetes Dashboard
         run: |
