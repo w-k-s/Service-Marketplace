@@ -72,7 +72,7 @@ jobs:
 
       - name: Create Kubernetes secrets (deprecated)
         run: |
-          kubectl create ns app;
+          kubectl create namespace app --dry-run=client -o yaml | kubectl apply -f -;
 
           kubectl -n app create secret generic fusionauth.servicesmarketplace.w-k-s.io \
           --from-literal=DATABASE_URL="$DB_INSTANCE_URL/fusionauth" \
