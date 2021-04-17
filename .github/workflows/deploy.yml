@@ -45,6 +45,7 @@ jobs:
         uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: 0.15.0
+          terraform_wrapper: false
 
       - name: Terraform Format
         id: fmt
@@ -60,7 +61,7 @@ jobs:
       - name: Configure Kubectl
         # TODO: Get cluster_name from terraform output
         run: |
-          aws eks --region "$AWS_DEFAULT_REGION" update-kubeconfig --name ServicesMarketplace-eks
+          aws eks --region "$AWS_DEFAULT_REGION" update-kubeconfig --name $(terraform output cluster_name)
 
       - name: Deploy Kubernetes Dashboard
         run: |
@@ -69,7 +70,6 @@ jobs:
           echo "Maybe later setup a Kubernetes dashboard: https://learn.hashicorp.com/tutorials/terraform/eks"
 
       - name: Create Kubernetes secrets (deprecated)
-        # This will be replaced with SealedSecrets
         run: |
           kubectl create ns app;
 
@@ -89,25 +89,25 @@ jobs:
           --from-literal=JDBC_URL="$DB_INSTANCE_URL/sm-auth?currentSchema=public&user=$DATABASE_USERNAME&password=$DATABASE_PASSWORD" \
           --from-literal=JDBC_USERNAME="$DATABASE_USERNAME" \
           --from-literal=JDBC_PASSWORD="$DATABASE_PASSWORD" \
-          --from-literal=AMQP_URI="$(terraform output -raw cloudamqp_url)";
+          --from-literal=AMQP_URI="$(terraform output cloudamqp_url)";
 
           kubectl -n app create secret generic order-service.servicesmarketplace.w-k-s.io \
           --from-literal=JDBC_URL="$DB_INSTANCE_URL/sm-orders" \
           --from-literal=JDBC_USERNAME="$DATABASE_USERNAME" \
           --from-literal=JDBC_PASSWORD="$DATABASE_PASSWORD" \
-          --from-literal=AMQP_URI="$(terraform output -raw cloudamqp_url)";
+          --from-literal=AMQP_URI="$(terraform output cloudamqp_url)";
 
           kubectl -n app create secret generic customer-service.servicesmarketplace.w-k-s.io \
           --from-literal=JDBC_URL="$DB_INSTANCE_URL/sm-customers?currentSchema=public&user=$DATABASE_USERNAME&password=$DATABASE_PASSWORD" \
           --from-literal=JDBC_USERNAME="$DATABASE_USERNAME" \
           --from-literal=JDBC_PASSWORD="$DATABASE_PASSWORD" \
-          --from-literal=AMQP_URI="$(terraform output -raw cloudamqp_url)";
+          --from-literal=AMQP_URI="$(terraform output cloudamqp_url)";
 
           kubectl -n app create secret generic service-provider-service.servicesmarketplace.w-k-s.io \
           --from-literal=JDBC_URL="$DB_INSTANCE_URL/sm-providers?currentSchema=public&user=$DATABASE_USERNAME&password=$DATABASE_PASSWORD" \
           --from-literal=JDBC_USERNAME="$DATABASE_USERNAME" \
           --from-literal=JDBC_PASSWORD="$DATABASE_PASSWORD" \
-          --from-literal=AMQP_URI="$(terraform output -raw cloudamqp_url)";
+          --from-literal=AMQP_URI="$(terraform output cloudamqp_url)";
 
       - name: Deploy Application
         working-directory: ./kubernetes-infra/app
