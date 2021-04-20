@@ -86,10 +86,7 @@ public class CustomerServiceApplication extends ResourceConfig {
     }
 
     public void run() throws Exception {
-        final URI uri = UriBuilder
-                .fromUri(parameters.serverHost())
-                .port(parameters.serverPort())
-                .build();
+        final URI uri = URI.create(String.format("http://%s:%s/", parameters.serverHost(), parameters.serverPort()));
 
         final Server server = JettyHttpContainerFactory.createServer(uri, this, false);
 

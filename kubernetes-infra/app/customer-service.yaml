@@ -61,14 +61,14 @@ spec:
             httpGet:
               path: /health
               port: 8081
-            initialDelaySeconds: 10
-            periodSeconds: 3
+            initialDelaySeconds: 60
+            periodSeconds: 10
           readinessProbe:
             httpGet:
               path: /health
               port: 8081
-            initialDelaySeconds: 10
-            periodSeconds: 3
+            initialDelaySeconds: 60
+            periodSeconds: 10
 ---
 apiVersion: v1
 kind: Service

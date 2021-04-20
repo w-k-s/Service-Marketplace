@@ -27,6 +27,7 @@ import org.glassfish.jersey.server.ResourceConfig
 import org.glassfish.jersey.server.ServerProperties.PROCESSING_RESPONSE_ERRORS_ENABLED
 import org.quartz.Scheduler
 import org.slf4j.LoggerFactory
+import java.net.URI
 import java.security.PrivateKey
 import java.security.PublicKey
 import javax.ws.rs.core.UriBuilder
@@ -90,10 +91,7 @@ class AuthServiceApplication(private val parameters : ApplicationParameters = Ap
     }
 
     fun run() {
-        val uri = UriBuilder
-                .fromUri(parameters.serverHost)
-                .port(parameters.serverPort)
-                .build()
+        val uri = URI.create("http://${parameters.serverHost}:${parameters.serverPort}/")
 
         val server = JettyHttpContainerFactory.createServer(uri, this)
         try {
