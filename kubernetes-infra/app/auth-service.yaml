@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: auth-service
-          image: 838107339577.dkr.ecr.ap-south-1.amazonaws.com/w-k-s/services-marketplace/auth-service:37b0549e29fee3ef3eb0a1d7b334e1e80f34f95b
+          image: 838107339577.dkr.ecr.ap-south-1.amazonaws.com/w-k-s/services-marketplace/auth-service:55b16bd251a1638ba2efeddee9a1b558d1f26e36
           imagePullPolicy: Always
           env:
             - name: FUSIONAUTH_APPLICATION_ID
