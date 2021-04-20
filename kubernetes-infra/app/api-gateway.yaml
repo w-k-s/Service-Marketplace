@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: api-gateway
-          image: 838107339577.dkr.ecr.ap-south-1.amazonaws.com/w-k-s/services-marketplace/api-gateway:55b16bd251a1638ba2efeddee9a1b558d1f26e36
+          image: 838107339577.dkr.ecr.ap-south-1.amazonaws.com/w-k-s/services-marketplace/api-gateway:8a615f5c196e33ec729bd877c1c9013ce1ba21af
           imagePullPolicy: Always
           env:
             - name: APPLICATION_HOSTS_CUSTOMER_SERVICE
