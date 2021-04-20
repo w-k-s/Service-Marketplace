@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Path("/")
+@Path("")
 public class HealthResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HealthResource.class.getSimpleName());

@@ -1,6 +1,5 @@
 package com.wks.servicemarketplace.authservice.adapters.events
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.rabbitmq.client.Channel
 import com.rabbitmq.client.MessageProperties
 import com.wks.servicemarketplace.common.messaging.Message

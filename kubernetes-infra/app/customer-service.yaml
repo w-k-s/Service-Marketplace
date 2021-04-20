@@ -54,7 +54,7 @@ spec:
             - name: SERVER_HOST
               value: "0.0.0.0"
             - name: SERVER_PORT
-              value: "8084"
+              value: "8081"
           ports:
             - containerPort: 8081
           livenessProbe:
