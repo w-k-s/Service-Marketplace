@@ -85,13 +85,17 @@ class AuthServiceApplication(private val parameters : ApplicationParameters = Ap
         })
         register(DefaultExceptionMapper::class.java)
         register(ObjectMapperProvider::class.java)
+        register(LoggingFilter::class.java)
         register(DefaultApplicationEventListener::class.java)
         register(ApiResource::class.java)
         register(HealthResource::class.java)
     }
 
     fun run() {
-        val uri = URI.create("http://${parameters.serverHost}:${parameters.serverPort}/")
+        val uri = UriBuilder
+            .fromUri(parameters.serverHost)
+            .port(parameters.serverPort)
+            .build()
 
         val server = JettyHttpContainerFactory.createServer(uri, this)
         try {

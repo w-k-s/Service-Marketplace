@@ -36,7 +36,7 @@ dependencies {
     // Logging
     implementation("ch.qos.logback:logback-classic:1.2.3")
     implementation("ch.qos.logback:logback-core:1.2.3")
-    implementation("org.slf4j:slf4j-log4j12:1.7.30")
+    implementation("org.slf4j:slf4j-api:1.7.30")
 
     // Jackson
     implementation("com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.1") // Jackson Provider for Jax-RS
