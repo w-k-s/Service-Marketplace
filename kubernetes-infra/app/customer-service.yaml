@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: customer-service
-          image: 838107339577.dkr.ecr.ap-south-1.amazonaws.com/w-k-s/services-marketplace/customer-service:8a615f5c196e33ec729bd877c1c9013ce1ba21af
+          image: 838107339577.dkr.ecr.ap-south-1.amazonaws.com/w-k-s/services-marketplace/customer-service:b9f587dcc0d7d04c7b43e4a311fec9dddc0e2736
           imagePullPolicy: Always
           env:
             - name: JDBC_URL

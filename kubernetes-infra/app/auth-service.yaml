@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: auth-service
-          image: 838107339577.dkr.ecr.ap-south-1.amazonaws.com/w-k-s/services-marketplace/auth-service:8a615f5c196e33ec729bd877c1c9013ce1ba21af
+          image: 838107339577.dkr.ecr.ap-south-1.amazonaws.com/w-k-s/services-marketplace/auth-service:b9f587dcc0d7d04c7b43e4a311fec9dddc0e2736
           imagePullPolicy: Always
           env:
             - name: FUSIONAUTH_APPLICATION_ID
@@ -67,7 +67,7 @@ spec:
             - name: AUTHSERVICE_HOST_URL
               value: http://localhost:8082
             - name: SERVER_HOST
-              value: "0.0.0.0"
+              value: "http://0.0.0.0"
             - name: SERVER_PORT
               value: "8082"
           ports:
