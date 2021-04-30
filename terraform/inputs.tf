@@ -8,6 +8,11 @@ variable "aws_secret_key" {
   type        = string
 }
 
+variable "aws_region" {
+  description = "AWS Region"
+  type        = string
+}
+
 variable "cloudamqp_region" {
   description = "AWS Region prefixed with amazon-web-services::"
   type        = string
