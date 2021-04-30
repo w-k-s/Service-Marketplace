@@ -78,6 +78,9 @@ spec:
   ports:
     - port: 80
       targetPort: 9011
+  # type: NodePort is required when using the annotation alb.ingress.kubernetes.io/target-type: instance
+  # in the Ingress controlller.
+  type: NodePort
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
@@ -86,6 +89,7 @@ metadata:
   namespace: app
   annotations:
     kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/target-type: instance
     alb.ingress.kubernetes.io/healthcheck-path: /api/status
     alb.ingress.kubernetes.io/scheme: internet-facing
 spec:

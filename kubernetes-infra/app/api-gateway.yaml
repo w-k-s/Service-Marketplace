@@ -39,6 +39,9 @@ metadata:
   namespace: app
   name: api-gateway
 spec:
+  # type: NodePort is required when using the annotation alb.ingress.kubernetes.io/target-type: instance
+  # in the Ingress controlller.
+  type: NodePort
   selector:
     app: api-gateway
   ports:
@@ -52,6 +55,7 @@ metadata:
   namespace: app
   annotations:
     kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/target-type: instance
     alb.ingress.kubernetes.io/healthcheck-path: /actuator/health
     alb.ingress.kubernetes.io/scheme: internet-facing
 spec:

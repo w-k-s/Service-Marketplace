@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: customer-service
-          image: 838107339577.dkr.ecr.ap-south-1.amazonaws.com/w-k-s/services-marketplace/customer-service:b9f587dcc0d7d04c7b43e4a311fec9dddc0e2736
+          image: 838107339577.dkr.ecr.ap-south-1.amazonaws.com/w-k-s/services-marketplace/customer-service:e4c0324b6c446b6de55254b7fa7a29f76caaa58f
           imagePullPolicy: Always
           env:
             - name: JDBC_URL
@@ -52,7 +52,7 @@ spec:
             - name: AUTHSERVICE_HOST_URL
               value: http://auth-service:8082
             - name: SERVER_HOST
-              value: "0.0.0.0"
+              value: "http://0.0.0.0"
             - name: SERVER_PORT
               value: "8081"
           ports:
