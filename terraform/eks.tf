@@ -35,7 +35,6 @@ module "eks" {
 }
 
 provider "kubernetes" {
-  alias                  = "eks"
   host                   = data.aws_eks_cluster.cluster.endpoint
   cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
   exec {
@@ -48,21 +47,6 @@ provider "kubernetes" {
       data.aws_eks_cluster.cluster.name
     ]
   }
-}
-
-module "alb_ingress_controller" {
-  source  = "iplabs/alb-ingress-controller/kubernetes"
-  version = "3.1.0"
-
-  providers = {
-    kubernetes = "kubernetes.eks"
-  }
-
-  k8s_cluster_type = "eks"
-  k8s_namespace    = "kube-system"
-
-  aws_region_name  = var.aws_region
-  k8s_cluster_name = data.aws_eks_cluster.cluster.name
 }
 
 data "aws_eks_cluster" "cluster" {
