@@ -46,6 +46,7 @@ jobs:
         uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: 0.15.0
+          # Disable able terraform_wrapper to get terraform output to work
           terraform_wrapper: false
 
       - name: Terraform Format
@@ -62,16 +63,18 @@ jobs:
       - name: Configure Kubectl
         # TODO: Get cluster_name from terraform output
         run: |
-          echo $(terraform output -raw cluster_name)
-          aws eks --region "$AWS_DEFAULT_REGION" update-kubeconfig --name ServicesMarketplace-eks
+          aws eks --region "$AWS_DEFAULT_REGION" update-kubeconfig --name $(terraform output -raw cluster_name)
+
+      - name: Install ALB Ingress Controller
+        # https://kubernetes-sigs.github.io/aws-load-balancer-controller/latest/deploy/installation/
+        
 
       - name: Deploy Kubernetes Dashboard
         run: |
           wget -O v0.3.6.tar.gz https://codeload.github.com/kubernetes-sigs/metrics-server/tar.gz/v0.3.6 && tar -xzf v0.3.6.tar.gz
           kubectl apply -f metrics-server-0.3.6/deploy/1.8+/
-          echo "Maybe later setup a Kubernetes dashboard: https://learn.hashicorp.com/tutorials/terraform/eks"
 
-      - name: Create Kubernetes secrets (deprecated)
+      - name: Create Kubernetes secrets
         run: |
           kubectl create namespace app --dry-run=client -o yaml | kubectl apply -f -;
 
