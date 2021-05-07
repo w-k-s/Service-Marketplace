@@ -3,49 +3,50 @@ package com.wks.servicemarketplace.common
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonValue
+import com.wks.servicemarketplace.common.auth.UserType
 import com.wks.servicemarketplace.common.errors.CoreException
 import com.wks.servicemarketplace.common.errors.ErrorType
+import com.wks.servicemarketplace.common.ids.UserId
+import java.lang.UnsupportedOperationException
 import java.util.*
 import javax.validation.Constraint
 import javax.validation.ConstraintValidator
 import javax.validation.ConstraintValidatorContext
 import javax.validation.Payload
 import javax.validation.constraints.NotBlank
-import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
 import kotlin.reflect.KClass
 
-data class UserId private constructor(@JsonValue val value: UUID) {
+data class CustomerId private constructor(@JsonValue val value: UserId) {
     companion object {
         @JvmStatic
-        fun of(uuid: UUID) = UserId(uuid)
+        fun of(userId: UserId) = CustomerId(userId)
 
         @JvmStatic
-        fun fromString(uuidString: String) = UserId(UUID.fromString(uuidString))
+        fun fromString(idString: String) = CustomerId(UserId.fromString(idString))
+    }
 
-        @JvmStatic
-        fun random() = UserId(UUID.randomUUID())
+    init {
+        if (value.userType != UserType.CUSTOMER){
+            throw CoreException(ErrorType.VALIDATION, "Invalid UserId. User is not a customer")
+        }
     }
 
     override fun toString() = value.toString()
 }
 
-data class CustomerUUID private constructor(@JsonValue val value: UUID) {
+data class CompanyRepresentativeId(@JsonValue val value: UserId) {
     companion object {
-        @JvmStatic
-        fun of(userId: UserId) = CustomerUUID(userId.value)
-
-        @JvmStatic
-        fun fromString(uuidString: String) = CustomerUUID(UUID.fromString(uuidString))
+        @Deprecated(message="Use UserId")
+        fun random() : CompanyRepresentativeId = throw UnsupportedOperationException("Can not generate random CompanyRepresentativeId")
+        fun fromString(userIdString: String) = CompanyRepresentativeId(UserId.fromString(userIdString))
+        fun of(userId: UserId) = CompanyRepresentativeId(userId)
     }
 
-    override fun toString() = value.toString()
-}
-
-data class CustomerId private constructor(@JsonValue val value: Long) {
-    companion object {
-        @JvmStatic
-        fun of(id: Long) = CustomerId(id)
+    init {
+        if (value.userType != UserType.SERVICE_PROVIDER){
+            throw CoreException(ErrorType.VALIDATION, "Invalid UserId. User is not a service provider")
+        }
     }
 
     override fun toString() = value.toString()
@@ -70,17 +71,6 @@ data class AddressId private constructor(@JsonValue val value: Long) {
     companion object {
         @JvmStatic
         fun of(id: Long) = AddressId(id)
-    }
-
-    override fun toString() = value.toString()
-}
-
-data class CompanyRepresentativeId(@JsonValue val value: Long)
-data class CompanyRepresentativeUUID(@JsonValue val value: UUID) {
-    companion object {
-        fun random() = CompanyRepresentativeUUID(UUID.randomUUID())
-        fun fromString(uuidString: String) = CompanyRepresentativeUUID(UUID.fromString(uuidString))
-        fun of(userId: UserId) = CompanyRepresentativeUUID(UUID.fromString(userId.toString()))
     }
 
     override fun toString() = value.toString()

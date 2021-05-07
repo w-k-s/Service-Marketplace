@@ -3,8 +3,8 @@ package com.wks.servicemarketplace.common.auth
 import com.wks.servicemarketplace.common.Email
 import com.wks.servicemarketplace.common.Name
 import com.wks.servicemarketplace.common.PhoneNumber
-import com.wks.servicemarketplace.common.UserId
 import com.wks.servicemarketplace.common.errors.CoreException
+import com.wks.servicemarketplace.common.ids.UserId
 import java.security.Principal
 
 interface Authentication : Principal {
@@ -34,9 +34,9 @@ enum class UserRole(val code: String) {
     }
 }
 
-enum class UserType(val code: String) {
-    CUSTOMER("Customer"),
-    SERVICE_PROVIDER("ServiceProvider");
+enum class UserType(val code: String, val numericCode: Int) {
+    CUSTOMER("Customer",1),
+    SERVICE_PROVIDER("ServiceProvider",2);
 
     companion object {
         fun of(code: String): UserType {

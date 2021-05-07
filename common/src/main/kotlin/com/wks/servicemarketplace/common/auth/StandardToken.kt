@@ -1,8 +1,7 @@
 package com.wks.servicemarketplace.common.auth
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.wks.servicemarketplace.common.Email
-import com.wks.servicemarketplace.common.UserId
+import com.wks.servicemarketplace.common.ids.UserId
 import org.jose4j.jwa.AlgorithmConstraints
 import org.jose4j.jws.AlgorithmIdentifiers
 import org.jose4j.jws.JsonWebSignature
@@ -46,9 +45,9 @@ class StandardToken(subject: String,
     override val refreshToken: String? = null
 
     data class Claims(
-            val subject: String,
-            val user: UserId? = null,
-            val permissions: List<String>
+        val subject: String,
+        val user: UserId? = null,
+        val permissions: List<String>
     )
 
     companion object {
