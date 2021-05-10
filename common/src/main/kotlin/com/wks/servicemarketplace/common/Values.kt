@@ -161,9 +161,9 @@ data class CountryCode private constructor(@JsonValue private val code: String) 
     override fun toString() = code
 }
 
-enum class Service(val code: String) {
-    HOUSE_KEEPING("CLEAN"),
-    ELECTRICAL("ELCTRC");
+enum class Service(val code: String, val numericCode: Int) {
+    HOUSE_KEEPING("CLEAN",100),
+    ELECTRICAL("ELCTRC",200);
 
     override fun toString() = code
 

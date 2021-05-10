@@ -18,7 +18,10 @@ class DefaultChecksumCalculatorTest{
     @EnumSource(value = UserType::class)
     fun `GIVEN a string with a check digit WHEN check digit is correct THEN validation is successful`(userType: UserType){
         repeat(10) {
-            assertThat(DefaultChecksumCalculator().validate(UserId.generate(userType).value.toString())).isTrue()
+            UserId.generate(userType).let {userId ->
+                assertThat(DefaultChecksumCalculator().validate(userId.toString())).isTrue()
+                assertThat(userId.userType).isEqualTo(userType)
+            }
         }
     }
 }

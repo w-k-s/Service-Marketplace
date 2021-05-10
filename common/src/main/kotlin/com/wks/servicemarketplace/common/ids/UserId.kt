@@ -16,12 +16,32 @@ data class UserId private constructor(@JsonValue val value: BigInteger) {
 
         @JvmStatic
         fun fromString(userIdString: String) = userIdString
-            .takeIf { userIdString.matches(PATTERN) }
-            ?.takeIf { DefaultChecksumCalculator().validate(it) }
-            ?.let { it.replace(ILLEGAL_CHARACTERS, "") }
-            ?.let { BigInteger(it) }
-            ?.let { UserId(it) }
-            ?: throw CoreException(ErrorType.VALIDATION, "Invalid UserId")
+            .let {
+                when (userIdString.matches(PATTERN)) {
+                    true -> userIdString
+                    else -> throw CoreException(
+                        ErrorType.VALIDATION,
+                        "Invalid User Id. UserId does not match expected format"
+                    )
+                }
+            }.let {
+                when (DefaultChecksumCalculator().validate(it)) {
+                    true -> userIdString
+                    else -> throw CoreException(ErrorType.VALIDATION, "Invalid User Id. Check sum validation failed")
+                }
+            }
+            .let { it.replace(ILLEGAL_CHARACTERS, "") }
+            .let { BigInteger(it) }
+            .let { UserId(it) }
+            .also { it.userType } // throws exception if userType is unrecognized
+
+        @JvmStatic
+        fun fromNumber(userId: Number): UserId {
+            return userId.toString()
+                .fixUserIdStringLength()
+                .hyphenateUserIdString()
+                .let { UserId.fromString(it) }
+        }
 
         @JvmStatic
         fun generate(userType: UserType): UserId {
@@ -54,27 +74,28 @@ data class UserId private constructor(@JsonValue val value: BigInteger) {
 
     val userType: UserType
         get() {
-            return this.value.toString().let {
-                when (it.length) {
-                    22 -> "0$it"
-                    23 -> it
-                    else -> throw RuntimeException("UserId was created with unexpected length of ${it.length} digits. Expected 22 or 23")
-                }
-            }.subSequence(startIndex = 2, endIndex = 4)
+            return this.value.toString()
+                .fixUserIdStringLength()
+                .subSequence(startIndex = 2, endIndex = 4)
                 .let { Integer.parseInt(it.toString()) }
-                .let { numericCode -> UserType.values().firstOrNull() { it.numericCode == numericCode } }
-                ?: throw RuntimeException("Invalid UserId created ${this.value}. UserType could not be parsed")
+                .let { numericCode -> UserType.values().firstOrNull { it.numericCode == numericCode } }
+                ?: throw CoreException(ErrorType.VALIDATION, "Invalid UserId '${this}'. UserType could not be parsed")
         }
 
-    override fun toString(): String{
-        return this.value.toString().let {
-            when (it.length) {
-                22 -> "0$it"
-                23 -> it
-                else -> throw RuntimeException("UserId was created with unexpected length of ${it.length} digits. Expected 22 or 23")
-            }
-        }.let {
-            "${it.subSequence(0,2)}-${it.subSequence(2,4)}-${it.subSequence(4,22)}-${it.subSequence(22,23)}"
-        }
+    override fun toString(): String {
+        return this.value.toString()
+            .let { it.fixUserIdStringLength() }
+            .let { it.hyphenateUserIdString() }
     }
 }
+
+private fun String.fixUserIdStringLength() = this.let {
+    when (it.length) {
+        22 -> "0$it"
+        23 -> it
+        else -> throw CoreException(ErrorType.VALIDATION, "'${this}' can not be formatted as a UserId. Invalid Length. Expected 22 or 23. Got: ${it.length}")
+    }
+}
+
+private fun String.hyphenateUserIdString() =
+    "${this.subSequence(0, 2)}-${this.subSequence(2, 4)}-${this.subSequence(4, 22)}-${this.subSequence(22, 23)}"
