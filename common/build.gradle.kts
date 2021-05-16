@@ -2,9 +2,10 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm") version "1.3.72"
+    `maven-publish`
 }
-group = "com.wks.servicemarketplace"
-version = "1.0-SNAPSHOT"
+//group = "com.wks.servicemarketplace"
+//version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -33,3 +34,26 @@ dependencies {
 tasks.withType<KotlinCompile>() {
     kotlinOptions.jvmTarget = "13"
 }
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = "com.wks.servicemarketplace"
+            artifactId = "common"
+            version = "0.0.1"
+
+            from(components["java"])
+        }
+    }
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/w-k-s/Service-Marketplace")
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+}
+
