@@ -30,9 +30,20 @@ dependencies {
     implementation("com.neovisionaries:nv-i18n:1.27")
 
     testImplementation(kotlin("test-junit5"))
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.7.0")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.0")
+    testImplementation("org.assertj:assertj-core:3.19.0")
 }
 tasks.withType<KotlinCompile>() {
     kotlinOptions.jvmTarget = "13"
+}
+
+tasks.test {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")
+    }
 }
 
 publishing {
@@ -40,7 +51,7 @@ publishing {
         create<MavenPublication>("maven") {
             groupId = "com.wks.servicemarketplace"
             artifactId = "common"
-            version = "0.0.1"
+            version = "0.0.2"
 
             from(components["java"])
         }

@@ -4,14 +4,14 @@ import com.wks.servicemarketplace.common.auth.Permission
 
 enum class ErrorType(val code: Int) {
     VALIDATION(400),
+    NOT_UNIQUE(400),
+    INVALID_FORMAT(400),
     AUTHENTICATION(401),
     AUTHORIZATION(403),
     RESOURCE_NOT_FOUND(404),
-    PROCESSING(428),
+    PROCESSING(409),
     UNKNOWN(500),
-    EXTERNAL_SYSTEM(1501),
-    NOT_UNIQUE(1401),
-    INVALID_FORMAT(1402);
+    EXTERNAL_SYSTEM(500),
 }
 
 data class CoreException(
