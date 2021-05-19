@@ -2,16 +2,25 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm") version "1.4.10"
+    `maven-publish`
 }
-group = "com.wks.servicemarketplace"
-version = "1.0-SNAPSHOT"
+//group = "com.wks.servicemarketplace"
+//version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
+    maven {
+        name = "GitHubPackages"
+        url = uri("https://maven.pkg.github.com/w-k-s/Service-Marketplace")
+        credentials {
+            username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
+            password = project.findProperty("gpr.token") as String? ?: System.getenv("GITHUB_TOKEN")
+        }
+    }
 }
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
-    implementation("com.wks.servicemarketplace:common:1.0-SNAPSHOT")
+    implementation("com.wks.servicemarketplace:common:0.0.3")
 
     // Validation
     implementation("org.glassfish:javax.el:3.0.0")
@@ -33,4 +42,26 @@ dependencies {
 }
 tasks.withType<KotlinCompile>() {
     kotlinOptions.jvmTarget = "13"
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = "com.wks.servicemarketplace"
+            artifactId = "auth-service-api"
+            version = "0.0.1"
+
+            from(components["java"])
+        }
+    }
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/w-k-s/Service-Marketplace")
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
 }
