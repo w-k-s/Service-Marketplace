@@ -73,22 +73,23 @@ public class DefaultOutboxDao extends BaseDAO implements OutboxDao {
                 field("dead_letter_routing_key"),
                 field("dead_letter_queue")
         ).from(table("outbox")).where(field("published").eq(false))
-                .fetch((record) -> new Message(
+                .fetch((record) -> Message.builder(
                         MessageId.fromString(record.get(field("message_uuid"), String.class)),
                         record.get(field("message_type"), String.class),
                         record.get(field("payload"), String.class),
-                        record.get(field("destination_exchange"), String.class),
-                        record.get(field("published"), Boolean.class),
-                        record.get(field("correlation_id"), String.class),
-                        record.get(field("destination_routing_key"), String.class),
-                        record.get(field("destination_queue"), String.class),
-                        record.get(field("reply_exchange"), String.class),
-                        record.get(field("reply_routing_key"), String.class),
-                        record.get(field("reply_queue"), String.class),
-                        record.get(field("dead_letter_exchange"), String.class),
-                        record.get(field("dead_letter_routing_key"), String.class),
-                        record.get(field("dead_letter_queue"), String.class)
-                ));
+                        record.get(field("destination_exchange"), String.class)
+                        ).withPublished(record.get(field("published"), Boolean.class))
+                                .withCorrelationId(record.get(field("correlation_id"), String.class))
+                                .withDestinationRoutingKey(record.get(field("destination_routing_key"), String.class))
+                                .withDestinationQueue(record.get(field("destination_queue"), String.class))
+                                .withReplyExchange(record.get(field("reply_exchange"), String.class))
+                                .withReplyRoutingKey(record.get(field("reply_routing_key"), String.class))
+                                .withReplyQueue(record.get(field("reply_queue"), String.class))
+                                .withDeadLetterExchange(record.get(field("dead_letter_exchange"), String.class))
+                                .withDeadLetterRoutingKey(record.get(field("dead_letter_routing_key"), String.class))
+                                .withDeadLetterQueue(record.get(field("dead_letter_queue"), String.class))
+                                .build()
+                );
     }
 
     @Override

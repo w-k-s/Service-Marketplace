@@ -2,11 +2,11 @@ package com.wks.servicemarketplace.authservice.core.sagas
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.wks.servicemarketplace.authservice.adapters.db.dao.DataSource
+import com.wks.servicemarketplace.authservice.api.AccountCreatedEvent
+import com.wks.servicemarketplace.authservice.api.AuthMessaging
 import com.wks.servicemarketplace.authservice.core.EventDao
 import com.wks.servicemarketplace.authservice.core.OutboxDao
 import com.wks.servicemarketplace.authservice.core.SagaDao
-import com.wks.servicemarketplace.authservice.api.AccountCreatedEvent
-import com.wks.servicemarketplace.authservice.api.AuthMessaging
 import com.wks.servicemarketplace.common.auth.UserType
 import com.wks.servicemarketplace.common.events.EventEnvelope
 import com.wks.servicemarketplace.common.events.EventId
@@ -63,17 +63,14 @@ class CreateProfileSaga @Inject constructor(
                 )
 
                 outboxDao.saveMessage(
-                    conn, Message(
-                        messageId,
-                        accountCreated.eventType.name,
-                        payload,
-                        destinationExchange = AuthMessaging.Exchange.MAIN.exchangeName,
-                        destinationRoutingKey = when (accountCreated.type) {
-                            UserType.SERVICE_PROVIDER -> AuthMessaging.RoutingKey.SERVICE_PROVIDER_ACCOUNT_CREATED
-                            UserType.CUSTOMER -> AuthMessaging.RoutingKey.CUSTOMER_ACCOUNT_CREATED
-                        },
-                        correlationId = transactionId.toString()
-                    )
+                        conn,
+                        Message.builder(messageId, accountCreated.eventType.name, payload, AuthMessaging.Exchange.MAIN.exchangeName)
+                                .withDestinationRoutingKey(when (accountCreated.type) {
+                                    UserType.SERVICE_PROVIDER -> AuthMessaging.RoutingKey.SERVICE_PROVIDER_ACCOUNT_CREATED
+                                    UserType.CUSTOMER -> AuthMessaging.RoutingKey.CUSTOMER_ACCOUNT_CREATED
+                                })
+                                .withCorrelationId(transactionId.toString())
+                                .build()
                 )
 
                 sagaDao.saveSaga(

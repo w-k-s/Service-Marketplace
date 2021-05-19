@@ -3,7 +3,6 @@ package com.wks.servicemarketplace.customerservice.adapters.web;
 import com.wks.servicemarketplace.common.errors.CoreException;
 import com.wks.servicemarketplace.common.errors.ErrorType;
 import com.wks.servicemarketplace.common.http.ErrorResponse;
-import com.wks.servicemarketplace.common.http.ErrorResponseKt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +28,7 @@ public class DefaultExceptionMapper implements ExceptionMapper<Throwable> {
 
     private Response createThrowableErrorResponse(Throwable exception) {
         return Response
-                .status(ErrorResponseKt.httpStatusCode(ErrorType.UNKNOWN))
+                .status(ErrorType.UNKNOWN.getCode())
                 .entity(new ErrorResponse(
                         ErrorType.UNKNOWN,
                         exception.getMessage(),
@@ -39,7 +38,7 @@ public class DefaultExceptionMapper implements ExceptionMapper<Throwable> {
 
     private Response createCoreErrorResponse(CoreException coreException) {
         return Response
-                .status(ErrorResponseKt.httpStatusCode(coreException.getErrorType()))
+                .status(coreException.getErrorType().getCode())
                 .entity(new ErrorResponse(
                         coreException.getErrorType(),
                         coreException.getMessage(),

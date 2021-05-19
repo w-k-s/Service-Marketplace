@@ -8,6 +8,14 @@ version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
+    maven {
+        name = "GitHubPackages"
+        url = uri("https://maven.pkg.github.com/w-k-s/Service-Marketplace")
+        credentials {
+            username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
+            password = project.findProperty("gpr.token") as String? ?: System.getenv("GITHUB_TOKEN")
+        }
+    }
 }
 
 tasks.withType<Jar> {
@@ -23,12 +31,14 @@ tasks.withType<Jar> {
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
-    implementation("com.wks.servicemarketplace:common:1.0-SNAPSHOT")
-    implementation("com.wks.servicemarketplace:auth-service-api:1.0-SNAPSHOT")
-    implementation("com.wks.servicemarketplace:customer-services-api:1.0-SNAPSHOT")
     implementation("org.glassfish.jersey.containers:jersey-container-jetty-http:2.31")
     implementation("org.glassfish.jersey.inject:jersey-hk2:2.31")
     implementation("javax.xml.bind:jaxb-api:2.3.1")
+
+    // Internal Libraries
+    implementation("com.wks.servicemarketplace:common:0.0.3")
+    implementation("com.wks.servicemarketplace:auth-service-api:0.0.1")
+    implementation("com.wks.servicemarketplace:customer-service-api:0.0.1")
 
     // Config
     implementation("com.ufoscout.properlty:properlty-kotlin:1.8.1")

@@ -7,11 +7,19 @@ plugins {
 group 'com.wks.servicemarketplace'
 version '1.0-SNAPSHOT'
 
-sourceCompatibility = 13
+sourceCompatibility = 15
 
 repositories {
     mavenCentral()
     jcenter()
+    maven {
+        name = "GitHubPackages"
+        url = uri("https://maven.pkg.github.com/w-k-s/Service-Marketplace")
+        credentials {
+            username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR")
+            password = project.findProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN")
+        }
+    }
 }
 
 
@@ -26,9 +34,9 @@ jar {
 }
 
 dependencies {
-    implementation 'com.wks.servicemarketplace:common:1.0-SNAPSHOT'
-    implementation 'com.wks.servicemarketplace:customer-services-api:1.0-SNAPSHOT'
-    implementation 'com.wks.servicemarketplace:auth-service-api:1.0-SNAPSHOT'
+    implementation 'com.wks.servicemarketplace:common:0.0.3'
+    implementation 'com.wks.servicemarketplace:customer-service-api:0.0.1'
+    implementation 'com.wks.servicemarketplace:auth-service-api:0.0.1'
 
     // Jersey
     implementation group: 'org.glassfish.jersey.containers', name: 'jersey-container-jetty-http', version: '2.31'

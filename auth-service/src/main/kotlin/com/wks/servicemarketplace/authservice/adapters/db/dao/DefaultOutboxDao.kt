@@ -64,22 +64,22 @@ class DefaultOutboxDao @Inject constructor(dataSource: DataSource) : BaseDao(dat
                 field("dead_letter_queue")
         ).from(table("outbox")).where(field("published").eq(false))
                 .fetch {
-                    Message(
+                    Message.builder(
                             MessageId.fromString(it.get(field("message_uuid"), String::class.java)),
                             it.get(field("message_type"), String::class.java),
                             it.get(field("payload"), String::class.java),
-                            it.get(field("destination_exchange"), String::class.java),
-                            it.get(field("published"), Boolean::class.java),
-                            it.get(field("correlation_id"), String::class.java),
-                            it.get(field("destination_routing_key"), String::class.java),
-                            it.get(field("destination_queue"), String::class.java),
-                            it.get(field("reply_exchange"), String::class.java),
-                            it.get(field("reply_routing_key"), String::class.java),
-                            it.get(field("reply_queue"), String::class.java),
-                            it.get(field("dead_letter_exchange"), String::class.java),
-                            it.get(field("dead_letter_routing_key"), String::class.java),
-                            it.get(field("dead_letter_queue"), String::class.java)
-                    )
+                            it.get(field("destination_exchange"), String::class.java)
+                    ).withPublished(it.get(field("published"), Boolean::class.java))
+                            .withCorrelationId(it.get(field("correlation_id"), String::class.java))
+                            .withDestinationRoutingKey(it.get(field("destination_routing_key"), String::class.java))
+                            .withDestinationQueue(it.get(field("destination_queue"), String::class.java))
+                            .withReplyExchange(it.get(field("reply_exchange"), String::class.java))
+                            .withReplyRoutingKey(it.get(field("reply_routing_key"), String::class.java))
+                            .withReplyQueue(it.get(field("reply_queue"), String::class.java))
+                            .withDeadLetterExchange(it.get(field("dead_letter_exchange"), String::class.java))
+                            .withDeadLetterRoutingKey(it.get(field("dead_letter_routing_key"), String::class.java))
+                            .withDeadLetterQueue(it.get(field("dead_letter_queue"), String::class.java))
+                            .build()
                 }
     }
 

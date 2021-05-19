@@ -3,7 +3,6 @@ package com.wks.servicemarketplace.authservice.adapters.web.resources
 import com.wks.servicemarketplace.common.errors.CoreException
 import com.wks.servicemarketplace.common.errors.ErrorType
 import com.wks.servicemarketplace.common.http.ErrorResponse
-import com.wks.servicemarketplace.common.http.httpStatusCode
 import org.glassfish.jersey.server.spi.ResponseErrorMapper
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
@@ -22,7 +21,7 @@ class DefaultExceptionMapper : ExceptionMapper<Throwable>, ResponseErrorMapper {
 
 internal fun CoreException.toResponse(): Response {
     return Response
-            .status(errorType.httpStatusCode())
+            .status(errorType.code)
             .entity(ErrorResponse(
                     this.errorType,
                     this.message,

@@ -10,8 +10,7 @@ import com.wks.servicemarketplace.common.errors.ErrorType;
 import com.wks.servicemarketplace.common.events.EventEnvelope;
 import com.wks.servicemarketplace.common.messaging.Message;
 import com.wks.servicemarketplace.common.messaging.MessageId;
-import com.wks.servicemarketplace.customerservice.api.CustomerRequest;
-import com.wks.servicemarketplace.customerservice.api.CustomerResponse;
+import com.wks.servicemarketplace.customerservice.api.*;
 import com.wks.servicemarketplace.customerservice.core.auth.AuthorizationUtils;
 import com.wks.servicemarketplace.customerservice.core.daos.CustomerDao;
 import com.wks.servicemarketplace.customerservice.core.daos.EventDao;
@@ -20,9 +19,6 @@ import com.wks.servicemarketplace.customerservice.core.daos.TransactionUtils;
 import com.wks.servicemarketplace.customerservice.core.usecase.ResultWithEvents;
 import com.wks.servicemarketplace.customerservice.core.usecase.UseCase;
 import com.wks.servicemarketplace.customerservice.core.utils.CloseableUtils;
-import com.wks.servicemarketplace.customerservice.api.CustomerCreatedEvent;
-import com.wks.servicemarketplace.customerservice.api.CustomerCreationFailedEvent;
-import com.wks.servicemarketplace.customerservice.api.CustomerMessaging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -113,22 +109,13 @@ public class CreateCustomerUseCase implements UseCase<CustomerRequest, CustomerR
                 payload
         ));
 
-        outboxDao.saveMessage(connection, new Message(
-                MessageId.random(),
-                event.getEventType().toString(),
-                payload,
-                CustomerMessaging.Exchange.MAIN.exchangeName,
-                false,
-                request.getCorrelationId().orElse(null),
-                CustomerMessaging.RoutingKey.CUSTOMER_PROFILE_CREATED,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
-        ));
+        outboxDao.saveMessage(
+                connection,
+                Message.builder(MessageId.random(), event.getEventType().toString(), payload, CustomerMessaging.Exchange.MAIN.exchangeName)
+                        .withCorrelationId(request.getCorrelationId().orElse(null))
+                        .withDestinationRoutingKey(CustomerMessaging.RoutingKey.CUSTOMER_PROFILE_CREATED)
+                        .build()
+        );
     }
 
     private void publishCustomerCreationFailed(Connection connection, CustomerRequest customerRequest, CoreException error) {
@@ -141,21 +128,12 @@ public class CreateCustomerUseCase implements UseCase<CustomerRequest, CustomerR
             throw new RuntimeException(e);
         }
 
-        outboxDao.saveMessage(connection, new Message(
-                MessageId.random(),
-                profileCreationFailed.getEventType().toString(),
-                payload,
-                CustomerMessaging.Exchange.MAIN.exchangeName,
-                false,
-                customerRequest.getCorrelationId().orElse(null),
-                CustomerMessaging.RoutingKey.CUSTOMER_PROFILE_CREATION_FAILED,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
-        ));
+        outboxDao.saveMessage(
+                connection,
+                Message.builder(MessageId.random(), profileCreationFailed.getEventType().toString(), payload, CustomerMessaging.Exchange.MAIN.exchangeName)
+                        .withCorrelationId(customerRequest.getCorrelationId().orElse(null))
+                        .withDestinationRoutingKey(CustomerMessaging.RoutingKey.CUSTOMER_PROFILE_CREATION_FAILED)
+                        .build()
+        );
     }
 }
