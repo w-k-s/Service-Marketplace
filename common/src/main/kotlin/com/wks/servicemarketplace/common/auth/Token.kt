@@ -7,5 +7,6 @@ interface Token {
     val accessToken: String
     val refreshToken: String?
     val expirationTimeUTC: OffsetDateTime
-    fun isToken() = this.expirationTimeUTC.isBefore(OffsetDateTime.now(Clock.systemUTC()))
 }
+
+fun Token.isExpired() = this.expirationTimeUTC.isBefore(OffsetDateTime.now(Clock.systemUTC()))
