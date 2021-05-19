@@ -32,7 +32,7 @@ jobs:
               ~/.gradle/wrapper
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
-              ${{ runner.os }}-gradle-
+              ${{ runner.os }}-gradle-v2
 
       - name: Build with Gradle
         run: gradle build
