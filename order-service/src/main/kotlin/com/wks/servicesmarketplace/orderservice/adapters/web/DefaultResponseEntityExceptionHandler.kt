@@ -1,8 +1,8 @@
-package com.wks.servicesmarketplace.orderservice.adapters.web.error
+package com.wks.servicesmarketplace.orderservice.adapters.web
 
 import com.wks.servicemarketplace.common.errors.CoreException
 import com.wks.servicemarketplace.common.errors.ErrorType
-import com.wks.servicemarketplace.common.http.httpStatusCode
+import com.wks.servicemarketplace.common.http.ErrorResponse
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.context.request.WebRequest
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
-
 
 @ControllerAdvice
 class DefaultResponseEntityExceptionHandler : ResponseEntityExceptionHandler() {
@@ -27,7 +26,7 @@ class DefaultResponseEntityExceptionHandler : ResponseEntityExceptionHandler() {
                 ex.message,
                 ex.details ?: emptyMap()
         )
-        return handleExceptionInternal(ex, body, HttpHeaders(), HttpStatus.valueOf(ex.errorType.httpStatusCode()), request!!)
+        return handleExceptionInternal(ex, body, HttpHeaders(), HttpStatus.valueOf(ex.errorType.code), request!!)
     }
 
     @ExceptionHandler(value = [Exception::class])

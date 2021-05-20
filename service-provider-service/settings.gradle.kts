@@ -8,7 +8,3 @@ pluginManagement {
         id("org.jetbrains.kotlin.plugin.serialization") version kotlinVersion
     }
 }
-
-includeBuild("../common")
-includeBuild("../auth-service-api")
-includeBuild("../service-provider-api")

@@ -36,6 +36,8 @@ jobs:
 
       - name: Build with Gradle
         run: gradle build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Cleanup Gradle Cache
         # Remove some files from the Gradle cache, so they aren't cached by GitHub Actions.
@@ -47,5 +49,4 @@ jobs:
       - name: Publish package
         run: gradle publish
         env:
-          GITHUB_ACTOR: w-k-s
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

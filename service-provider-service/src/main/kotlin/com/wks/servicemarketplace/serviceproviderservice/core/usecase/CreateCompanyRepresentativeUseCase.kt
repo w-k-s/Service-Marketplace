@@ -3,6 +3,8 @@ package com.wks.servicemarketplace.serviceproviderservice.core.usecase
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder
+import com.wks.servicemarketplace.api.ServiceProviderCreationFailedEvent
+import com.wks.servicemarketplace.api.ServiceProviderMessaging
 import com.wks.servicemarketplace.common.*
 import com.wks.servicemarketplace.common.auth.Authentication
 import com.wks.servicemarketplace.common.auth.Permission
@@ -11,8 +13,6 @@ import com.wks.servicemarketplace.common.errors.ErrorType
 import com.wks.servicemarketplace.common.events.EventEnvelope
 import com.wks.servicemarketplace.common.messaging.Message
 import com.wks.servicemarketplace.common.messaging.MessageId
-import com.wks.servicemarketplace.api.ServiceProviderCreationFailedEvent
-import com.wks.servicemarketplace.api.ServiceProviderMessaging
 import com.wks.servicemarketplace.serviceproviderservice.core.CompanyRepresentative
 import com.wks.servicemarketplace.serviceproviderservice.core.CompanyRepresentativeDao
 import com.wks.servicemarketplace.serviceproviderservice.core.EventDao
@@ -23,12 +23,12 @@ import java.util.*
 import javax.validation.constraints.NotNull
 
 class CreateCompanyRepresentativeUseCase constructor(
-    private val companyRepresentativeDao: CompanyRepresentativeDao,
-    private val eventDao: EventDao,
-    private val outboxDao: OutboxDao,
-    private val objectMapper: ObjectMapper
+        private val companyRepresentativeDao: CompanyRepresentativeDao,
+        private val eventDao: EventDao,
+        private val outboxDao: OutboxDao,
+        private val objectMapper: ObjectMapper
 ) :
-    UseCase<CreateCompanyRepresentativeRequest, CreateCompanyRepresentativeResponse> {
+        UseCase<CreateCompanyRepresentativeRequest, CreateCompanyRepresentativeResponse> {
 
     companion object {
         val LOGGER: Logger = LoggerFactory.getLogger(CreateCompanyRepresentativeUseCase::class.java)
@@ -42,41 +42,43 @@ class CreateCompanyRepresentativeUseCase constructor(
                 input.authentication.checkRole(Permission.CREATE_COMPANY_REPRESENTATIVE)
 
                 val (companyRepresentative, event) = CompanyRepresentative.create(
-                    companyRepresentativeDao.newCompanyRepresentativeId(conn),
-                    CompanyRepresentativeUUID(input.uuid),
-                    input.name,
-                    input.email,
-                    input.phoneNumber,
-                    input.authentication.name
+                        companyRepresentativeDao.newCompanyRepresentativeId(conn),
+                        CompanyRepresentativeUUID(input.uuid),
+                        input.name,
+                        input.email,
+                        input.phoneNumber,
+                        input.authentication.name
                 )
 
                 companyRepresentativeDao.save(conn, companyRepresentative)
 
                 val payload = objectMapper.writeValueAsString(event.first())
                 eventDao.saveEvent(
-                    conn, EventEnvelope(
+                        conn, EventEnvelope(
                         event.first(),
                         companyRepresentative.uuid.toString(),
                         payload
-                    )
+                )
                 )
 
                 outboxDao.saveMessage(
-                    conn, Message.fromEvent(
-                        event.first(),
-                        payload,
-                        input.correlationId,
-                        ServiceProviderMessaging.Exchange.MAIN.exchangeName,
-                        ServiceProviderMessaging.RoutingKey.SERVICE_PROVIDER_PROFILE_CREATED.value
-                    )
+                        conn,
+                        Message.builder(
+                                MessageId.random(),
+                                event.first().toString(),
+                                payload,
+                                ServiceProviderMessaging.Exchange.MAIN.exchangeName
+                        ).withCorrelationId(input.correlationId)
+                                .withDestinationRoutingKey(ServiceProviderMessaging.RoutingKey.SERVICE_PROVIDER_PROFILE_CREATED.value)
+                                .build()
                 )
 
                 conn.commit()
 
                 return companyRepresentative.let { rep ->
                     CreateCompanyRepresentativeResponse(
-                        rep.externalId,
-                        rep.uuid
+                            rep.externalId,
+                            rep.uuid
                     )
                 }
             } catch (e: Exception) {
@@ -92,24 +94,24 @@ class CreateCompanyRepresentativeUseCase constructor(
         outboxDao.connection().use { conn ->
 
             val event = ServiceProviderCreationFailedEvent(
-                when (e) {
-                    is CoreException -> e.errorType
-                    else -> ErrorType.UNKNOWN
-                },
-                e.message
+                    when (e) {
+                        is CoreException -> e.errorType
+                        else -> ErrorType.UNKNOWN
+                    },
+                    e.message
             )
             val payload = objectMapper.writeValueAsString(event)
 
             outboxDao.saveMessage(
-                conn, Message(
-                    MessageId.random(),
-                    event.eventType.toString(),
-                    payload,
-                    ServiceProviderMessaging.Exchange.MAIN.exchangeName,
-                    false,
-                    input.correlationId,
-                    ServiceProviderMessaging.RoutingKey.SERVICE_PROVIDER_PROFILE_CREATION_FAILED.value
-                )
+                    conn,
+                    Message.builder(
+                            MessageId.random(),
+                            event.eventType.toString(),
+                            payload,
+                            ServiceProviderMessaging.Exchange.MAIN.exchangeName
+                    ).withCorrelationId(input.correlationId)
+                            .withDestinationRoutingKey(ServiceProviderMessaging.RoutingKey.SERVICE_PROVIDER_PROFILE_CREATION_FAILED.value)
+                            .build()
             )
         }
     }
@@ -117,38 +119,38 @@ class CreateCompanyRepresentativeUseCase constructor(
 
 @JsonDeserialize(builder = CreateCompanyRepresentativeRequest.Builder::class)
 data class CreateCompanyRepresentativeRequest private constructor(
-    val uuid: UUID,
-    val name: Name,
-    val email: Email,
-    val phoneNumber: PhoneNumber,
-    val authentication: Authentication,
-    val correlationId: String?
+        val uuid: UUID,
+        val name: Name,
+        val email: Email,
+        val phoneNumber: PhoneNumber,
+        val authentication: Authentication,
+        val correlationId: String?
 ) {
     @JsonPOJOBuilder(buildMethodName = "build", withPrefix = "")
     class Builder(
-        @NotNull
-        var uuid: String?,
-        @NotNull
-        var firstName: String?,
-        @NotNull
-        var lastName: String?,
-        @NotNull
-        var email: String?,
-        @NotNull
-        var mobileNumber: String?,
-        @NotNull
-        var authentication: Authentication?,
-        var correlationId: String?
+            @NotNull
+            var uuid: String?,
+            @NotNull
+            var firstName: String?,
+            @NotNull
+            var lastName: String?,
+            @NotNull
+            var email: String?,
+            @NotNull
+            var mobileNumber: String?,
+            @NotNull
+            var authentication: Authentication?,
+            var correlationId: String?
     ) {
         fun build(): CreateCompanyRepresentativeRequest {
             return ModelValidator.validate(this).let {
                 CreateCompanyRepresentativeRequest(
-                    UUID.fromString(this.uuid!!),
-                    Name.of(this.firstName!!, this.lastName!!),
-                    Email.of(this.email!!),
-                    PhoneNumber.of(this.mobileNumber!!),
-                    this.authentication!!,
-                    this.correlationId
+                        UUID.fromString(this.uuid!!),
+                        Name.of(this.firstName!!, this.lastName!!),
+                        Email.of(this.email!!),
+                        PhoneNumber.of(this.mobileNumber!!),
+                        this.authentication!!,
+                        this.correlationId
                 )
             }
         }
@@ -156,6 +158,6 @@ data class CreateCompanyRepresentativeRequest private constructor(
 }
 
 data class CreateCompanyRepresentativeResponse(
-    private val externalId: CompanyRepresentativeId,
-    private val uuid: CompanyRepresentativeUUID
+        private val externalId: CompanyRepresentativeId,
+        private val uuid: CompanyRepresentativeUUID
 )

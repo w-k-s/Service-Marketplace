@@ -22,6 +22,14 @@ version = "1.0-SNAPSHOT"
 repositories {
     jcenter()
     mavenCentral()
+    maven {
+        name = "GitHubPackages"
+        url = uri("https://maven.pkg.github.com/w-k-s/Service-Marketplace")
+        credentials {
+            username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
+            password = project.findProperty("gpr.token") as String? ?: System.getenv("GITHUB_TOKEN")
+        }
+    }
 }
 
 tasks.withType<Jar> {
@@ -49,9 +57,9 @@ tasks.test {
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
 
-    implementation("com.wks.servicemarketplace:common:1.0-SNAPSHOT")
-    implementation("com.wks.servicemarketplace:auth-service-api:1.0-SNAPSHOT")
-    implementation("com.wks.servicemarketplace:service-provider-api:1.0-SNAPSHOT")
+    implementation("com.wks.servicemarketplace:common:0.0.3")
+    implementation("com.wks.servicemarketplace:auth-service-api:0.0.1")
+    implementation("com.wks.servicemarketplace:service-provider-api:0.0.1")
 
     implementation("io.ktor:ktor-server-core:$ktorVersion")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")

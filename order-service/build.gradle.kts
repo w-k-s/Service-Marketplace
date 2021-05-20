@@ -11,7 +11,7 @@ plugins {
 
 group = "com.wks.servicesmarketplace"
 version = "0.0.1-SNAPSHOT"
-java.sourceCompatibility = JavaVersion.VERSION_13
+java.sourceCompatibility = JavaVersion.VERSION_15
 
 sourceSets.getByName("main") {
 	java.srcDir("src/main/java")
@@ -24,6 +24,14 @@ sourceSets.getByName("test") {
 
 repositories {
 	mavenCentral()
+	maven {
+		name = "GitHubPackages"
+		url = uri("https://maven.pkg.github.com/w-k-s/Service-Marketplace")
+		credentials {
+			username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
+			password = project.findProperty("gpr.token") as String? ?: System.getenv("GITHUB_TOKEN")
+		}
+	}
 }
 
 dependencies {
@@ -33,8 +41,8 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.hibernate.validator:hibernate-validator:6.0.16.Final")
 
-	implementation("com.wks.servicemarketplace:common:1.0-SNAPSHOT")
-	implementation("com.wks.servicemarketplace:auth-service-api:1.0-SNAPSHOT")
+	implementation("com.wks.servicemarketplace:common:0.0.3")
+	implementation("com.wks.servicemarketplace:auth-service-api:0.0.1")
 
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310") // adds support for java.time on Jacksom
@@ -54,11 +62,7 @@ dependencies {
 	runtimeOnly("org.postgresql:postgresql")
 
 	// Liquibase
-	liquibaseRuntime("org.liquibase:liquibase-core:3.8.1")
-	liquibaseRuntime("javax.xml.bind:jaxb-api:2.3.1")
-	liquibaseRuntime("org.postgresql:postgresql")
-	liquibaseRuntime("ch.qos.logback:logback-core:1.2.3")
-	liquibaseRuntime("ch.qos.logback:logback-classic:1.2.3")
+	implementation("org.liquibase:liquibase-core:3.8.1")
 
 	implementation("org.springframework.boot:spring-boot-starter-amqp")
 
