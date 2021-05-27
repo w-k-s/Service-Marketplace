@@ -126,14 +126,16 @@ returns trigger as $body$
 $body$
 language plpgsql;
 
+DROP TRIGGER IF EXISTS audit_company ON public.company;
 create trigger audit_company
 BEFORE update on company
 for each row execute procedure audit_record();
 
+DROP TRIGGER IF EXISTS audit_employee ON public.employee;
 create trigger audit_employee
 BEFORE update on employee
 for each row execute procedure audit_record();
 
-create trigger audit_address
-BEFORE update on address
+DROP TRIGGER IF EXISTS audit_address ON public.address;
+create trigger audit_address BEFORE update on address
 for each row execute procedure audit_record();

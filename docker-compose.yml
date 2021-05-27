@@ -37,13 +37,14 @@ services:
       FUSIONAUTH_API_KEY: 9Am1DMurFnQo6B_Zae3qLdSqd2mOk7w4APyPoCTnLHw
       AUTHSERVICE_HOST_URL: http://localhost:8082
       SERVER_HOST: http://0.0.0.0
-      SERVER_PORT: 8082
+      SERVER_PORT: 8080
       AMQP_URI: amqp://rabbitmq:5672
       JDBC_URL: jdbc:postgresql://docker.for.mac.host.internal:5432/auth
       JDBC_USERNAME: waqqassheikh
       JDBC_PASSWORD: 7713659
     ports:
-      - 8082:8082
+      - 8082:8080
+    command: ["./wait-for-it.sh", "fusionauth:9011","-t","0","--strict","--","java","-jar","/app.jar"]
 
   customer-service:
     build:
@@ -52,17 +53,18 @@ services:
     image: wkas/sm-customer-service
     restart: always
     ports:
-      - 8081:8081
+      - 8081:8080
     environment:
       AUTHSERVICE_CLIENT_ID: customer-service
       AUTHSERVICE_CLIENT_SECRET: Password@1
-      AUTHSERVICE_BASE_RUL: http://auth-service:8082
+      AUTHSERVICE_HOST_URL: http://auth-service:8082
       JDBC_URL: jdbc:postgresql://docker.for.mac.host.internal:5432/customer
       JDBC_USERNAME: waqqassheikh
       JDBC_PASSWORD: 7713659
       AMQP_URI: amqp://rabbitmq:5672
       SERVER_HOST: http://0.0.0.0
-      SERVER_PORT: 8081
+      SERVER_PORT: 8080
+    command: ["./wait-for-it.sh", "rabbitmq:5672","-t","0","--strict","--","java","-jar","/app.jar"]
 
   service-provider-service:
     build:
@@ -73,15 +75,16 @@ services:
     environment:
       AUTHSERVICE_CLIENT_ID: service-provider-service
       AUTHSERVICE_CLIENT_SECRET: Password@1
-      AUTHSERVICE_BASE_URL: http://auth-service:8082
+      AUTHSERVICE_HOST_URL: http://auth-service:8082
       JDBC_URL: jdbc:postgresql://docker.for.mac.host.internal:5432/provider
       JDBC_USERNAME: waqqassheikh
       JDBC_PASSWORD: 7713659
       AMQP_URI: amqp://rabbitmq:5672
       SERVER_HOST: http://0.0.0.0
-      SERVER_PORT: 8084
+      SERVER_PORT: 8080
     ports:
-      - 8084:8084
+      - 8084:8080
+    command: ["./wait-for-it.sh", "rabbitmq:5672","-t","0","--strict","--","java","-jar","/app.jar"]
 
   order-service:
     build:
@@ -90,9 +93,9 @@ services:
     image: wkas/sm-order-service
     restart: always
     ports:
-      - 8083:8083
+      - 8083:8080
     environment:
-      SERVER_PORT: 8083
+      SERVER_PORT: 8080
       SPRING_DATASOURCE_URL: jdbc:postgresql://docker.for.mac.host.internal:5432/service_order
       SPRING_DATASOURCE_USERNAME: waqqassheikh
       SPRING_DATASOURCE_PASSWORD: 7713659
@@ -108,7 +111,7 @@ services:
       - 8080:8080
     environment:
       SERVER_PORT: 8080
-      APPLICATION_HOSTS_CUSTOMER_SERVICE: http://customer-service:8081
-      APPLICATION_HOSTS_AUTH_SERVICE: http://auth-service:8082
-      APPLICATION_HOSTS_ORDER_SERVICE: http://order-service:8083
-      APPLICATION_HOSTS_SERVICE_PROVIDER_SERVICE: http://service-provider-service:8084
+      APPLICATION_HOSTS_CUSTOMER_SERVICE: http://customer-service:8080
+      APPLICATION_HOSTS_AUTH_SERVICE: http://auth-service:8080
+      APPLICATION_HOSTS_ORDER_SERVICE: http://order-service:8080
+      APPLICATION_HOSTS_SERVICE_PROVIDER_SERVICE: http://service-provider-service:8080

@@ -1,4 +1,4 @@
-CREATE TABLE service_order (
+CREATE TABLE IF NOT EXISTS service_order (
     order_uuid VARCHAR(255) PRIMARY KEY,
     customer_uuid VARCHAR(255) NOT NULL,
     title VARCHAR(255),

@@ -73,10 +73,12 @@ returns trigger as $body$
 $body$
 language plpgsql;
 
+DROP TRIGGER IF EXISTS audit_customers ON public.customers;
 create trigger audit_customers
 BEFORE update on customers
 for each row execute procedure audit_record();
 
+DROP TRIGGER IF EXISTS audit_addresses ON public.addresses;
 create trigger audit_addresses
 BEFORE update on addresses
 for each row execute procedure audit_record();
