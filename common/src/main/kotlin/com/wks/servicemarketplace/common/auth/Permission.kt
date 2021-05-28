@@ -1,5 +1,7 @@
 package com.wks.servicemarketplace.common.auth
 
+import com.wks.servicemarketplace.common.errors.CoreException
+import com.wks.servicemarketplace.common.errors.ErrorType
 import java.util.*
 
 enum class Permission(val value: String) {
@@ -22,14 +24,21 @@ enum class Permission(val value: String) {
     DELETE_ADDRESS("address.delete"),
     EDIT_ADDRESS("address.edit"),
     VIEW_ADDRESS("address.view");
+
+    companion object{
+        fun of(value: String)
+        = values().firstOrNull { it.value == value }
+                ?: throw CoreException(ErrorType.VALIDATION, "No permission with value '$value'")
+    }
 }
 
 data class Permissions(private val value: EnumSet<Permission>) : Iterable<Permission>, Set<Permission>{
     companion object {
         fun all() = Permissions(EnumSet.allOf(Permission::class.java))
+        fun none() = Permissions(EnumSet.noneOf(Permission::class.java))
         fun of(vararg permissions: Permission) = Permissions(EnumSet.copyOf(permissions.toList()))
         fun of(permissionNames: List<String>) = permissionNames
-                .map { Permission.valueOf(it) }
+                .map { Permission.of(it) }
                 .toList()
                 .let { Permissions(EnumSet.copyOf(it)) }
     }
@@ -38,5 +47,5 @@ data class Permissions(private val value: EnumSet<Permission>) : Iterable<Permis
     override fun contains(element: Permission) = value.contains(element)
     override fun containsAll(elements: Collection<Permission>) = value.containsAll(elements)
     override fun isEmpty() = value.isEmpty()
-    fun toStringList() = value.map { it.name }.toList()
+    fun toStringList() = value.map { it.value }.toList().sorted()
 }

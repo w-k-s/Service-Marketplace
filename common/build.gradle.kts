@@ -49,7 +49,7 @@ publishing {
         create<MavenPublication>("maven") {
             groupId = "com.wks.servicemarketplace"
             artifactId = "common"
-            version = "0.0.4"
+            version = "0.0.6"
 
             from(components["java"])
         }
