@@ -35,7 +35,7 @@ class StandardTokenValidator(publicKey: PublicKey, private val objectMapper: Obj
                 DefaultAuthentication(
                         it.getStringClaimValue("userId")?.let { uuidString -> UserId.fromString(uuidString) },
                         it.subject,
-                        it.getStringListClaimValue("permissions")
+                        Permissions.of(it.getStringListClaimValue("permissions"))
                 )
             }
 

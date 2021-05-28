@@ -9,6 +9,7 @@ import java.security.Principal
 
 interface Authentication : Principal {
     val userId: UserId?
+    val permissions: Permissions
     fun hasRole(role: Permission): Boolean
     fun checkRole(role: Permission)
 }
@@ -51,8 +52,8 @@ enum class UserType(val code: String) {
 
 class DefaultAuthentication(override val userId: UserId?,
                             private val name: String,
-                            private val permissions: List<String>) : Authentication {
-    override fun hasRole(role: Permission) = permissions.contains(role.value)
+                            override val permissions: Permissions) : Authentication {
+    override fun hasRole(role: Permission) = permissions.contains(role)
 
     override fun checkRole(role: Permission) {
         if (!hasRole(role)) {

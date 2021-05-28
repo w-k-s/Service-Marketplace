@@ -1,5 +1,7 @@
 package com.wks.servicemarketplace.common.auth
 
+import java.util.*
+
 enum class Permission(val value: String) {
     CREATE_ORDER("order.create"),
     DELETE_ORDER("order.delete"),
@@ -20,4 +22,21 @@ enum class Permission(val value: String) {
     DELETE_ADDRESS("address.delete"),
     EDIT_ADDRESS("address.edit"),
     VIEW_ADDRESS("address.view");
+}
+
+data class Permissions(private val value: EnumSet<Permission>) : Iterable<Permission>, Set<Permission>{
+    companion object {
+        fun all() = Permissions(EnumSet.allOf(Permission::class.java))
+        fun of(vararg permissions: Permission) = Permissions(EnumSet.copyOf(permissions.toList()))
+        fun of(permissionNames: List<String>) = permissionNames
+                .map { Permission.valueOf(it) }
+                .toList()
+                .let { Permissions(EnumSet.copyOf(it)) }
+    }
+    override fun iterator() = value.iterator()
+    override val size = value.size
+    override fun contains(element: Permission) = value.contains(element)
+    override fun containsAll(elements: Collection<Permission>) = value.containsAll(elements)
+    override fun isEmpty() = value.isEmpty()
+    fun toStringList() = value.map { it.name }.toList()
 }

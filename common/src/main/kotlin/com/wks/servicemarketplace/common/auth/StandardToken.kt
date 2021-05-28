@@ -1,7 +1,6 @@
 package com.wks.servicemarketplace.common.auth
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.wks.servicemarketplace.common.Email
 import com.wks.servicemarketplace.common.UserId
 import org.jose4j.jwa.AlgorithmConstraints
 import org.jose4j.jws.AlgorithmIdentifiers
@@ -13,10 +12,9 @@ import java.security.PrivateKey
 import java.security.PublicKey
 import java.time.*
 
-
 class StandardToken(subject: String,
                     userId: UserId?,
-                    permissions: List<String>,
+                    permissions: Permissions,
                     expiration: Duration,
                     otherClaims: Map<String, String> = emptyMap(),
                     privateKey: PrivateKey
@@ -29,17 +27,17 @@ class StandardToken(subject: String,
         val expiryMillis = Instant.now().plus(expiration)
         this.expirationTimeUTC = OffsetDateTime.ofInstant(expiryMillis, ZoneId.systemDefault())
                 .withOffsetSameInstant(ZoneOffset.UTC)
-        this.accessToken = JsonWebSignature().also {
-            it.payload = JwtClaims().also { claims ->
+        this.accessToken = JsonWebSignature().also { jws ->
+            jws.payload = JwtClaims().also { claims ->
                 claims.setIssuedAtToNow()
                 claims.expirationTime = NumericDate.fromMilliseconds(expiryMillis.toEpochMilli())
                 claims.subject = subject
-                claims.setStringListClaim("permissions", permissions)
+                claims.setStringListClaim("permissions", permissions.toStringList())
                 userId?.let { claims.setClaim("userId", it.toString()) }
-                otherClaims.forEach { claim -> claims.setClaim(claim.key, claim.value) }
+                otherClaims.forEach { claims.setClaim(it.key, it.value) }
             }.toJson()
-            it.key = privateKey
-            it.algorithmHeaderValue = AlgorithmIdentifiers.RSA_USING_SHA256
+            jws.key = privateKey
+            jws.algorithmHeaderValue = AlgorithmIdentifiers.RSA_USING_SHA256
         }.compactSerialization
     }
 

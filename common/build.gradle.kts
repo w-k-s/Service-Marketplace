@@ -4,8 +4,6 @@ plugins {
     kotlin("jvm") version "1.3.72"
     `maven-publish`
 }
-//group = "com.wks.servicemarketplace"
-//version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -51,7 +49,7 @@ publishing {
         create<MavenPublication>("maven") {
             groupId = "com.wks.servicemarketplace"
             artifactId = "common"
-            version = "0.0.3"
+            version = "0.0.4"
 
             from(components["java"])
         }
