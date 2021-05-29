@@ -29,7 +29,7 @@ repositories {
 		url = uri("https://maven.pkg.github.com/w-k-s/Service-Marketplace")
 		credentials {
 			username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
-			password = project.findProperty("gpr.token") as String? ?: System.getenv("GITHUB_TOKEN")
+			password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
 		}
 	}
 }
@@ -41,7 +41,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.hibernate.validator:hibernate-validator:6.0.16.Final")
 
-	implementation("com.wks.servicemarketplace:common:0.0.3")
+	implementation("com.wks.servicemarketplace:common:0.0.6")
 	implementation("com.wks.servicemarketplace:auth-service-api:0.0.1")
 
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")

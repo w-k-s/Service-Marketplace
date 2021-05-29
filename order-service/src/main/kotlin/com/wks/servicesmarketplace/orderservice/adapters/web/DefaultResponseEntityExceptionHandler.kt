@@ -21,6 +21,7 @@ class DefaultResponseEntityExceptionHandler : ResponseEntityExceptionHandler() {
 
     @ExceptionHandler(value = [CoreException::class])
     protected fun handleCoreException(ex: CoreException, request: WebRequest?): ResponseEntity<Any?>? {
+        LOGGER.error("Unhandled Core Exception: ${ex.message}", ex)
         val body = ErrorResponse(
                 ex.errorType,
                 ex.message,
@@ -31,7 +32,7 @@ class DefaultResponseEntityExceptionHandler : ResponseEntityExceptionHandler() {
 
     @ExceptionHandler(value = [Exception::class])
     protected fun handleThrowable(ex: Exception, request: WebRequest?): ResponseEntity<Any?>? {
-        LOGGER.error(ex.message, ex)
+        LOGGER.error("Unhandled exception: ${ex.message}", ex)
         val body = ErrorResponse(
                 ErrorType.UNKNOWN,
                 "Unknown exception"

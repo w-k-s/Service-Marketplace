@@ -1,4 +1,4 @@
-package com.wks.servicesmarketplace.orderservice.core.usecases
+package com.wks.servicesmarketplace.orderservice.core.service.dto
 
 import com.wks.servicesmarketplace.orderservice.core.OrderUUID
 
