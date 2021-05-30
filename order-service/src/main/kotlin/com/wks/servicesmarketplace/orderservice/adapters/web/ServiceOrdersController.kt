@@ -2,8 +2,8 @@ package com.wks.servicesmarketplace.orderservice.adapters.web
 
 import com.wks.servicemarketplace.common.auth.Authentication
 import com.wks.servicesmarketplace.orderservice.core.OrderUUID
-import com.wks.servicesmarketplace.orderservice.core.service.dto.ServiceOrderRequest
-import com.wks.servicesmarketplace.orderservice.core.service.ServiceOrderService
+import com.wks.servicesmarketplace.orderservice.core.ServiceOrderRequest
+import com.wks.servicesmarketplace.orderservice.core.ServiceOrderService
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 import java.security.Principal

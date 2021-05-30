@@ -1,25 +1,17 @@
-package com.wks.servicesmarketplace.orderservice.core.service
+package com.wks.servicesmarketplace.orderservice.core
 
 import com.wks.servicemarketplace.common.CountryCode
 import com.wks.servicemarketplace.common.CustomerUUID
 import com.wks.servicemarketplace.common.auth.Authentication
 import com.wks.servicemarketplace.common.errors.CoreException
 import com.wks.servicemarketplace.common.errors.ErrorType
-import com.wks.servicesmarketplace.orderservice.core.Address
-import com.wks.servicesmarketplace.orderservice.core.OrderUUID
-import com.wks.servicesmarketplace.orderservice.core.ServiceOrder
-import com.wks.servicesmarketplace.orderservice.core.ServiceOrderStatus
-import com.wks.servicesmarketplace.orderservice.core.repositories.ServiceOrderRepository
-import com.wks.servicesmarketplace.orderservice.core.service.dto.OrderIdResponse
-import com.wks.servicesmarketplace.orderservice.core.service.dto.ServiceOrderRequest
-import com.wks.servicesmarketplace.orderservice.core.service.dto.ServiceOrderResponse
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import javax.annotation.security.RolesAllowed
 
 @Service
 @Transactional
-class ServiceOrderService constructor(val serviceOrderRepository: ServiceOrderRepository) {
+class ServiceOrderService constructor(val serviceOrderDao: ServiceOrderDao) {
 
     @RolesAllowed("ROLE_order.create")
     fun create(request: ServiceOrderRequest, authentication: Authentication): OrderIdResponse {
@@ -28,7 +20,7 @@ class ServiceOrderService constructor(val serviceOrderRepository: ServiceOrderRe
         val customerId = CustomerUUID.of(authentication.userId
                 ?: throw CoreException(ErrorType.AUTHENTICATION, "userId not found"))
 
-        serviceOrderRepository.save(request.let {
+        serviceOrderDao.save(request.let {
             ServiceOrder.create(
                     orderId,
                     customerId,
@@ -53,8 +45,8 @@ class ServiceOrderService constructor(val serviceOrderRepository: ServiceOrderRe
     }
 
     fun get(orderUUID: OrderUUID, authentication: Authentication): ServiceOrderResponse {
-        return serviceOrderRepository.findById(orderUUID)
-                .map {
+        return serviceOrderDao.findById(orderUUID)
+                ?.let {
                     ServiceOrderResponse(
                             it.orderUUID,
                             it.customerUUID,
@@ -67,12 +59,10 @@ class ServiceOrderService constructor(val serviceOrderRepository: ServiceOrderRe
                             it.rejectReason,
                             it.version
                     )
-                }
-                .orElseThrow {
+                } ?: throw
                     CoreException(
                             ErrorType.RESOURCE_NOT_FOUND,
                             "Order $orderUUID not found"
                     )
-                }
     }
 }

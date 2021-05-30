@@ -35,11 +35,12 @@ repositories {
 }
 
 dependencies {
-	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.hibernate.validator:hibernate-validator:6.0.16.Final")
+
+	implementation("org.jdbi:jdbi3-core:3.20.0")
 
 	implementation("com.wks.servicemarketplace:common:0.0.6")
 	implementation("com.wks.servicemarketplace:auth-service-api:0.0.1")

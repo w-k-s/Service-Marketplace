@@ -3,50 +3,33 @@ package com.wks.servicesmarketplace.orderservice.core
 import com.wks.servicemarketplace.common.CustomerUUID
 import com.wks.servicemarketplace.common.ModelValidator
 import com.wks.servicemarketplace.common.Service
-import com.wks.servicesmarketplace.orderservice.core.repositories.CustomerUUIDConverter
-import com.wks.servicesmarketplace.orderservice.core.repositories.MonetaryAmountConverter
-import com.wks.servicesmarketplace.orderservice.core.repositories.PrincipalConverter
 import com.wks.servicesmarketplace.orderservice.core.utils.ServiceCode
 import com.wks.servicesmarketplace.orderservice.core.utils.ServiceOrderDateTime
-import org.springframework.data.annotation.CreatedDate
-import org.springframework.data.annotation.LastModifiedDate
 import java.security.Principal
 import java.time.OffsetDateTime
 import javax.money.MonetaryAmount
-import javax.persistence.*
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
 
 data class ServiceOrder internal constructor(
-    @field:EmbeddedId
-    @field:AttributeOverride(name = "value", column = Column(name = "order_uuid"))
     val orderUUID: OrderUUID,
-    @field:Convert(converter=CustomerUUIDConverter::class)
     val customerUUID: CustomerUUID,
-    @field:NotNull
     @field:ServiceCode
     val serviceCode: Service,
-    @field:NotBlank
+    @NotBlank
     val title: String,
     @field:NotBlank
     val description: String,
     @field:ServiceOrderDateTime
     val orderDateTime: OffsetDateTime,
-    @field:Embedded
     val address: Address,
     val status: ServiceOrderStatus = ServiceOrderStatus.INVALID,
-    @field:AttributeOverride(name = "value", column = Column(name = "scheduled_service_provider_id"))
     val scheduledCompanyId: CompanyId? = null,
-    @field:Convert(converter = MonetaryAmountConverter::class)
     val price: MonetaryAmount? = null,
     val rejectReason: String? = null,
-    @field:CreatedDate
     val createdDate: OffsetDateTime = OffsetDateTime.now(),
-    @field:Convert(converter = PrincipalConverter::class)
     val createdBy: Principal,
-    @field:LastModifiedDate
     val lastModifiedDate: OffsetDateTime? = null,
-    @field:Convert(converter = PrincipalConverter::class)
     val lastModifiedBy: Principal? = null,
     val version: Long = 0
 ) {
