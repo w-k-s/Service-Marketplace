@@ -15,9 +15,9 @@ class DefaultServiceOrderDao(private val jdbi: Jdbi) : ServiceOrderDao {
                 INSERT INTO service_order 
                 (order_uuid,customer_uuid,title,description,order_date_time,service_code,status,
                 address_city,address_country,address_line1,address_line2,address_latitude,address_longitude,
-                created_by,created_date
+                created_by,created_date,version)
                 VALUES
-                (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
                 """.trimIndent(),
                     serviceOrder.orderUUID.toString(),
                     serviceOrder.customerUUID.value,
@@ -33,13 +33,14 @@ class DefaultServiceOrderDao(private val jdbi: Jdbi) : ServiceOrderDao {
                     serviceOrder.address.latitude,
                     serviceOrder.address.longitude,
                     serviceOrder.createdBy.name,
-                    serviceOrder.createdDate.toUTCTimestamp()
+                    serviceOrder.createdDate.toUTCTimestamp(),
+                    serviceOrder.version
             )
         }
     }
 
-    override fun findById(orderUUID: OrderUUID): List<ServiceOrder> {
-        return jdbi.withHandle<List<ServiceOrder>, Exception> {
+    override fun findById(orderUUID: OrderUUID): ServiceOrder? {
+        return jdbi.withHandle<ServiceOrder, Exception> {
             it.select("""
                 SELECT order_uuid, customer_uuid, title, description, order_date_time, service_code, status,
                 price, reject_reason, scheduled_service_provider_id, address_city, address_country, address_line1,
@@ -76,7 +77,7 @@ class DefaultServiceOrderDao(private val jdbi: Jdbi) : ServiceOrderDao {
                         rs.getTimestamp("last_modified_date").toUTCOffsetDateTime(),
                         lastModifiedBy?.let { Principal {lastModifiedBy} }
                 )
-            }.list()
+            }.firstOrNull()
         }
     }
 }

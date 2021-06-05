@@ -1,11 +1,14 @@
 package com.wks.servicesmarketplace.orderservice.config
 
 import com.wks.servicemarketplace.common.auth.TokenValidator
+import org.springframework.context.annotation.Bean
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
+import org.springframework.security.config.core.GrantedAuthorityDefaults
 import org.springframework.security.config.http.SessionCreationPolicy
+
 
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true,  proxyTargetClass = true)
@@ -19,5 +22,10 @@ class DefaultWebSecurityConfigurerAdapter(private val tokenValidator: TokenValid
                 .addFilter(JWTAuthorizationFilter(authenticationManager(), tokenValidator))
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
+    }
+
+    @Bean
+    fun grantedAuthorityDefaults(): GrantedAuthorityDefaults {
+        return GrantedAuthorityDefaults("") // Remove the ROLE_ prefix
     }
 }

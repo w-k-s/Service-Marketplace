@@ -6,6 +6,7 @@ import com.wks.servicemarketplace.common.Service
 import com.wks.servicesmarketplace.orderservice.core.utils.ServiceCode
 import java.math.BigDecimal
 import java.time.OffsetDateTime
+import javax.money.MonetaryAmount
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
 
@@ -53,3 +54,10 @@ data class ServiceOrderResponse(
 ){
     val serviceCode = service.code
 }
+
+data class BidRequest(
+        val note: String,
+        val price: MonetaryAmount
+)
+
+data class BidUUIDResponse(val bidUUID: BidUUID)
