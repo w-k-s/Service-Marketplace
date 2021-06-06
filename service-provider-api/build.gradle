@@ -2,6 +2,7 @@ import org.gradle.api.publish.maven.MavenPublication
 
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.4.21'
+    id("com.google.protobuf") version "0.8.16"
     id("maven-publish")
 }
 
@@ -35,7 +36,26 @@ dependencies {
     implementation 'org.glassfish:javax.el:3.0.0'
     implementation 'javax.el:javax.el-api:3.0.0'
     implementation 'org.hibernate:hibernate-validator:6.1.5.Final'
+
+    // Protocol Buffers
+    implementation 'com.google.protobuf:protobuf-java:3.0.0'
+
+    // Retrofit
+    implementation "com.squareup.retrofit2:retrofit:2.9.0"
+    implementation "com.squareup.retrofit2:converter-jackson:2.9.0"
 }
+
+protobuf {
+    protoc {
+        // Download from repositories
+        artifact = 'com.google.protobuf:protoc:3.0.0'
+    }
+}
+
+// adds the directory in which the proto compiler generates Java code to the directories the :compileKotlin looks for Java source:
+sourceSets.main.java.srcDirs += 'build/generated/source/proto/main/java'
+// ensures that the Java code is (re)generated before invoking :compileKotlin:
+compileKotlin.dependsOn ':generateProto'
 
 publishing {
     repositories {
@@ -53,7 +73,7 @@ publishing {
         maven(MavenPublication) {
             groupId = 'com.wks.servicemarketplace'
             artifactId = 'service-provider-api'
-            version = '0.0.1'
+            version = '0.0.2'
 
             from components.java
         }

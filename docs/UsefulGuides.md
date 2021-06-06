@@ -127,3 +127,15 @@
 ## RabbitMQ
 
 - [When to use RabbitMQ or ApacheKafka](https://www.cloudamqp.com/blog/2019-12-12-when-to-use-rabbitmq-or-apache-kafka.html)
+
+## Test Containers
+
+- [Test Containers in Kotlin](https://rieckpil.de/testing-spring-boot-applications-with-kotlin-and-testcontainers/)
+
+## F*****g Spring
+
+- [Spring Security with JWT](https://www.toptal.com/spring/spring-security-tutorial)
+
+## Protocol Buffers
+
+- [Protocol Buffers (Kotlin)](https://developers.google.com/protocol-buffers/docs/reference/kotlin-generated)

@@ -1,0 +1,23 @@
+syntax = "proto3";
+package com.wks.servicemarketplace.api.proto;
+
+import "google/protobuf/timestamp.proto";
+
+option java_multiple_files = true;
+option java_package = "com.wks.servicemarketplace.api.proto";
+option java_outer_classname = "CompanyProtos";
+
+message Company {
+    int32 id = 1;
+    string uuid = 2;
+    string name = 3;
+    string phone = 4;
+    string email = 5;
+    string logo_url = 6;
+    repeated string services = 7;
+    string created_by = 8;
+    google.protobuf.Timestamp created_date = 9;
+    string last_modified_by = 10;
+    google.protobuf.Timestamp last_modified_date = 11;
+    int32 version = 12;
+}
