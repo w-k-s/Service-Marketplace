@@ -42,7 +42,7 @@ dependencies {
 
     // Retrofit
     implementation "com.squareup.retrofit2:retrofit:2.9.0"
-    implementation "com.squareup.retrofit2:converter-jackson:2.9.0"
+    implementation "com.squareup.retrofit2:converter-protobuf:2.9.0"
 }
 
 protobuf {
@@ -73,7 +73,7 @@ publishing {
         maven(MavenPublication) {
             groupId = 'com.wks.servicemarketplace'
             artifactId = 'service-provider-api'
-            version = '0.0.2'
+            version = '0.0.3'
 
             from components.java
         }

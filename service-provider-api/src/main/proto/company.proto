@@ -21,3 +21,22 @@ message Company {
     google.protobuf.Timestamp last_modified_date = 11;
     int32 version = 12;
 }
+
+message ErrorResponse{
+     enum ErrorType {
+        VALIDATION = 0;
+        NOT_UNIQUE = 1;
+        INVALID_FORMAT = 2;
+        AUTHENTICATION = 3;
+        AUTHORIZATION = 4;
+        RESOURCE_NOT_FOUND = 5;
+        PROCESSING = 6;
+        UNKNOWN = 7;
+        EXTERNAL_SYSTEM = 8;
+     }
+
+    int32 code = 1;
+    ErrorType error_type = 2;
+    string message = 3;
+    map<string,string> info = 4;
+}

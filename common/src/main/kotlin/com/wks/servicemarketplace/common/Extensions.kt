@@ -6,6 +6,8 @@ import java.io.InputStreamReader
 import java.security.KeyFactory
 import java.security.PublicKey
 import java.security.spec.X509EncodedKeySpec
+import java.sql.Timestamp
+import java.time.*
 import java.util.*
 import java.util.stream.Collectors
 
@@ -21,3 +23,9 @@ fun InputStream.readPublicKey(): PublicKey {
         }
     }
 }
+
+fun Timestamp.toUTCOffsetDateTime()
+        = OffsetDateTime.ofInstant(Instant.ofEpochMilli(this.time), ZoneId.of("UTC"))
+
+fun OffsetDateTime.toUTCTimestamp()
+        = Timestamp.valueOf(LocalDateTime.ofInstant(this.toInstant(), ZoneOffset.UTC));
