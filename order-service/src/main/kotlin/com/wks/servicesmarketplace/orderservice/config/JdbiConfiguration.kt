@@ -10,4 +10,6 @@ class JdbiConfiguration {
 
     @Bean
     fun jdbi(dataSource: DataSource) = Jdbi.create(dataSource)
+
+
 }

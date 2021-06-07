@@ -1,6 +1,7 @@
 package com.wks.servicesmarketplace.orderservice.core
 
-import com.wks.servicemarketplace.common.CompanyUUID
+import com.wks.servicemarketplace.api.InternalServiceProviderClient
+import com.wks.servicemarketplace.common.CompanyId
 import com.wks.servicemarketplace.common.CountryCode
 import com.wks.servicemarketplace.common.CustomerUUID
 import com.wks.servicemarketplace.common.auth.Authentication
@@ -8,23 +9,25 @@ import com.wks.servicemarketplace.common.errors.CoreException
 import com.wks.servicemarketplace.common.errors.ErrorType
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import javax.annotation.security.RolesAllowed
 
 @Service
 @Transactional
 class ServiceOrderService constructor(val serviceOrderDao: ServiceOrderDao,
-                                      val bidDao: BidDao) {
+                                      val bidDao: BidDao,
+                                      val internalServiceProviderClient: InternalServiceProviderClient) {
 
     fun createOrder(request: ServiceOrderRequest, authentication: Authentication): OrderIdResponse {
 
-        val orderId = OrderUUID.random()
-        val customerId = CustomerUUID.of(authentication.userId
+        val orderId = serviceOrderDao.nextOrderId()
+        val orderUUID = OrderUUID.random()
+        val customerUUID = CustomerUUID.of(authentication.userId
                 ?: throw CoreException(ErrorType.AUTHENTICATION, "userId not found"))
 
         serviceOrderDao.save(request.let {
             ServiceOrder.create(
                     orderId,
-                    customerId,
+                    orderUUID,
+                    customerUUID,
                     com.wks.servicemarketplace.common.Service.of(it.serviceCode),
                     it.title,
                     it.description,
@@ -42,14 +45,14 @@ class ServiceOrderService constructor(val serviceOrderDao: ServiceOrderDao,
             )
         })
 
-        return OrderIdResponse(orderId)
+        return OrderIdResponse(orderUUID)
     }
 
     fun getOrder(orderUUID: OrderUUID, authentication: Authentication): ServiceOrderResponse {
         return serviceOrderDao.findById(orderUUID)
                 ?.let {
                     ServiceOrderResponse(
-                            it.orderUUID,
+                            it.uuid,
                             it.customerUUID,
                             it.serviceCode,
                             it.title,
@@ -70,35 +73,39 @@ class ServiceOrderService constructor(val serviceOrderDao: ServiceOrderDao,
     fun createOrUpdateBid(bidRequest: BidRequest, orderId: OrderUUID, authentication: Authentication): BidUUIDResponse {
         val serviceOrder = serviceOrderDao.findById(orderId)
                 ?: throw CoreException(ErrorType.RESOURCE_NOT_FOUND, "Order $orderId not found")
-        val companyId = serviceProviderApi.getCompanyFromUserId(authentication.userId)
-        bidDao.findByCompanyId(companyId)?.let {
+        val userId = authentication.userId
+                ?: throw CoreException(ErrorType.AUTHENTICATION, "UserId missing from token")
+        val company = internalServiceProviderClient.companyFromUserId(userId)
+        bidDao.findByCompanyUUID(company.uuid)?.let {
             return updateBid(bidRequest, it, authentication)
         }
-        return BidUUIDResponse(createBid(bidRequest, serviceOrder, companyId, authentication))
+        return BidUUIDResponse(createBid(bidRequest, serviceOrder, company.id, authentication))
     }
 
     private fun updateBid(bidRequest: BidRequest, bid: Bid, authentication: Authentication): BidUUIDResponse {
         bidDao.update(
-                bid.uuid,
+                bid.id,
                 bid.version,
                 bid.copy(
-                price = bidRequest.price,
-                note = bidRequest.note,
-                lastModifiedBy = authentication.name
-        ))
+                        price = bidRequest.price,
+                        note = bidRequest.note,
+                        lastModifiedBy = authentication.name
+                ))
         return BidUUIDResponse(bid.uuid)
     }
 
-    private fun createBid(bidRequest: BidRequest, serviceOrder: ServiceOrder, companyId: CompanyUUID, authentication: Authentication): BidUUID {
+    private fun createBid(bidRequest: BidRequest, serviceOrder: ServiceOrder, companyId: CompanyId, authentication: Authentication): BidUUID {
+        val bidId = bidDao.nextBidId()
         val bidUUID = BidUUID.random()
-        bidDao.save(bidRequest.let{
+        bidDao.save(bidRequest.let {
             Bid(
-                   bidUUID,
-                   serviceOrder.orderUUID,
-                   companyId,
-                   it.price,
-                   it.note,
-                   authentication.name
+                    bidId,
+                    bidUUID,
+                    serviceOrder.id,
+                    companyId,
+                    it.price,
+                    it.note,
+                    authentication.name
             )
         })
         return bidUUID

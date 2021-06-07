@@ -5,6 +5,18 @@ import com.fasterxml.jackson.annotation.JsonValue
 import java.io.Serializable
 import java.util.*
 
+data class OrderId internal constructor(private var value: Long) : Serializable {
+    companion object {
+        @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+        @JvmStatic
+        fun of(id: Number): OrderId {
+            return OrderId(id.toLong())
+        }
+    }
+
+    override fun toString() = value.toString()
+}
+
 data class OrderUUID internal constructor(@JsonValue var value: UUID) : Serializable {
     companion object {
         fun of(uuid: UUID) = OrderUUID(uuid)
@@ -18,6 +30,17 @@ data class OrderUUID internal constructor(@JsonValue var value: UUID) : Serializ
     override fun toString() = value.toString()
 }
 
+data class BidId internal constructor(private var value: Long) : Serializable {
+    companion object {
+        @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+        @JvmStatic
+        fun of(id: Number): BidId {
+            return BidId(id.toLong())
+        }
+    }
+    override fun toString() = value.toString()
+}
+
 data class BidUUID internal constructor(@JsonValue var value: UUID) : Serializable {
     companion object {
         fun of(uuid: UUID) = BidUUID(uuid)
@@ -26,18 +49,6 @@ data class BidUUID internal constructor(@JsonValue var value: UUID) : Serializab
         @JvmStatic
         fun fromString(uuidString: String) = BidUUID(UUID.fromString(uuidString))
         fun random() = BidUUID(UUID.randomUUID())
-    }
-
-    override fun toString() = value.toString()
-}
-
-data class CompanyId internal constructor(private var value: Long) : Serializable {
-    companion object {
-        @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
-        @JvmStatic
-        fun of(id: Number): CompanyId {
-            return CompanyId(id.toLong())
-        }
     }
 
     override fun toString() = value.toString()

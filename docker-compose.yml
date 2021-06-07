@@ -100,6 +100,7 @@ services:
       SPRING_DATASOURCE_USERNAME: waqqassheikh
       SPRING_DATASOURCE_PASSWORD: 7713659
       SPRING_RABBITMQ_ADDRESSES: amqp://rabbitmq:5672
+      APPLICATION_SERVICE_PROVIDER_API_BASE_URL: http://service-provider-service:8084
 
   api-gateway:
     build:

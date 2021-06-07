@@ -40,10 +40,12 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.hibernate.validator:hibernate-validator:6.0.16.Final")
 
+	implementation("com.zaxxer:HikariCP:3.4.5")
 	implementation("org.jdbi:jdbi3-core:3.20.0")
 
 	implementation("com.wks.servicemarketplace:common:0.0.6")
 	implementation("com.wks.servicemarketplace:auth-service-api:0.0.1")
+	implementation("com.wks.servicemarketplace:service-provider-api:0.0.3")
 
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310") // adds support for java.time on Jacksom

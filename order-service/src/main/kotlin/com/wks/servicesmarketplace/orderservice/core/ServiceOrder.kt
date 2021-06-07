@@ -1,5 +1,6 @@
 package com.wks.servicesmarketplace.orderservice.core
 
+import com.wks.servicemarketplace.common.CustomerId
 import com.wks.servicemarketplace.common.CustomerUUID
 import com.wks.servicemarketplace.common.ModelValidator
 import com.wks.servicemarketplace.common.Service
@@ -9,34 +10,35 @@ import java.security.Principal
 import java.time.OffsetDateTime
 import javax.money.MonetaryAmount
 import javax.validation.constraints.NotBlank
-import javax.validation.constraints.NotNull
 
 data class ServiceOrder internal constructor(
-    val orderUUID: OrderUUID,
-    val customerUUID: CustomerUUID,
-    @field:ServiceCode
-    val serviceCode: Service,
-    @NotBlank
-    val title: String,
-    @field:NotBlank
-    val description: String,
-    @field:ServiceOrderDateTime
-    val orderDateTime: OffsetDateTime,
-    val address: Address,
-    val status: ServiceOrderStatus = ServiceOrderStatus.INVALID,
-    val scheduledCompanyId: CompanyId? = null,
-    val price: MonetaryAmount? = null,
-    val rejectReason: String? = null,
-    val createdDate: OffsetDateTime = OffsetDateTime.now(),
-    val createdBy: Principal,
-    val lastModifiedDate: OffsetDateTime? = null,
-    val lastModifiedBy: Principal? = null,
-    val version: Long = 0
+        val id: OrderId,
+        val uuid: OrderUUID,
+        val customerUUID: CustomerUUID,
+        @field:ServiceCode
+        val serviceCode: Service,
+        @NotBlank
+        val title: String,
+        @field:NotBlank
+        val description: String,
+        @field:ServiceOrderDateTime
+        val orderDateTime: OffsetDateTime,
+        val address: Address,
+        val status: ServiceOrderStatus = ServiceOrderStatus.INVALID,
+        val scheduledCompanyId: CompanyId? = null,
+        val price: MonetaryAmount? = null,
+        val rejectReason: String? = null,
+        val createdDate: OffsetDateTime = OffsetDateTime.now(),
+        val createdBy: Principal,
+        val lastModifiedDate: OffsetDateTime? = null,
+        val lastModifiedBy: Principal? = null,
+        val version: Long = 0
 ) {
 
     companion object {
         fun create(
-                orderId: OrderUUID,
+                orderId: OrderId,
+                orderUUID: OrderUUID,
                 customerId: CustomerUUID,
                 service: Service,
                 title: String,
@@ -46,32 +48,33 @@ data class ServiceOrder internal constructor(
                 status: ServiceOrderStatus,
                 createdBy: Principal
         ) =
-            ModelValidator.validate(
-                ServiceOrder(
-                    orderId,
-                    customerId,
-                    service,
-                    title,
-                    description,
-                    orderDateTime,
-                    address,
-                    status,
-                    createdBy = createdBy
+                ModelValidator.validate(
+                        ServiceOrder(
+                                orderId,
+                                orderUUID,
+                                customerId,
+                                service,
+                                title,
+                                description,
+                                orderDateTime,
+                                address,
+                                status,
+                                createdBy = createdBy
+                        )
                 )
-            )
     }
 
     fun verify(verifiedBy: Principal): ServiceOrder {
         return this.copy(
-            status = ServiceOrderStatus.PUBLISHED,
-            lastModifiedBy = verifiedBy
+                status = ServiceOrderStatus.PUBLISHED,
+                lastModifiedBy = verifiedBy
         )
     }
 
     fun reject(rejectReason: String, rejectedBy: Principal): ServiceOrder {
         return this.copy(
-            status = ServiceOrderStatus.REJECTED,
-            lastModifiedBy = rejectedBy
+                status = ServiceOrderStatus.REJECTED,
+                lastModifiedBy = rejectedBy
         )
     }
 }

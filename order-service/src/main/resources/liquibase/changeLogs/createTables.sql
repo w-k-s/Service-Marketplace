@@ -1,38 +1,43 @@
+CREATE SEQUENCE IF NOT EXISTS server_order_id;
 CREATE TABLE IF NOT EXISTS service_order (
-    order_uuid VARCHAR(255) PRIMARY KEY,
+    id BIG SERIAL PRIMARY KEY,
+    uuid VARCHAR(255) UNIQUE NOT NULL,
     customer_uuid VARCHAR(255) NOT NULL,
-    title VARCHAR(255),
-    description VARCHAR(255),
-    order_date_time timestamp with time zone,
+    title VARCHAR(255) NOT NULL,
+    description VARCHAR(255) NOT NULL,
+    order_date_time timestamp with time zone NOT NULL,
     service_code VARCHAR(255) NOT NULL,
-    status VARCHAR(255),
+    status VARCHAR(255) NOT NULL,
     price VARCHAR(255),
     reject_reason VARCHAR(255),
     scheduled_service_provider_id BIGINT,
-    address_city VARCHAR(255),
-    address_country VARCHAR(255),
-    address_line1 VARCHAR(255),
+    address_city VARCHAR(255) NOT NULL,
+    address_country VARCHAR(255) NOT NULL,
+    address_line1 VARCHAR(255) NOT NULL,
     address_line2 VARCHAR(255),
-    address_latitude numeric(9,5),
-    address_longitude numeric(9,5),
-    created_by VARCHAR(255),
-    created_date timestamp with time zone,
+    address_latitude numeric(9,5) NOT NULL,
+    address_longitude numeric(9,5) NOT NULL,
+    created_by VARCHAR(255) NOT NULL,
+    created_date timestamp with time zone NOT NULL,
     last_modified_by VARCHAR(255),
     last_modified_date timestamp with time zone,
     version BIGINT NOT NULL
 );
 
+CREATE SEQUENCE IF NOT EXISTS bid_id;
 CREATE TABLE IF NOT EXISTS bid (
-    bid_uuid VARCHAR(255) PRIMARY KEY,
-    order_uuid VARCHAR(255) NOT NULL,
-    company_uuid VARCHAR(255) NOT NULL,
+    id BIG SERIAL PRIMARY KEY,
+    uuid VARCHAR(255) UNIQUE NOT NULL,
+    order_id BIG SERIAL NOT NULL,
+    company_id BIG SERIAL NOT NULL,
     note VARCHAR(255),
-    price VARCHAR(255),
-    created_by VARCHAR(255),
-    created_date timestamp with time zone,
+    price VARCHAR(255) NOT NULL,
+    created_by VARCHAR(255) NOT NULL,
+    created_date timestamp with time zone NOT NULL,
     last_modified_by VARCHAR(255),
     last_modified_date timestamp with time zone,
-    version BIGINT NOT NULL
+    version BIGINT NOT NULL,
+    CONSTRAINT fk_order FOREIGN KEY(order_id) REFERENCES order(id)
 );
 
 create or replace function audit_record()

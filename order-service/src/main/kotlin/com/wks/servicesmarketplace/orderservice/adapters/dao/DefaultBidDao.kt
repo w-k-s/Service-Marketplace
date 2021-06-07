@@ -1,10 +1,7 @@
 package com.wks.servicesmarketplace.orderservice.adapters.dao
 
 import com.wks.servicemarketplace.common.CompanyUUID
-import com.wks.servicesmarketplace.orderservice.core.Bid
-import com.wks.servicesmarketplace.orderservice.core.BidDao
-import com.wks.servicesmarketplace.orderservice.core.BidUUID
-import com.wks.servicesmarketplace.orderservice.core.OrderUUID
+import com.wks.servicesmarketplace.orderservice.core.*
 import org.javamoney.moneta.FastMoney
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.mapper.RowMapper
@@ -16,9 +13,10 @@ class DefaultBidDao(private val jdbi: Jdbi) : BidDao {
     companion object {
         private val bidMapper = RowMapper<Bid> { rs, _ ->
             Bid(
-                BidUUID.fromString(rs.getString("bid_uuid")),
-                OrderUUID.fromString(rs.getString("order_uuid")),
-                CompanyUUID.fromString(rs.getString("company_uuid")),
+                    BidId.of(rs.getLong("id")),
+                BidUUID.fromString(rs.getString("uuid")),
+                OrderId.of(rs.getLong("order_id")),
+                CompanyId.of(rs.getLong("company_id")),
                 FastMoney.parse(rs.getString("price")),
                 rs.getString("note"),
                 rs.getString("created_by"),
@@ -30,7 +28,15 @@ class DefaultBidDao(private val jdbi: Jdbi) : BidDao {
         }
     }
 
-    override fun findByCompanyId(companyUUID: CompanyUUID): Bid? {
+    override fun nextBidId(): BidId {
+        return jdbi.withHandle<Long, Exception> {
+            it.select("SELECT nextval('bid_id')")
+                    .mapTo(Long::class.java)
+                    .one()
+        }.let { BidId.of(it) }
+    }
+
+    override fun findByCompanyUUID(companyUUID: CompanyUUID): Bid? {
         return jdbi.withHandle<Bid, Exception> {
             it.select(
                     """SELECT bid_uuid,order_uuid,company_uuid,note,price,version,created_by,created_date,last_modified_by,last_modified_date FROM bid WHERE company_uuid = ? LIMIT 1"""",
@@ -43,34 +49,35 @@ class DefaultBidDao(private val jdbi: Jdbi) : BidDao {
     override fun save(bid: Bid): Boolean {
         return jdbi.withHandle<Int,Exception> {
             it.execute(
-                    """INSERT INTO bid (bid_uuid,order_uuid,company_uuid,price,note,version,created_by,created_date,last_modified_by,last_modified_date)
+                    """INSERT INTO bid (id,uuid,order_id,company_id,price,note,version,created_by,created_date,last_modified_by,last_modified_date)
                         VALUES (?,?,?,?,?,?,?,?,?)
                     """.trimMargin(),
+                    bid.id,
                     bid.uuid,
-                    bid.orderUUID,
-                    bid.companyUUID,
+                    bid.orderId,
+                    bid.companyId,
                     bid.price.toString(),
                     bid.note,
                     bid.version,
                     bid.createdBy,
                     bid.createdDate.toUTCTimestamp(),
                     bid.lastModifiedBy,
-                    bid.lastModifiedDate.toUTCTimestamp()
+                    bid.lastModifiedDate?.toUTCTimestamp()
             )
         } == 1
     }
 
-    override fun update(bidUUID: BidUUID, version: Int, newBid: Bid): Boolean {
+    override fun update(bidId: BidId, version: Int, newBid: Bid): Boolean {
         return jdbi.inTransaction<Int,Exception> {
             it.execute(
                     """
-                        UPDATE bid SET price = ?, note = ?, last_modified_by = ?, last_modified_date = ? WHERE bid_uuid = ? AND version = ? 
+                        UPDATE bid SET price = ?, note = ?, last_modified_by = ?, last_modified_date = ? WHERE id = ? AND version = ? 
                     """.trimIndent(),
                     newBid.price.toString(),
                     newBid.note,
                     newBid.lastModifiedBy,
-                    newBid.lastModifiedDate.toUTCTimestamp(),
-                    bidUUID,
+                    newBid.lastModifiedDate?.toUTCTimestamp(),
+                    bidId,
                     version
             )
         } == 1
