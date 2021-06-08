@@ -1,5 +1,6 @@
 package com.wks.servicesmarketplace.orderservice.adapters.dao
 
+import com.wks.servicemarketplace.common.CompanyId
 import com.wks.servicemarketplace.common.CompanyUUID
 import com.wks.servicesmarketplace.orderservice.core.*
 import org.javamoney.moneta.FastMoney
@@ -16,7 +17,7 @@ class DefaultBidDao(private val jdbi: Jdbi) : BidDao {
                     BidId.of(rs.getLong("id")),
                 BidUUID.fromString(rs.getString("uuid")),
                 OrderId.of(rs.getLong("order_id")),
-                CompanyId.of(rs.getLong("company_id")),
+                CompanyId(rs.getLong("company_id")),
                 FastMoney.parse(rs.getString("price")),
                 rs.getString("note"),
                 rs.getString("created_by"),

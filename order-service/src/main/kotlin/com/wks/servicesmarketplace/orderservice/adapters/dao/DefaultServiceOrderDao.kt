@@ -1,3 +1,4 @@
+import com.wks.servicemarketplace.common.CompanyId
 import com.wks.servicemarketplace.common.CountryCode
 import com.wks.servicemarketplace.common.CustomerUUID
 import com.wks.servicemarketplace.common.Service
@@ -79,7 +80,7 @@ class DefaultServiceOrderDao(private val jdbi: Jdbi) : ServiceOrderDao {
                                 rs.getBigDecimal("address_longitude")
                         ),
                         ServiceOrderStatus.valueOf(rs.getString("status")),
-                        rs.getLong("scheduled_service_provider_id")?.let { CompanyId.of(it) },
+                        rs.getLong("scheduled_service_provider_id")?.let { CompanyId(it) },
                         rs.getString("price")?.let { price -> FastMoney.parse(price) },
                         rs.getString("reject_reason"),
                         rs.getTimestamp("created_date").toUTCOffsetDateTime(),

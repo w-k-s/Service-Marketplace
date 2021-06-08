@@ -1,9 +1,6 @@
 package com.wks.servicesmarketplace.orderservice.core
 
-import com.wks.servicemarketplace.common.CustomerId
-import com.wks.servicemarketplace.common.CustomerUUID
-import com.wks.servicemarketplace.common.ModelValidator
-import com.wks.servicemarketplace.common.Service
+import com.wks.servicemarketplace.common.*
 import com.wks.servicesmarketplace.orderservice.core.utils.ServiceCode
 import com.wks.servicesmarketplace.orderservice.core.utils.ServiceOrderDateTime
 import java.security.Principal

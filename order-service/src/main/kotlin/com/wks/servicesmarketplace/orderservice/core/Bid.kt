@@ -1,5 +1,6 @@
 package com.wks.servicesmarketplace.orderservice.core
 
+import com.wks.servicemarketplace.common.CompanyId
 import java.time.Clock
 import java.time.OffsetDateTime
 import javax.money.MonetaryAmount

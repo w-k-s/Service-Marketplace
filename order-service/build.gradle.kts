@@ -40,7 +40,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.hibernate.validator:hibernate-validator:6.0.16.Final")
 
-	implementation("com.zaxxer:HikariCP:3.4.5")
+	implementation("org.springframework.boot:spring-boot-starter-jdbc")
 	implementation("org.jdbi:jdbi3-core:3.20.0")
 
 	implementation("com.wks.servicemarketplace:common:0.0.6")
@@ -66,13 +66,15 @@ dependencies {
 
 	// Liquibase
 	implementation("org.liquibase:liquibase-core:3.8.1")
-
-	implementation("org.springframework.boot:spring-boot-starter-amqp")
+	implementation("javax.xml.bind:jaxb-api:2.3.1")
+	implementation("com.sun.xml.bind:jaxb-impl:2.3.1")
+	implementation("org.glassfish.jaxb:jaxb-runtime:2.3.2")
+	implementation("javax.activation:activation:1.1.1")
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test") {
 		exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
 	}
-	testImplementation("org.springframework.amqp:spring-rabbit-test")
+
 }
 
 tasks.withType<Test> {
