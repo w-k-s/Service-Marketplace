@@ -1,8 +1,7 @@
 package com.wks.servicesmarketplace.orderservice.config
 
 import DefaultServiceOrderDao
-import com.wks.servicesmarketplace.orderservice.adapters.dao.DefaultBidDao
-import com.wks.servicesmarketplace.orderservice.core.ServiceOrderDao
+import com.wks.servicesmarketplace.orderservice.adapters.dao.DefaultQuoteDao
 import org.jdbi.v3.core.Jdbi
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -14,5 +13,5 @@ class DaoConfiguration {
     fun serviceOrderDao(jdbi: Jdbi) = DefaultServiceOrderDao(jdbi)
 
     @Bean
-    fun bidDao(jdbi: Jdbi) = DefaultBidDao(jdbi)
+    fun bidDao(jdbi: Jdbi) = DefaultQuoteDao(jdbi)
 }

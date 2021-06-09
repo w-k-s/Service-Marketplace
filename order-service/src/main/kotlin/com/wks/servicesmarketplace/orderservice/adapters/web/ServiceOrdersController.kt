@@ -1,8 +1,7 @@
 package com.wks.servicesmarketplace.orderservice.adapters.web
 
 import com.wks.servicemarketplace.common.auth.Authentication
-import com.wks.servicemarketplace.common.auth.Permission
-import com.wks.servicesmarketplace.orderservice.core.BidRequest
+import com.wks.servicesmarketplace.orderservice.core.CreateQuoteRequest
 import com.wks.servicesmarketplace.orderservice.core.OrderUUID
 import com.wks.servicesmarketplace.orderservice.core.ServiceOrderRequest
 import com.wks.servicesmarketplace.orderservice.core.ServiceOrderService
@@ -27,8 +26,8 @@ class ServiceOrdersController(val serviceOrderService: ServiceOrderService) {
 
     @PostMapping("/{orderId}/bid")
     @RolesAllowed("bid.create")
-    fun createBid(@AuthenticationPrincipal principal: Principal,
-                  @PathVariable("orderId", required = true) orderId: String,
-                  @Valid @RequestBody(required = true) bidRequest: BidRequest)
-    = serviceOrderService.createOrUpdateBid(bidRequest, OrderUUID.fromString(orderId), principal as Authentication)
+    fun createQuote(@AuthenticationPrincipal principal: Principal,
+                    @PathVariable("orderId", required = true) orderId: String,
+                    @Valid @RequestBody(required = true) createQuoteRequest: CreateQuoteRequest)
+    = serviceOrderService.createOrUpdateQuote(createQuoteRequest, OrderUUID.fromString(orderId), principal as Authentication)
 }

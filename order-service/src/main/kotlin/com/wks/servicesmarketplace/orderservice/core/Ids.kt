@@ -30,25 +30,25 @@ data class OrderUUID internal constructor(@JsonValue var value: UUID) : Serializ
     override fun toString() = value.toString()
 }
 
-data class BidId internal constructor(private var value: Long) : Serializable {
+data class QuoteId internal constructor(private var value: Long) : Serializable {
     companion object {
         @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
         @JvmStatic
-        fun of(id: Number): BidId {
-            return BidId(id.toLong())
+        fun of(id: Number): QuoteId {
+            return QuoteId(id.toLong())
         }
     }
     override fun toString() = value.toString()
 }
 
-data class BidUUID internal constructor(@JsonValue var value: UUID) : Serializable {
+data class QuoteUUID internal constructor(@JsonValue var value: UUID) : Serializable {
     companion object {
-        fun of(uuid: UUID) = BidUUID(uuid)
+        fun of(uuid: UUID) = QuoteUUID(uuid)
 
         @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
         @JvmStatic
-        fun fromString(uuidString: String) = BidUUID(UUID.fromString(uuidString))
-        fun random() = BidUUID(UUID.randomUUID())
+        fun fromString(uuidString: String) = QuoteUUID(UUID.fromString(uuidString))
+        fun random() = QuoteUUID(UUID.randomUUID())
     }
 
     override fun toString() = value.toString()

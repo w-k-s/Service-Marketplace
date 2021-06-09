@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 @Transactional
 class ServiceOrderService constructor(val serviceOrderDao: ServiceOrderDao,
-                                      val bidDao: BidDao,
+                                      val quoteDao: QuoteDao,
                                       val internalServiceProviderClient: InternalServiceProviderClient) {
 
     fun createOrder(request: ServiceOrderRequest, authentication: Authentication): OrderIdResponse {
@@ -70,37 +70,37 @@ class ServiceOrderService constructor(val serviceOrderDao: ServiceOrderDao,
         )
     }
 
-    fun createOrUpdateBid(bidRequest: BidRequest, orderId: OrderUUID, authentication: Authentication): BidUUIDResponse {
+    fun createOrUpdateQuote(createQuoteRequest: CreateQuoteRequest, orderId: OrderUUID, authentication: Authentication): QuoteUUIDResponse {
         val serviceOrder = serviceOrderDao.findById(orderId)
                 ?: throw CoreException(ErrorType.RESOURCE_NOT_FOUND, "Order $orderId not found")
         val userId = authentication.userId
                 ?: throw CoreException(ErrorType.AUTHENTICATION, "UserId missing from token")
         val company = internalServiceProviderClient.companyFromUserId(userId)
-        bidDao.findByCompanyUUID(company.uuid)?.let {
-            return updateBid(bidRequest, it, authentication)
+        quoteDao.findByCompanyUUID(company.uuid)?.let {
+            return updateQuote(createQuoteRequest, it, authentication)
         }
-        return BidUUIDResponse(createBid(bidRequest, serviceOrder, company.id, authentication))
+        return QuoteUUIDResponse(createQuote(createQuoteRequest, serviceOrder, company.id, authentication))
     }
 
-    private fun updateBid(bidRequest: BidRequest, bid: Bid, authentication: Authentication): BidUUIDResponse {
-        bidDao.update(
-                bid.id,
-                bid.version,
-                bid.copy(
-                        price = bidRequest.price,
-                        note = bidRequest.note,
+    private fun updateQuote(createQuoteRequest: CreateQuoteRequest, quote: Quote, authentication: Authentication): QuoteUUIDResponse {
+        quoteDao.update(
+                quote.id,
+                quote.version,
+                quote.copy(
+                        price = createQuoteRequest.price,
+                        note = createQuoteRequest.note,
                         lastModifiedBy = authentication.name
                 ))
-        return BidUUIDResponse(bid.uuid)
+        return QuoteUUIDResponse(quote.uuid)
     }
 
-    private fun createBid(bidRequest: BidRequest, serviceOrder: ServiceOrder, companyId: CompanyId, authentication: Authentication): BidUUID {
-        val bidId = bidDao.nextBidId()
-        val bidUUID = BidUUID.random()
-        bidDao.save(bidRequest.let {
-            Bid(
-                    bidId,
-                    bidUUID,
+    private fun createQuote(createQuoteRequest: CreateQuoteRequest, serviceOrder: ServiceOrder, companyId: CompanyId, authentication: Authentication): QuoteUUID {
+        val quoteId = quoteDao.nextQuoteId()
+        val quoteUUID = QuoteUUID.random()
+        quoteDao.save(createQuoteRequest.let {
+            Quote(
+                    quoteId,
+                    quoteUUID,
                     serviceOrder.id,
                     companyId,
                     it.price,
@@ -108,6 +108,6 @@ class ServiceOrderService constructor(val serviceOrderDao: ServiceOrderDao,
                     authentication.name
             )
         })
-        return bidUUID
+        return quoteUUID
     }
 }

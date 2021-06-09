@@ -5,9 +5,9 @@ import java.time.Clock
 import java.time.OffsetDateTime
 import javax.money.MonetaryAmount
 
-data class Bid(
-        val id: BidId,
-        val uuid: BidUUID,
+data class Quote(
+        val id: QuoteId,
+        val uuid: QuoteUUID,
         val orderId: OrderId,
         val companyId: CompanyId,
         val price: MonetaryAmount,

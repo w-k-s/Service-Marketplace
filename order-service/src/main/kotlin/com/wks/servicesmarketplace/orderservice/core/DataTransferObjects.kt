@@ -55,9 +55,9 @@ data class ServiceOrderResponse(
     val serviceCode = service.code
 }
 
-data class BidRequest(
+data class CreateQuoteRequest(
         val note: String,
         val price: MonetaryAmount
 )
 
-data class BidUUIDResponse(val bidUUID: BidUUID)
+data class QuoteUUIDResponse(val quoteUUID: QuoteUUID)

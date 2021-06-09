@@ -8,7 +8,8 @@ CREATE TABLE IF NOT EXISTS service_order (
     order_date_time timestamp with time zone NOT NULL,
     service_code VARCHAR(255) NOT NULL,
     status VARCHAR(255) NOT NULL,
-    price VARCHAR(255),
+    final_quote_currency VARCHAR(3),
+    final_quote_amount_minor_units NUMBER(19,0),
     reject_reason VARCHAR(255),
     scheduled_service_provider_id BIGINT,
     address_city VARCHAR(255) NOT NULL,
@@ -24,14 +25,15 @@ CREATE TABLE IF NOT EXISTS service_order (
     version BIGINT NOT NULL
 );
 
-CREATE SEQUENCE IF NOT EXISTS bid_id;
-CREATE TABLE IF NOT EXISTS bid (
+CREATE SEQUENCE IF NOT EXISTS quote_id;
+CREATE TABLE IF NOT EXISTS quote (
     id BIG SERIAL PRIMARY KEY,
     uuid VARCHAR(255) UNIQUE NOT NULL,
     order_id BIG SERIAL NOT NULL,
     company_id BIG SERIAL NOT NULL,
     note VARCHAR(255),
-    price VARCHAR(255) NOT NULL,
+    currency VARCHAR(3) NOT NULL,
+    amount_minor_units NUMBER(18,0) NOT NULL,
     created_by VARCHAR(255) NOT NULL,
     created_date timestamp with time zone NOT NULL,
     last_modified_by VARCHAR(255),
@@ -59,7 +61,7 @@ create trigger audit_service_order
 BEFORE update on service_order
 for each row execute procedure audit_record();
 
-DROP TRIGGER IF EXISTS audit_bid ON public.bid;
-create trigger audit_bid
-BEFORE update on bid
+DROP TRIGGER IF EXISTS audit_quote ON public.quote;
+create trigger audit_quote
+BEFORE update on quote
 for each row execute procedure audit_record();

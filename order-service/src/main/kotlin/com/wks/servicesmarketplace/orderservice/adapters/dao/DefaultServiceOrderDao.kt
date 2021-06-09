@@ -6,6 +6,7 @@ import com.wks.servicesmarketplace.orderservice.core.*
 import org.javamoney.moneta.FastMoney
 import org.jdbi.v3.core.Jdbi
 import java.security.Principal
+import javax.money.Monetary
 
 class DefaultServiceOrderDao(private val jdbi: Jdbi) : ServiceOrderDao {
 
@@ -53,7 +54,7 @@ class DefaultServiceOrderDao(private val jdbi: Jdbi) : ServiceOrderDao {
         return jdbi.withHandle<ServiceOrder, Exception> {
             it.select("""
                 SELECT order_uuid, customer_uuid, title, description, order_date_time, service_code, status,
-                price, reject_reason, scheduled_service_provider_id, address_city, address_country, address_line1,
+                final_quote_currency, final_quote_amount_minor_units, reject_reason, scheduled_service_provider_id, address_city, address_country, address_line1,
                 address_line2, address_latitude, address_longitude, created_by, created_date, last_modified_by, 
                 last_modified_date 
                 FROM service_order 
@@ -81,7 +82,7 @@ class DefaultServiceOrderDao(private val jdbi: Jdbi) : ServiceOrderDao {
                         ),
                         ServiceOrderStatus.valueOf(rs.getString("status")),
                         rs.getLong("scheduled_service_provider_id")?.let { CompanyId(it) },
-                        rs.getString("price")?.let { price -> FastMoney.parse(price) },
+                        FastMoney.ofMinor(Monetary.getCurrency(rs.getString("final_quote_currency")),rs.getLong("final_quote_minor_units")),
                         rs.getString("reject_reason"),
                         rs.getTimestamp("created_date").toUTCOffsetDateTime(),
                         Principal { createdBy },
