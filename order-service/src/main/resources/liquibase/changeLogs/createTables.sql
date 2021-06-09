@@ -1,6 +1,6 @@
 CREATE SEQUENCE IF NOT EXISTS server_order_id;
 CREATE TABLE IF NOT EXISTS service_order (
-    id BIG SERIAL PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     uuid VARCHAR(255) UNIQUE NOT NULL,
     customer_uuid VARCHAR(255) NOT NULL,
     title VARCHAR(255) NOT NULL,
@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS service_order (
     service_code VARCHAR(255) NOT NULL,
     status VARCHAR(255) NOT NULL,
     final_quote_currency VARCHAR(3),
-    final_quote_amount_minor_units NUMBER(19,0),
+    final_quote_amount_minor_units DECIMAL(19,0),
     reject_reason VARCHAR(255),
     scheduled_service_provider_id BIGINT,
     address_city VARCHAR(255) NOT NULL,
@@ -27,19 +27,19 @@ CREATE TABLE IF NOT EXISTS service_order (
 
 CREATE SEQUENCE IF NOT EXISTS quote_id;
 CREATE TABLE IF NOT EXISTS quote (
-    id BIG SERIAL PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     uuid VARCHAR(255) UNIQUE NOT NULL,
-    order_id BIG SERIAL NOT NULL,
-    company_id BIG SERIAL NOT NULL,
+    order_id BIGSERIAL NOT NULL,
+    company_id BIGSERIAL NOT NULL,
     note VARCHAR(255),
     currency VARCHAR(3) NOT NULL,
-    amount_minor_units NUMBER(18,0) NOT NULL,
+    amount_minor_units DECIMAL(18,0) NOT NULL,
     created_by VARCHAR(255) NOT NULL,
     created_date timestamp with time zone NOT NULL,
     last_modified_by VARCHAR(255),
     last_modified_date timestamp with time zone,
     version BIGINT NOT NULL,
-    CONSTRAINT fk_order FOREIGN KEY(order_id) REFERENCES order(id)
+    CONSTRAINT fk_order FOREIGN KEY(order_id) REFERENCES service_order(id)
 );
 
 create or replace function audit_record()
