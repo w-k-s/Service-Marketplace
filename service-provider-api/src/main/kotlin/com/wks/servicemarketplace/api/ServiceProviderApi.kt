@@ -9,19 +9,20 @@ import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.protobuf.ProtoConverterFactory
 import retrofit2.http.GET
+import retrofit2.http.Headers
 import retrofit2.http.Query
 import java.time.Instant
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 
-internal interface InternalServiceProviderApi {
-
+interface InternalServiceProviderApi {
     companion object {
         const val PROTO_PATH_V1_ = "/proto/v1/serviceproviders"
         const val ENDPOINT_GET_COMPANY = "/company"
     }
 
     @GET(PROTO_PATH_V1_ + ENDPOINT_GET_COMPANY)
+    @Headers(value = ["Accept: application/protobuf"])
     fun companyFromUserId(@Query("user_uuid") userUUID: String): Call<Company?>
 }
 
@@ -36,7 +37,7 @@ data class InternalServiceProviderClient(private val baseUrl: String) {
     fun companyFromUserId(userUUID: UserId): CompanyResponse {
         try {
             val response = client.companyFromUserId(userUUID.toString()).execute()
-            when{
+            when {
                 response.isSuccessful && response.body() != null -> response.body()!!.let {
                     return CompanyResponse(
                             id = CompanyId(it.id.toLong()),
@@ -49,7 +50,7 @@ data class InternalServiceProviderClient(private val baseUrl: String) {
                             createdBy = CompanyRepresentativeUUID.fromString(it.createdBy),
                             createdDate = OffsetDateTime.ofInstant(Instant.ofEpochSecond(it.createdDate.seconds), ZoneOffset.UTC),
                             version = it.version.toLong(),
-                            lastModifiedDate = it.lastModifiedDate?.seconds?.let{ seconds -> OffsetDateTime.ofInstant(Instant.ofEpochSecond(seconds), ZoneOffset.UTC) },
+                            lastModifiedDate = it.lastModifiedDate?.seconds?.let { seconds -> OffsetDateTime.ofInstant(Instant.ofEpochSecond(seconds), ZoneOffset.UTC) },
                             lastModifiedBy = it.lastModifiedBy
                     )
                 }
