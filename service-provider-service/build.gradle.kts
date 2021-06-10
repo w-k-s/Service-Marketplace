@@ -59,7 +59,7 @@ dependencies {
 
     implementation("com.wks.servicemarketplace:common:0.0.3")
     implementation("com.wks.servicemarketplace:auth-service-api:0.0.1")
-    implementation("com.wks.servicemarketplace:service-provider-api:0.0.2")
+    implementation("com.wks.servicemarketplace:service-provider-api:0.0.3")
 
     implementation("io.ktor:ktor-server-core:$ktorVersion")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")

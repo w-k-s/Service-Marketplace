@@ -29,6 +29,7 @@ import io.ktor.features.*
 import io.ktor.http.*
 import io.ktor.jackson.*
 import io.ktor.locations.*
+import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import org.koin.ktor.ext.Koin
@@ -168,12 +169,26 @@ fun Application.events(){
 fun Application.exceptionHandler() {
     install(StatusPages){
         exception<CoreException> {
-            call.respond(
-                    HttpStatusCode.fromValue(it.errorType.code),
-                    ErrorResponse(it.errorType, it.message, it.details)
-            )
+            val errorResponse = ErrorResponse(it.errorType, it.message, it.details)
+            if (call.request.acceptsProtocolBuffers()){
+                call.respondBytes(
+                        contentType= ContentType.Application.ProtoBuf,
+                        status= HttpStatusCode.fromValue(errorResponse.code),
+                        bytes = errorResponse.toProtocolBuffer().toByteArray()
+                )
+            } else call.respond(HttpStatusCode.fromValue(it.errorType.code), errorResponse)
         }
     }
 }
 
 data class DefaultPrincipal(val value: DefaultAuthentication): Principal
+
+fun ApplicationRequest.acceptsProtocolBuffers() = this.accept()?.contains(ContentType.Application.ProtoBuf.contentType) ?: false
+
+fun ErrorResponse.toProtocolBuffer(): com.wks.servicemarketplace.api.proto.ErrorResponse =
+        com.wks.servicemarketplace.api.proto.ErrorResponse.newBuilder()
+        .setErrorType(com.wks.servicemarketplace.api.proto.ErrorResponse.ErrorType.valueOf(this.type.name))
+        .setCode(this.code)
+        .setMessage(this.message)
+        .putAllInfo(this.info)
+        .build()

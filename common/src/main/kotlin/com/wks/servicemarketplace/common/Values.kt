@@ -203,3 +203,19 @@ class Services(services: List<Service>) : Iterable<Service> {
 
     override fun toString() = this.services.map { it.code }.joinToString { ", " }
 }
+
+@MustBeDocumented
+@Constraint(validatedBy = [ServiceCodeValidator::class])
+@Target(allowedTargets = [AnnotationTarget.FIELD])
+@Retention(AnnotationRetention.RUNTIME)
+annotation class ServiceCode(
+        val message: String = "{ServiceCode.invalid}",
+        val groups: Array<KClass<out Any>> = [],
+        val payload: Array<KClass<out Payload>> = []
+)
+
+class ServiceCodeValidator : ConstraintValidator<ServiceCode, String> {
+    override fun isValid(value: String?, context: ConstraintValidatorContext?): Boolean {
+        return Service.values().any { it.code == value }
+    }
+}
