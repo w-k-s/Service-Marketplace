@@ -18,8 +18,7 @@ data class EmployeeUUID(@JsonValue val value: UUID) {
 }
 
 data class Employee(
-    val id: Long,
-    val externalId: EmployeeId,
+    val id: EmployeeId,
     val uuid: EmployeeUUID,
     val companyId: CompanyId,
     val name: Name,

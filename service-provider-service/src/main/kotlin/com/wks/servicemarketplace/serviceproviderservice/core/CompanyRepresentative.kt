@@ -12,8 +12,7 @@ import java.time.OffsetDateTime
  * After this, company representative is deleted.
  */
 data class CompanyRepresentative(
-    val id: Long,
-    val externalId: CompanyRepresentativeId,
+    val id: CompanyRepresentativeId,
     val uuid: CompanyRepresentativeUUID,
     val name: Name,
     val email: Email,
@@ -25,7 +24,7 @@ data class CompanyRepresentative(
     val version: Long = 0L
 ) {
     companion object {
-        fun create(externalId: CompanyRepresentativeId,
+        fun create(id: CompanyRepresentativeId,
                    uuid: CompanyRepresentativeUUID,
                    name: Name,
                    email: Email,
@@ -33,8 +32,7 @@ data class CompanyRepresentative(
                    createdBy: String): ResultWithEvents<CompanyRepresentative, ServiceProviderCreatedEvent> {
 
             val representative = CompanyRepresentative(
-                0,
-                externalId,
+                id,
                 uuid,
                 name,
                 email,
@@ -43,7 +41,7 @@ data class CompanyRepresentative(
             )
 
             val event = ServiceProviderCreatedEvent(
-                externalId,
+                id,
                 uuid,
                 name,
                 email,
@@ -58,8 +56,7 @@ data class CompanyRepresentative(
     }
 
     fun toEmployee(companyId: CompanyId, createdBy: String): Employee = Employee(
-        this.id,
-        EmployeeId(this.externalId.value),
+        EmployeeId(this.id.value),
         EmployeeUUID(this.uuid.value),
         companyId,
         this.name,

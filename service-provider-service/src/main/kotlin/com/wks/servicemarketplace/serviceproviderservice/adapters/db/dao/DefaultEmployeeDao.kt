@@ -16,8 +16,7 @@ class DefaultEmployeeDao constructor(dataSource: DataSource) : BaseDao(dataSourc
     private val employeeMapper = RecordMapper<Record, Employee> { record ->
         record?.let {
             Employee(
-                    it.get("e.id", Long::class.java),
-                    EmployeeId(it.get("e.external_id", Long::class.java)),
+                    EmployeeId(it.get("e.id", Long::class.java)),
                     EmployeeUUID.fromString(it.get("e.uuid", String::class.java)),
                     CompanyId(it.get("e.company_external_id", Long::class.java)),
                     Name.of(
@@ -38,7 +37,7 @@ class DefaultEmployeeDao constructor(dataSource: DataSource) : BaseDao(dataSourc
     override fun save(connection: Connection, employee: Employee) {
         create(connection).insertInto(
                 table("employee"),
-                field("external_id"),
+                field("id"),
                 field("uuid"),
                 field("first_name"),
                 field("last_name"),
@@ -49,7 +48,7 @@ class DefaultEmployeeDao constructor(dataSource: DataSource) : BaseDao(dataSourc
                 field("last_modified_by"),
                 field("version"),
         ).values(
-                employee.externalId.value,
+                employee.id.value,
                 employee.uuid.value,
                 employee.name.firstName,
                 employee.name.lastName,
@@ -66,7 +65,6 @@ class DefaultEmployeeDao constructor(dataSource: DataSource) : BaseDao(dataSourc
         return create(connection)
                 .select(
                         field("e.id"),
-                        field("e.external_id"),
                         field("e.uuid"),
                         field("e.first_name"),
                         field("e.last_name"),
@@ -80,7 +78,7 @@ class DefaultEmployeeDao constructor(dataSource: DataSource) : BaseDao(dataSourc
                         field("e.version")
                 )
                 .from(table("employee").`as`("e"))
-                .where(field("e.external_id").eq(id.value))
+                .where(field("e.id").eq(id.value))
                 .fetchOne(employeeMapper)
     }
 
@@ -88,7 +86,6 @@ class DefaultEmployeeDao constructor(dataSource: DataSource) : BaseDao(dataSourc
         return create(connection)
                 .select(
                         field("e.id"),
-                        field("e.external_id"),
                         field("e.uuid"),
                         field("e.first_name"),
                         field("e.last_name"),
@@ -102,7 +99,7 @@ class DefaultEmployeeDao constructor(dataSource: DataSource) : BaseDao(dataSourc
                         field("e.version")
                 )
                 .from(table("employee").`as`("e"))
-                .where(field("e.company_external_id").eq(id.value))
+                .where(field("e.company_id").eq(id.value))
                 .fetch(employeeMapper)
     }
 }

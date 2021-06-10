@@ -17,8 +17,6 @@ import com.wks.servicemarketplace.serviceproviderservice.adapters.events.Default
 import com.wks.servicemarketplace.serviceproviderservice.adapters.events.DefaultMessagePublisher
 import com.wks.servicemarketplace.serviceproviderservice.adapters.events.TransactionalOutboxJobFactory
 import com.wks.servicemarketplace.serviceproviderservice.core.*
-import com.wks.servicemarketplace.serviceproviderservice.core.usecase.CreateCompanyRepresentativeUseCase
-import com.wks.servicemarketplace.serviceproviderservice.core.usecase.CreateCompanyUseCase
 import org.koin.dsl.module
 import org.koin.experimental.builder.singleBy
 import java.io.FileNotFoundException
@@ -28,11 +26,11 @@ val appModule = module {
     single(createdAtStart = true) {
         ApplicationParameters.load()
     }
-    single(createdAtStart = true){
+    single(createdAtStart = true) {
         DataSource(
-            applicationParameters.jdbcUrl,
-            applicationParameters.jdbcUsername,
-            applicationParameters.jdbcPassword
+                jdbcUrl = applicationParameters.jdbcUrl,
+                username = applicationParameters.jdbcUsername,
+                password = applicationParameters.jdbcPassword
         )
     }
     single(createdAtStart = true) {
@@ -41,59 +39,67 @@ val appModule = module {
         }.newConnection()
         connectionFactory.createChannel()
     }
-    single(createdAtStart = true){
-        DefaultEventReceiver(get(),get(),get(),get())
+    single(createdAtStart = true) {
+        DefaultEventReceiver(get(), get(), get(), get())
     }
-    single(createdAtStart = true){
+    single(createdAtStart = true) {
         this.javaClass.classLoader.getResourceAsStream("publicKey.pem")?.readPublicKey()
-            ?: throw FileNotFoundException("Public Key not found")
+                ?: throw FileNotFoundException("Public Key not found")
     }
-    single<TokenValidator>{
+    single<TokenValidator> {
         StandardTokenValidator(
-            publicKey = get(),
-            objectMapper = get()
+                publicKey = get(),
+                objectMapper = get()
         )
     }
-    single{
-        ObjectMapper()
-            .registerModule(KotlinModule())
-            .registerModule(JavaTimeModule())
-            .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-            .setSerializationInclusion(JsonInclude.Include.NON_NULL)
-    }
-    single{ DefaultMessagePublisher(
-        channel = get()
-    ) }
-    single{ ClientCredentialsTokenSupplier(
-        clientCredentials = ClientCredentialsRequest(applicationParameters.clientId, applicationParameters.clientSecret),
-        authServiceBaseUrl = applicationParameters.authServiceBaseUrl,
-        objectMapper = get()
-    ) }
-    single{ DatabaseMigration(
-        dataSource = get()
-    ) }
-    single { CreateCompanyUseCase(
-        companyDao = get(),
-        companyRepresentativeDao = get(),
-        employeeDao = get(),
-        eventDao = get(),
-        outboxDao = get(),
-        objectMapper = get()
-    )}
     single {
-        CreateCompanyRepresentativeUseCase(
-            companyRepresentativeDao=get(),
-            eventDao = get(),
-            outboxDao = get(),
-            objectMapper = get()
+        ObjectMapper()
+                .registerModule(KotlinModule())
+                .registerModule(JavaTimeModule())
+                .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+    }
+    single {
+        DefaultMessagePublisher(
+                channel = get()
         )
     }
-    single{
+    single {
+        ClientCredentialsTokenSupplier(
+                clientCredentials = ClientCredentialsRequest(applicationParameters.clientId, applicationParameters.clientSecret),
+                authServiceBaseUrl = applicationParameters.authServiceBaseUrl,
+                objectMapper = get()
+        )
+    }
+    single {
+        DatabaseMigration(
+                dataSource = get()
+        )
+    }
+    single {
+        CompanyService(
+                companyDao = get(),
+                companyRepresentativeDao = get(),
+                employeeDao = get(),
+                eventDao = get(),
+                outboxDao = get(),
+                objectMapper = get()
+        )
+    }
+    single {
+        EmployeeService(
+                companyRepresentativeDao = get(),
+                eventDao = get(),
+                outboxDao = get(),
+                objectMapper = get()
+        )
+    }
+    single {
         TransactionalOutboxJobFactory(
-            outboxDao = get(),
-            messagePublisher = get(),
-            clientCredentialsTokenSupplier = get()
+                outboxDao = get(),
+                messagePublisher = get(),
+                clientCredentialsTokenSupplier = get()
         )
     }
     singleBy<CompanyDao, DefaultCompanyDao>()

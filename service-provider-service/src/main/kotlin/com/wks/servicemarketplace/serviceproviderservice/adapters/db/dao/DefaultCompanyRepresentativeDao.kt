@@ -10,14 +10,14 @@ class DefaultCompanyRepresentativeDao constructor(dataSource: DataSource) : Base
 
     override fun newCompanyRepresentativeId(connection: Connection): CompanyRepresentativeId {
         return CompanyRepresentativeId(
-                create(connection).nextval(sequence(name("company_representative_external_id"), Long::class.java))
+                create(connection).nextval(sequence(name("company_representative_id"), Long::class.java))
         )
     }
 
     override fun save(connection: Connection, admin: CompanyRepresentative): Int {
         return create(connection).insertInto(
                 table("company_representative"),
-                field("external_id"),
+                field("id"),
                 field("uuid"),
                 field("first_name"),
                 field("last_name"),
@@ -27,7 +27,7 @@ class DefaultCompanyRepresentativeDao constructor(dataSource: DataSource) : Base
                 field("last_modified_by"),
                 field("version"),
         ).values(
-                admin.externalId.value,
+                admin.id.value,
                 admin.uuid.value,
                 admin.name.firstName,
                 admin.name.lastName,
@@ -48,7 +48,6 @@ class DefaultCompanyRepresentativeDao constructor(dataSource: DataSource) : Base
     override fun findByUUID(connection: Connection, id: CompanyRepresentativeUUID): CompanyRepresentative? {
         return create(connection)
                 .select(
-                        field("p.id"),
                         field("p.external_id"),
                         field("p.uuid"),
                         field("p.first_name"),
@@ -66,8 +65,7 @@ class DefaultCompanyRepresentativeDao constructor(dataSource: DataSource) : Base
                 .fetchOne()
                 ?.let {
                     CompanyRepresentative(
-                            it.get("p.id", Long::class.java),
-                            CompanyRepresentativeId(it.get("p.external_id", Long::class.java)),
+                            CompanyRepresentativeId(it.get("p.id", Long::class.java)),
                             CompanyRepresentativeUUID.fromString(it.get("p.uuid", String::class.java)),
                             Name.of(
                                     it.get("p.first_name", String::class.java),

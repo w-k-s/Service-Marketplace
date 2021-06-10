@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS quote (
     company_id BIGSERIAL NOT NULL,
     note VARCHAR(255),
     currency VARCHAR(3) NOT NULL,
-    amount_minor_units DECIMAL(18,0) NOT NULL,
+    amount_minor_units DECIMAL(19,0) NOT NULL,
     created_by VARCHAR(255) NOT NULL,
     created_date timestamp with time zone NOT NULL,
     last_modified_by VARCHAR(255),

@@ -26,8 +26,6 @@ services:
       dockerfile: Dockerfile
     image: wkas/sm-auth-service
     restart: always
-    env_file:
-      - docker-infra/auth-service.env
     environment:
       AUTHSERVICE_CLIENT_ID: auth-service
       AUTHSERVICE_CLIENT_SECRET: Password@1

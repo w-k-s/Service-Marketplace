@@ -8,16 +8,17 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.github.michaelbull.result.expect
 import com.github.michaelbull.result.onFailure
 import com.wks.servicemarketplace.common.UserId
 import com.wks.servicemarketplace.common.auth.DefaultAuthentication
-import com.wks.servicemarketplace.common.auth.StandardTokenValidator
 import com.wks.servicemarketplace.common.auth.TokenValidator
+import com.wks.servicemarketplace.common.errors.CoreException
+import com.wks.servicemarketplace.common.http.ErrorResponse
 import com.wks.servicemarketplace.serviceproviderservice.adapters.events.TransactionalOutboxJob
 import com.wks.servicemarketplace.serviceproviderservice.adapters.events.TransactionalOutboxJobFactory
 import com.wks.servicemarketplace.serviceproviderservice.adapters.web.resources.healthCheckRouting
-import com.wks.servicemarketplace.serviceproviderservice.adapters.web.resources.serviceProviderRouting
+import com.wks.servicemarketplace.serviceproviderservice.adapters.web.resources.internalCompanyRouting
+import com.wks.servicemarketplace.serviceproviderservice.adapters.web.resources.companyRouting
 import com.wks.servicemarketplace.serviceproviderservice.config.ApplicationParameters
 import com.wks.servicemarketplace.serviceproviderservice.config.DatabaseMigration
 import com.wks.servicemarketplace.serviceproviderservice.config.appModule
@@ -25,8 +26,10 @@ import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.auth.jwt.*
 import io.ktor.features.*
+import io.ktor.http.*
 import io.ktor.jackson.*
 import io.ktor.locations.*
+import io.ktor.response.*
 import io.ktor.routing.*
 import org.koin.ktor.ext.Koin
 import org.koin.ktor.ext.inject
@@ -95,7 +98,8 @@ fun Application.contentNegotiation(){
 
 fun Application.routing(){
     routing {
-        serviceProviderRouting()
+        companyRouting()
+        internalCompanyRouting()
         healthCheckRouting()
     }
 }
@@ -158,6 +162,17 @@ fun Application.events(){
 
     environment.monitor.subscribe(ApplicationStopped) {
         LOGGER.info("Application Stopped")
+    }
+}
+
+fun Application.exceptionHandler() {
+    install(StatusPages){
+        exception<CoreException> {
+            call.respond(
+                    HttpStatusCode.fromValue(it.errorType.code),
+                    ErrorResponse(it.errorType, it.message, it.details)
+            )
+        }
     }
 }
 

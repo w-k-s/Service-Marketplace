@@ -1,14 +1,13 @@
 package com.wks.servicemarketplace.serviceproviderservice.core
 
+import com.wks.servicemarketplace.api.CompanyCreatedEvent
 import com.wks.servicemarketplace.common.*
 import com.wks.servicemarketplace.common.events.DomainEvent
-import com.wks.servicemarketplace.api.CompanyCreatedEvent
 import java.time.Clock
 import java.time.OffsetDateTime
 
 data class Company(
-    val id: Long = 0L,
-    val externalId: CompanyId,
+    val id : CompanyId,
     val uuid: CompanyUUID,
     val name: String,
     val phone: PhoneNumber,
@@ -23,7 +22,7 @@ data class Company(
 ) {
     companion object {
         fun create(
-            externalId: CompanyId,
+            id: CompanyId,
             name: String,
             email: Email,
             phoneNumber: PhoneNumber,
@@ -33,8 +32,7 @@ data class Company(
         ): ResultWithEvents<Company, DomainEvent> {
 
             val result = Company(
-                0L,
-                externalId,
+                id,
                 CompanyUUID.random(),
                 name,
                 phoneNumber,
@@ -45,7 +43,7 @@ data class Company(
             )
 
             val event = CompanyCreatedEvent(
-                externalId,
+                id,
                 result.uuid,
                 name,
                 phoneNumber,

@@ -1,9 +1,6 @@
 package com.wks.servicemarketplace.serviceproviderservice.core
 
-import com.wks.servicemarketplace.common.AddressId
-import com.wks.servicemarketplace.common.CompanyId
-import com.wks.servicemarketplace.common.CompanyRepresentativeId
-import com.wks.servicemarketplace.common.CompanyRepresentativeUUID
+import com.wks.servicemarketplace.common.*
 import com.wks.servicemarketplace.common.events.EventEnvelope
 import com.wks.servicemarketplace.common.messaging.Message
 import com.wks.servicemarketplace.common.messaging.MessageId
@@ -19,7 +16,8 @@ interface Dao {
 interface CompanyDao : Dao {
     fun newCompanyId(connection: Connection): CompanyId
     fun save(connection: Connection, company: Company)
-    fun findById(connection: Connection, companyId: CompanyId): Company
+    fun findById(connection: Connection, companyId: CompanyId): Company?
+    fun findByEmployeeId(connection: Connection, userId: UserId): Company?
     fun setAdministrator(connection: Connection, company: Company, admin: CompanyRepresentative): Int
 }
 

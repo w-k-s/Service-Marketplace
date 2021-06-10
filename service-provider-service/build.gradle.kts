@@ -1,20 +1,20 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val kotlinVersion : String by project
-val ktorVersion : String by project
-val quartzVersion: String by project
-val properltyVersion: String by project
-val koinVersion: String by project
-val jacksonVersion: String by project
-val amqpVersion: String by project
-val postgresqlVersion: String by project
-val hikariVersion: String by project
-val jooqVersion: String by project
-val liquibaseVersion: String by project
-val countryCodesVersion: String by project
+val kotlinVersion       =   "1.4.31"
+val ktorVersion         =   "1.5.3"
+val koinVersion         =   "2.2.2"
+val quartzVersion       =   "2.3.0"
+val properltyVersion    =   "1.8.1"
+val jacksonVersion      =   "2.11.1"
+val amqpVersion         =   "5.9.0"
+val postgresqlVersion   =   "42.2.12"
+val hikariVersion       =   "3.4.5"
+val jooqVersion         =   "3.12.3"
+val liquibaseVersion    =   "3.8.1"
+val countryCodesVersion =   "1.27"
 
 plugins {
-    kotlin("jvm")
+    kotlin("jvm") version "1.4.31"
 }
 group = "com.wks.servicemarketplace"
 version = "1.0-SNAPSHOT"
@@ -27,7 +27,7 @@ repositories {
         url = uri("https://maven.pkg.github.com/w-k-s/Service-Marketplace")
         credentials {
             username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
-            password = project.findProperty("gpr.token") as String? ?: System.getenv("GITHUB_TOKEN")
+            password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
         }
     }
 }
@@ -59,7 +59,7 @@ dependencies {
 
     implementation("com.wks.servicemarketplace:common:0.0.3")
     implementation("com.wks.servicemarketplace:auth-service-api:0.0.1")
-    implementation("com.wks.servicemarketplace:service-provider-api:0.0.1")
+    implementation("com.wks.servicemarketplace:service-provider-api:0.0.2")
 
     implementation("io.ktor:ktor-server-core:$ktorVersion")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
@@ -108,6 +108,9 @@ dependencies {
 
     // Country Codes
     implementation("com.neovisionaries:nv-i18n:$countryCodesVersion")
+
+    // Protocol Buffers
+    implementation("com.google.protobuf:protobuf-java:3.0.0")
 
     testImplementation(platform("org.junit:junit-bom:5.7.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")

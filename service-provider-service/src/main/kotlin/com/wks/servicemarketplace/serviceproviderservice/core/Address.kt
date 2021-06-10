@@ -9,8 +9,7 @@ import java.time.Clock
 import java.time.OffsetDateTime
 
 data class Address(
-    val id: Long,
-    val externalId: AddressId,
+    val id: AddressId,
     val uuid: AddressUUID,
     val companyId: CompanyId,
     val name: String,

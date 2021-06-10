@@ -6,16 +6,16 @@ import com.rabbitmq.client.Delivery
 import com.wks.servicemarketplace.authservice.api.AuthMessaging
 import com.wks.servicemarketplace.common.auth.TokenValidator
 import com.wks.servicemarketplace.common.errors.CoreException
-import com.wks.servicemarketplace.serviceproviderservice.core.usecase.CreateCompanyRepresentativeRequest
-import com.wks.servicemarketplace.serviceproviderservice.core.usecase.CreateCompanyRepresentativeUseCase
+import com.wks.servicemarketplace.serviceproviderservice.core.CreateCompanyRepresentativeRequest
+import com.wks.servicemarketplace.serviceproviderservice.core.EmployeeService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 class DefaultEventReceiver constructor(
-    private val tokenValidator: TokenValidator,
-    createCompanyRepresentativeUseCase: CreateCompanyRepresentativeUseCase,
-    objectMapper: ObjectMapper,
-    channel: Channel
+        private val tokenValidator: TokenValidator,
+        employeeService: EmployeeService,
+        objectMapper: ObjectMapper,
+        channel: Channel
 ) {
 
     companion object {
@@ -24,11 +24,11 @@ class DefaultEventReceiver constructor(
     }
 
     init {
-        consumeServiceProviderCreated(createCompanyRepresentativeUseCase, objectMapper, channel)
+        consumeServiceProviderCreated(employeeService, objectMapper, channel)
     }
 
     private fun consumeServiceProviderCreated(
-        createCompanyRepresentativeUseCase: CreateCompanyRepresentativeUseCase,
+        companyService: EmployeeService,
         objectMapper: ObjectMapper,
         channel: Channel
     ) {
@@ -41,12 +41,9 @@ class DefaultEventReceiver constructor(
             try {
                 LOGGER.info("Service Provider Created Event")
 
-                val customerRequest =
-                    objectMapper.readValue(message.body, CreateCompanyRepresentativeRequest.Builder::class.java).also {
-                        it.authentication = tokenValidator.authenticate(message.authorization())
-                        it.correlationId = message.properties.correlationId
-                    }.build()
-                createCompanyRepresentativeUseCase.execute(customerRequest)
+                val representativeRequest = objectMapper.readValue(message.body, CreateCompanyRepresentativeRequest::class.java)
+                val authentication =  tokenValidator.authenticate(message.authorization())
+                companyService.createCompanyRepresentative(representativeRequest, authentication, message.properties.correlationId)
                 channel.basicAck(message.envelope.deliveryTag, false)
             } catch (e: CoreException) {
                 LOGGER.error(e.message, e)

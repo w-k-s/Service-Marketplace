@@ -17,10 +17,9 @@ class DefaultAddressDao constructor(dataSource: DataSource) : BaseDao(dataSource
     private val addressMapper = RecordMapper<Record, Address> { record ->
         record?.let {
             Address(
-                    it.get("a.id", Long::class.java),
-                    AddressId.of(it.get("a.external_id", Long::class.java)),
+                    AddressId.of(it.get("a.id", Long::class.java)),
                     AddressUUID.fromString(it.get("a.uuid", String::class.java)),
-                    CompanyId(it.get("a.company_external_id", Long::class.java)),
+                    CompanyId(it.get("a.company_id", Long::class.java)),
                     it.get("a.name", String::class.java),
                     it.get("a.line_1", String::class.java),
                     it.get("a.line_2", String::class.java),
@@ -40,9 +39,9 @@ class DefaultAddressDao constructor(dataSource: DataSource) : BaseDao(dataSource
     override fun save(connection: Connection, address: Address) {
         create(connection).insertInto(
                 table("address"),
-                field("external_id"),
+                field("id"),
                 field("uuid"),
-                field("company_external_id"),
+                field("company_id"),
                 field("name"),
                 field("line_1"),
                 field("line_2"),
@@ -54,7 +53,7 @@ class DefaultAddressDao constructor(dataSource: DataSource) : BaseDao(dataSource
                 field("last_modified_by"),
                 field("version"),
         ).values(
-                address.externalId.value,
+                address.id.value,
                 address.uuid.value,
                 address.companyId.value,
                 address.name,
@@ -74,9 +73,8 @@ class DefaultAddressDao constructor(dataSource: DataSource) : BaseDao(dataSource
         return create(connection)
                 .select(
                         field("a.id"),
-                        field("a.external_id"),
                         field("a.uuid"),
-                        field("a.company_external_id"),
+                        field("a.company_id"),
                         field("a.name"),
                         field("a.line_1"),
                         field("a.line_2"),
@@ -91,7 +89,7 @@ class DefaultAddressDao constructor(dataSource: DataSource) : BaseDao(dataSource
                         field("a.version")
                 )
                 .from(table("address").`as`("a"))
-                .where(field("a.external_id").eq(id.value))
+                .where(field("a.id").eq(id.value))
                 .fetchOne(addressMapper)
     }
 
@@ -99,9 +97,8 @@ class DefaultAddressDao constructor(dataSource: DataSource) : BaseDao(dataSource
         return create(connection)
                 .select(
                         field("a.id"),
-                        field("a.external_id"),
                         field("a.uuid"),
-                        field("a.company_external_id"),
+                        field("a.company_id"),
                         field("a.name"),
                         field("a.line_1"),
                         field("a.line_2"),
@@ -116,7 +113,7 @@ class DefaultAddressDao constructor(dataSource: DataSource) : BaseDao(dataSource
                         field("a.version")
                 )
                 .from(table("address").`as`("a"))
-                .where(field("a.company_external_id").eq(id.value))
+                .where(field("a.company_id").eq(id.value))
                 .fetch(addressMapper)
     }
 }

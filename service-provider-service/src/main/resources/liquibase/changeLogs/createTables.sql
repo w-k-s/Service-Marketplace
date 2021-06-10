@@ -2,10 +2,9 @@
 
 -- Company
 
-CREATE SEQUENCE IF NOT EXISTS company_external_id;
+CREATE SEQUENCE IF NOT EXISTS company_id;
 CREATE TABLE IF NOT EXISTS company(
     id BIGSERIAL PRIMARY KEY NOT NULL,
-	external_id BIGSERIAL NOT NULL UNIQUE,
 	uuid VARCHAR(64) NOT NULL UNIQUE,
 	name VARCHAR(255) NOT NULL,
 	email VARCHAR(320) NOT NULL UNIQUE,
@@ -20,10 +19,9 @@ CREATE TABLE IF NOT EXISTS company(
 
 -- Company Representative (User that will create company)
 
-CREATE SEQUENCE IF NOT EXISTS company_representative_external_id;
+CREATE SEQUENCE IF NOT EXISTS company_representative_id;
 CREATE TABLE IF NOT EXISTS company_representative(
 	id BIGSERIAL PRIMARY KEY NOT NULL,
-	external_id BIGSERIAL NOT NULL UNIQUE,
 	uuid VARCHAR(64) NOT NULL UNIQUE,
 	first_name VARCHAR(50) NOT NULL,
 	last_name VARCHAR(50) NOT NULL,
@@ -38,16 +36,15 @@ CREATE TABLE IF NOT EXISTS company_representative(
 
 -- Employee
 
-CREATE SEQUENCE IF NOT EXISTS employee_external_id;
+CREATE SEQUENCE IF NOT EXISTS employee_id;
 CREATE TABLE IF NOT EXISTS employee(
 	id BIGSERIAL PRIMARY KEY NOT NULL,
-	external_id BIGSERIAL NOT NULL UNIQUE,
 	uuid VARCHAR(64) NOT NULL UNIQUE,
 	first_name VARCHAR(50) NOT NULL,
 	last_name VARCHAR(50) NOT NULL,
 	email VARCHAR(320) NOT NULL UNIQUE,
 	phone VARCHAR(18) NOT NULL UNIQUE,
-	company_external_id BIGSERIAL NOT NULL REFERENCES company(external_id) ON UPDATE cascade ON DELETE RESTRICT,
+	company_id BIGSERIAL NOT NULL REFERENCES company(id) ON UPDATE cascade ON DELETE RESTRICT,
 	created_date timestamp without time zone default (now() at time zone 'utc'),
 	created_by VARCHAR(255) NOT NULL,
 	last_modified_date timestamp without time zone default (now() at time zone 'utc'),
@@ -57,12 +54,11 @@ CREATE TABLE IF NOT EXISTS employee(
 
 -- Address
 
-CREATE SEQUENCE IF NOT EXISTS address_external_id;
+CREATE SEQUENCE IF NOT EXISTS address_id;
 CREATE TABLE IF NOT EXISTS address(
 	id BIGSERIAL PRIMARY KEY NOT NULL,
-	external_id BIGSERIAL NOT NULL UNIQUE,
 	uuid VARCHAR(64) NOT NULL UNIQUE,
-	company_external_id BIGSERIAL NOT NULL REFERENCES company(external_id) ON UPDATE cascade ON DELETE RESTRICT,
+	compan_id BIGSERIAL NOT NULL REFERENCES company(id) ON UPDATE cascade ON DELETE RESTRICT,
 	name VARCHAR(50) NOT NULL check (length(name) >= 2),
 	line_1 VARCHAR(100) NOT NULL check (length(line_1) >= 2),
 	line_2 VARCHAR(100),
@@ -96,17 +92,17 @@ VALUES
 
 CREATE TABLE IF NOT EXISTS company_service(
     company_uuid VARCHAR(64) NOT NULL REFERENCES company(uuid),
-    company_external_id BIGSERIAL NOT NULL REFERENCES company(external_id),
+    company_id BIGSERIAL NOT NULL REFERENCES company(id),
     service_code VARCHAR(6) NOT NULL  REFERENCES service(code),
-    CONSTRAINT unique_service_per_company UNIQUE(service_code,company_external_id,company_uuid)
+    CONSTRAINT unique_service_per_company UNIQUE(service_code,company_id,company_uuid)
 );
 
 -- Company & Admin
 
 CREATE TABLE IF NOT EXISTS company_admin(
     company_uuid VARCHAR(64) NOT NULL UNIQUE REFERENCES company(uuid),
-    company_external_id BIGSERIAL NOT NULL UNIQUE REFERENCES company(external_id),
-    employee_id BIGSERIAL NOT NULL UNIQUE REFERENCES employee(external_id),
+    company_id BIGSERIAL NOT NULL UNIQUE REFERENCES company(id),
+    employee_id BIGSERIAL NOT NULL UNIQUE REFERENCES employee(id),
     employee_uuid VARCHAR(64) NOT NULL UNIQUE REFERENCES employee(uuid)
 );
 
