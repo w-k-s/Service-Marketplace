@@ -15,7 +15,7 @@ import org.koin.ktor.ext.inject
 @Location(ServiceProviderApi.API_PATH_V1_)
 class ServiceProvidersEndpoint {
 
-    @Location("/company")
+    @Location(ServiceProviderApi.ENDPOINT_CREATE_COMPANY)
     class Company(val parent: ServiceProvidersEndpoint)
 }
 

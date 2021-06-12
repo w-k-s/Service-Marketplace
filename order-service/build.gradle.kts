@@ -43,9 +43,9 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-jdbc")
 	implementation("org.jdbi:jdbi3-core:3.20.0")
 
-	implementation("com.wks.servicemarketplace:common:0.0.6")
+	implementation("com.wks.servicemarketplace:common:0.0.7")
 	implementation("com.wks.servicemarketplace:auth-service-api:0.0.1")
-	implementation("com.wks.servicemarketplace:service-provider-api:0.0.3")
+	implementation("com.wks.servicemarketplace:service-provider-api:0.0.4")
 
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310") // adds support for java.time on Jacksom

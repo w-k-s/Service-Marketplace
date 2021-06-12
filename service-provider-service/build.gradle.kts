@@ -57,9 +57,9 @@ tasks.test {
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
 
-    implementation("com.wks.servicemarketplace:common:0.0.3")
+    implementation("com.wks.servicemarketplace:common:0.0.7")
     implementation("com.wks.servicemarketplace:auth-service-api:0.0.1")
-    implementation("com.wks.servicemarketplace:service-provider-api:0.0.3")
+    implementation("com.wks.servicemarketplace:service-provider-api:0.0.4")
 
     implementation("io.ktor:ktor-server-core:$ktorVersion")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")

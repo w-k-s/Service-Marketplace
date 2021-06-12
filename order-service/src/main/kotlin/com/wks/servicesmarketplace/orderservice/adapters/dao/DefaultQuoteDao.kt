@@ -2,13 +2,13 @@ package com.wks.servicesmarketplace.orderservice.adapters.dao
 
 import com.wks.servicemarketplace.common.CompanyId
 import com.wks.servicemarketplace.common.CompanyUUID
+import com.wks.servicemarketplace.common.toUTCOffsetDateTime
+import com.wks.servicemarketplace.common.toUTCTimestamp
 import com.wks.servicesmarketplace.orderservice.core.*
 import org.javamoney.moneta.FastMoney
 import org.javamoney.moneta.function.MonetaryQueries
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.mapper.RowMapper
-import toUTCOffsetDateTime
-import toUTCTimestamp
 import javax.money.Monetary
 
 class DefaultQuoteDao(private val jdbi: Jdbi) : QuoteDao {

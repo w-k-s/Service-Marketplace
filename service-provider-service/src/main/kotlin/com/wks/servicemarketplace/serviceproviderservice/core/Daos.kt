@@ -17,7 +17,7 @@ interface CompanyDao : Dao {
     fun newCompanyId(connection: Connection): CompanyId
     fun save(connection: Connection, company: Company)
     fun findById(connection: Connection, companyId: CompanyId): Company?
-    fun findByEmployeeId(connection: Connection, userId: UserId): Company?
+    fun findByEmployeeId(connection: Connection, employeeId: UserId): Company?
     fun setAdministrator(connection: Connection, company: Company, admin: CompanyRepresentative): Int
 }
 

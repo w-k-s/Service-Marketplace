@@ -11,6 +11,7 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.github.michaelbull.result.onFailure
 import com.wks.servicemarketplace.common.UserId
 import com.wks.servicemarketplace.common.auth.DefaultAuthentication
+import com.wks.servicemarketplace.common.auth.Permissions
 import com.wks.servicemarketplace.common.auth.TokenValidator
 import com.wks.servicemarketplace.common.errors.CoreException
 import com.wks.servicemarketplace.common.http.ErrorResponse
@@ -64,7 +65,7 @@ fun Application.authentication(){
                 DefaultPrincipal(DefaultAuthentication(
                     UserId.fromString(credential.payload.getClaim("userId").asString()),
                     credential.payload.subject,
-                    credential.payload.getClaim("permissions").asList(String::class.java)
+                    Permissions.of(credential.payload.getClaim("permissions").asList(String::class.java))
                 ))
             }
             verifier(object: JWTVerifier{

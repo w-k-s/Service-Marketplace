@@ -1,18 +1,39 @@
 package com.wks.servicesmarketplace.orderservice.core
 
 import com.wks.servicemarketplace.common.*
-import com.wks.servicesmarketplace.orderservice.core.utils.ServiceCode
-import com.wks.servicesmarketplace.orderservice.core.utils.ServiceOrderDateTime
 import java.security.Principal
 import java.time.OffsetDateTime
 import javax.money.MonetaryAmount
+import javax.validation.Constraint
+import javax.validation.ConstraintValidator
+import javax.validation.ConstraintValidatorContext
+import javax.validation.Payload
 import javax.validation.constraints.NotBlank
+import kotlin.reflect.KClass
+
+@MustBeDocumented
+@Constraint(validatedBy = [ServiceOrderDateTimeValidator::class])
+@Target(allowedTargets = [AnnotationTarget.FIELD])
+@Retention(AnnotationRetention.RUNTIME)
+annotation class ServiceOrderDateTime(
+        val message: String = "{ServiceOrderDateTime.invalid}",
+        val groups: Array<KClass<out Any>> = [],
+        val payload: Array<KClass<out Payload>> = []
+)
+
+class ServiceOrderDateTimeValidator : ConstraintValidator<ServiceOrderDateTime, OffsetDateTime> {
+    override fun isValid(value: OffsetDateTime?, context: ConstraintValidatorContext?): Boolean {
+        if (value == null || value.isBefore(OffsetDateTime.now())) {
+            return false
+        }
+        return true
+    }
+}
 
 data class ServiceOrder internal constructor(
         val id: OrderId,
         val uuid: OrderUUID,
         val customerUUID: CustomerUUID,
-        @field:ServiceCode
         val serviceCode: Service,
         @NotBlank
         val title: String,
@@ -70,6 +91,7 @@ data class ServiceOrder internal constructor(
 
     fun reject(rejectReason: String, rejectedBy: Principal): ServiceOrder {
         return this.copy(
+                rejectReason = rejectReason,
                 status = ServiceOrderStatus.REJECTED,
                 lastModifiedBy = rejectedBy
         )

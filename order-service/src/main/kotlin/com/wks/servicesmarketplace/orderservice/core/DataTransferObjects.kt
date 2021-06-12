@@ -1,9 +1,11 @@
 package com.wks.servicesmarketplace.orderservice.core
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.wks.servicemarketplace.common.CustomerUUID
 import com.wks.servicemarketplace.common.Service
-import com.wks.servicesmarketplace.orderservice.core.utils.ServiceCode
+import com.wks.servicemarketplace.common.ServiceCode
 import java.math.BigDecimal
 import java.time.OffsetDateTime
 import javax.money.MonetaryAmount
@@ -57,6 +59,7 @@ data class ServiceOrderResponse(
 
 data class CreateQuoteRequest(
         val note: String,
+        @JsonDeserialize(using = MonetaryAmountDeserializer::class)
         val price: MonetaryAmount
 )
 

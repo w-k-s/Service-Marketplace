@@ -24,7 +24,7 @@ class ServiceOrdersController(val serviceOrderService: ServiceOrderService) {
     fun getServiceOrderById(@AuthenticationPrincipal principal: Principal, @PathVariable("orderId", required = true) orderId: String)
     = serviceOrderService.getOrder(OrderUUID.fromString(orderId), principal as Authentication)
 
-    @PostMapping("/{orderId}/bid")
+    @PostMapping("/{orderId}/quote")
     @RolesAllowed("bid.create")
     fun createQuote(@AuthenticationPrincipal principal: Principal,
                     @PathVariable("orderId", required = true) orderId: String,

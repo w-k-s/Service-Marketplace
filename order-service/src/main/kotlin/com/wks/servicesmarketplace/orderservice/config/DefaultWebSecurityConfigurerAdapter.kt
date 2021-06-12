@@ -11,7 +11,11 @@ import org.springframework.security.config.http.SessionCreationPolicy
 
 
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true,  proxyTargetClass = true)
+@EnableGlobalMethodSecurity(
+        prePostEnabled = true,  // Enable @PreAuthorize, @PostAuthorize
+        proxyTargetClass = true//,
+        //jsr250Enabled = true // Enable @RolesAllowed - doesn't work, use prepost instead
+)
 class DefaultWebSecurityConfigurerAdapter(private val tokenValidator: TokenValidator) : WebSecurityConfigurerAdapter() {
 
     override fun configure(http: HttpSecurity) {

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonValue
 import java.io.Serializable
 import java.util.*
 
-data class OrderId internal constructor(private var value: Long) : Serializable {
+data class OrderId internal constructor(var value: Long) : Serializable {
     companion object {
         @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
         @JvmStatic

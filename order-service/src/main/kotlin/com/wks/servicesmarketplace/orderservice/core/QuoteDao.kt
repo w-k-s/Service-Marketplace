@@ -6,5 +6,5 @@ interface QuoteDao {
     fun nextQuoteId(): QuoteId
     fun findByCompanyUUID(companyUUID: CompanyUUID): Quote?
     fun save(quote: Quote) : Boolean
-    fun update(quote: QuoteId, version: Int, newQuote: Quote): Boolean
+    fun update(quoteId: QuoteId, version: Int, newQuote: Quote): Boolean
 }
